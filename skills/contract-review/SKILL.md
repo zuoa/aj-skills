@@ -18,6 +18,10 @@ description: 合同审核与审查报告技能。用户提到“审合同”“�
 - 用户未明确法域，且合同和沟通语言明显是中文商事场景时，先读 [references/prc-defaults.md](references/prc-defaults.md)。
 - 先读 [references/source-hierarchy.md](references/source-hierarchy.md)，明确法源、监管、公司制度和市场惯例的层级。
 - 再按合同类型读取 [references/clause-checklists.md](references/clause-checklists.md)，补齐常见条款检查点。
+- 若为 NDA，追加读取 [references/prc-nda-redlines.md](references/prc-nda-redlines.md)。
+- 若为采购合同，追加读取 [references/prc-procurement-redlines.md](references/prc-procurement-redlines.md)。
+- 若为 SaaS 协议，追加读取 [references/prc-saas-redlines.md](references/prc-saas-redlines.md)。
+- 若为服务协议，追加读取 [references/prc-service-redlines.md](references/prc-service-redlines.md)。
 - 需要生成红线、替代条款或谈判口径时，读取 [references/standard-redlines.md](references/standard-redlines.md)。
 - 需要直接产出可粘贴条款时，读取 [references/clause-templates.md](references/clause-templates.md)。
 - 用户没有公司规则但希望建立内部红线时，读取 [references/company-redline-template.md](references/company-redline-template.md)。
@@ -234,9 +238,10 @@ description: 合同审核与审查报告技能。用户提到“审合同”“�
 执行顺序：
 1. 逐条扫描 clause register
 2. 用合同类型检查清单补查缺失项
-3. 将问题映射到风险分类
-4. 评估严重性、发生概率、可修复性
-5. 形成处理建议
+3. 在中国大陆场景下，再读取对应合同类型的 PRC 专项红线文件
+4. 将问题映射到风险分类
+5. 评估严重性、发生概率、可修复性
+6. 形成处理建议
 
 `04-risk-register.md` 每个问题至少包含：
 - `risk_id`
@@ -256,6 +261,7 @@ description: 合同审核与审查报告技能。用户提到“审合同”“�
 
 写法要求：
 - 先读 [references/standard-redlines.md](references/standard-redlines.md)，确定优先级和 fallback 立场
+- 若默认按中国大陆法语境审查，再叠加读取对应合同类型的 PRC 专项红线文件
 - 需要具体替代表达时，再读 [references/clause-templates.md](references/clause-templates.md)
 - 优先给“为什么要改”和“改成什么”
 - 替代条款要尽量可直接粘贴到合同

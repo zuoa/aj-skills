@@ -7,6 +7,14 @@
 - 让 redline 更贴近本土交易实践
 - 在数据、保密、用工等高风险处更保守
 
+## 按合同类型继续读取
+
+确定合同类型后，继续加载对应专项文件：
+- NDA：见 [prc-nda-redlines.md](prc-nda-redlines.md)
+- 采购合同：见 [prc-procurement-redlines.md](prc-procurement-redlines.md)
+- SaaS 协议：见 [prc-saas-redlines.md](prc-saas-redlines.md)
+- 服务协议：见 [prc-service-redlines.md](prc-service-redlines.md)
+
 ## 适用触发
 
 出现以下任一情形时，优先按本文件审查：

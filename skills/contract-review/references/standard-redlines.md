@@ -18,6 +18,11 @@
 
 如果默认按中国大陆法语境审查：
 - 同时读取 [prc-defaults.md](prc-defaults.md)
+- 若合同类型已知，优先读取对应专项文件：
+  - NDA： [prc-nda-redlines.md](prc-nda-redlines.md)
+  - 采购： [prc-procurement-redlines.md](prc-procurement-redlines.md)
+  - SaaS： [prc-saas-redlines.md](prc-saas-redlines.md)
+  - 服务： [prc-service-redlines.md](prc-service-redlines.md)
 - 对格式条款、免责条款、数据出境、商业秘密和顾问/用工边界默认更保守
 - 输出里区分“法律/合规底线”和“商业偏好”
 
