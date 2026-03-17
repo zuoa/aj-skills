@@ -1,0 +1,4 @@
+interface:
+  display_name: "Contract Review"
+  short_description: "企业合同审核、条款风险识别、法源比对与审查报告生成"
+  default_prompt: "Use $contract-review to review this contract, classify risks, suggest redlines, and give a signing recommendation."

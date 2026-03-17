@@ -3,6 +3,7 @@
 本仓库当前包含多个可直接使用的技能：
 - `skills/stock-analysis`：基于价值投资思路，使用 Tushare 公共数据提供 A 股筛选、个股分析、板块对比、估值计算与新闻舆情分析能力
 - `skills/activity-push`：根据 `feeds.md` 抓取公众号 feed，由模型按文章语义判断是否为活动，提取结构化活动信息，生成审阅 Markdown 和推送文本，并通过 bash + curl 调用企业微信客户联系/客户群 API 推送到外部群
+- `skills/contract-review`：面向企业法务与业务团队的合同审核技能，支持条款拆解、法源与公司规定比对、风险分级、红线建议和审查报告生成
 
 
 ```bash
@@ -11,6 +12,10 @@ npx skills add https://github.com/zuoa/aj-skills --skill aj-stock-analysis
 
 ```bash
 npx skills add https://github.com/zuoa/aj-skills --skill activity-push
+```
+
+```bash
+npx skills add https://github.com/zuoa/aj-skills --skill contract-review
 ```
 
 ## 目录结构
