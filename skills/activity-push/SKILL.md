@@ -253,7 +253,7 @@ bash /Users/yujian/Code/py/aj-skills/skills/activity-push/scripts/fetch_recent_f
 - `activity-structured.json` 必须按活动价值从高到低输出，价值最高的活动排在最前面
 - 输出必须是 JSON 数组
 
-允许保留这些可选来源字段，便于后续追踪：
+为保证汇总图里一定能生成二维码，每条活动都必须保留这些来源字段：
 - `sourceUrl`
 - `sourceTitle`
 - `sourceMpId`
@@ -290,6 +290,7 @@ bash /Users/yujian/Code/py/aj-skills/skills/activity-push/scripts/fetch_recent_f
 - `activityLimitNum`：仅保留数字；未知时写空字符串
 - `activityDescription`：1 到 3 句，不要整段照抄原文
 - `activityImages`：必须是数组
+- `sourceUrl`：必须保留原文链接，供汇总图把二维码直接渲染进图片；缺失时不允许静默省略二维码
 
 活动价值评分时优先考虑：
 - 对目标用户是否有直接价值，是否值得立即行动
@@ -381,7 +382,9 @@ python3 /Users/yujian/Code/py/aj-skills/skills/activity-push/scripts/render_acti
 - 图片中只渲染实际存在的数据字段；缺失字段直接省略，不要写"未说明""待补充"等占位词
 - 只有在活动具备有效经纬度时才显示地图预览；没有经纬度时不要渲染地图占位块
 - 若存在 `activityStaticMapUrl` 且有有效经纬度，可把静态地图贴进图片；地图图面不要再额外叠加 marker、十字线或高亮点
-- 若存在原文链接，可渲染二维码，但二维码区域不要使用红色强调条，也不要写"链接已转为二维码"这类无效说明
+- 只要图片里渲染了活动卡片，就必须在每个活动卡片内生成原文链接二维码；二维码不能作为可选项被省略
+- 若某条活动缺少 `sourceUrl`，应视为数据不完整并直接报错，而不是继续产出一个没有二维码的活动图片
+- 二维码区域不要使用红色强调条，也不要写"链接已转为二维码"这类无效说明
 - 无活动时也要生成空结果图片，便于归档
 
 推荐输出：
@@ -587,6 +590,7 @@ curl -s "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=YOUR_KEY" \
 - `activity-structured.json` 必须按内部评分结果降序排列
 - `activity-structured-geo.json` 必须在有地址时尽量补全 GCJ-02、WGS84 和静态地图 URL
 - `activity-summary.png` 必须由 `activity-structured-geo.json` 渲染生成；空结果也要产出
+- `activity-summary.png` 在存在活动时，每个活动卡片都必须包含二维码
 - `activity-structured.md` 必须用于人工审阅，默认中文
 - `activity-structured.md` 不展示坐标字段，优先展示静态地图
 - `activity-push.txt` 必须用于 webhook 推送的文本内容
@@ -634,6 +638,7 @@ curl -s "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=YOUR_KEY" \
 - 已完成活动价值评分并按高到低排序
 - 如地址存在，已产出 `activity-structured-geo.json`
 - 已产出 `activity-summary.png`
+- 已确认所有活动卡片都带有二维码
 - 已产出审阅用 `activity-structured.md`
 - 已产出推送用 `activity-push.txt`
 - 若推送配置完整，已通过 webhook 完成推送

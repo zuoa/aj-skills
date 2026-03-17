@@ -14,7 +14,14 @@ SKILL_ROOT = Path(__file__).resolve().parents[1]
 if str(SKILL_ROOT) not in sys.path:
     sys.path.insert(0, str(SKILL_ROOT))
 
-from scripts.render_activity_image import build_meta_lines, draw_qr_block, font_candidates, has_coordinates, run_render
+from scripts.render_activity_image import (
+    build_meta_lines,
+    draw_qr_block,
+    font_candidates,
+    has_coordinates,
+    require_source_url,
+    run_render,
+)
 
 
 class RenderActivityImageTests(unittest.TestCase):
@@ -121,6 +128,10 @@ class RenderActivityImageTests(unittest.TestCase):
         self.assertFalse(has_coordinates({"activityLongitudeGCJ02": "abc", "activityLatitudeGCJ02": 31.1}))
         self.assertTrue(has_coordinates({"activityLongitudeGCJ02": 121.4, "activityLatitudeGCJ02": 31.1}))
 
+    def test_require_source_url_rejects_missing_qr_source(self) -> None:
+        with self.assertRaisesRegex(RuntimeError, "missing sourceUrl"):
+            require_source_url({"activityName": "AI 工作坊"}, 1)
+
     def test_draw_qr_block_uses_neutral_colors(self) -> None:
         image = Image.new("RGB", (500, 220), "white")
         draw = ImageDraw.Draw(image)
@@ -131,7 +142,7 @@ class RenderActivityImageTests(unittest.TestCase):
 
         height = draw_qr_block(image, draw, "https://example.com/post/1", 20, 20, fonts)
 
-        self.assertEqual(height, 112)
+        self.assertEqual(height, 116)
         self.assertNotEqual(image.getpixel((24, 76)), (184, 92, 56))
 
     def test_run_render_generates_empty_state_png(self) -> None:
@@ -157,6 +168,37 @@ class RenderActivityImageTests(unittest.TestCase):
             with Image.open(output_path) as rendered:
                 self.assertEqual(rendered.size[0], 1280)
                 self.assertGreater(rendered.size[1], 250)
+
+    def test_run_render_requires_source_url_for_activity_cards(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            input_path = tmp_path / "activity-structured-geo.json"
+            output_path = tmp_path / "activity-summary.png"
+            input_path.write_text(
+                json.dumps(
+                    [
+                        {
+                            "activityName": "AI 工作坊",
+                            "activityType": "工作坊",
+                        }
+                    ],
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(RuntimeError, "missing sourceUrl"):
+                run_render(
+                    Namespace(
+                        input=str(input_path),
+                        output=str(output_path),
+                        title="活动情报速递",
+                        subtitle="2026-03-11",
+                        watermark="潮匠里",
+                        width=1280,
+                        download_timeout=1.0,
+                    )
+                )
 
 
 if __name__ == "__main__":

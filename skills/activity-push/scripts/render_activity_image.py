@@ -287,6 +287,14 @@ def has_coordinates(activity: Dict[str, Any]) -> bool:
     return True
 
 
+def require_source_url(activity: Dict[str, Any], index: int) -> str:
+    source_url = str(activity.get("sourceUrl", "")).strip()
+    if source_url:
+        return source_url
+    activity_name = str(activity.get("activityName", "")).strip() or f"第 {index} 条活动"
+    raise RuntimeError(f"activity {index} missing sourceUrl, cannot render required QR code: {activity_name}")
+
+
 def draw_qr_block(
     image: Image.Image,
     draw: ImageDraw.ImageDraw,
@@ -493,10 +501,10 @@ def render_card(
 
     title = str(activity.get('activityName', '')).strip() or '未命名活动'
     activity_type = str(activity.get('activityType', '')).strip()
-    source_url = str(activity.get("sourceUrl", "")).strip()
+    source_url = require_source_url(activity, index)
 
     show_map = has_coordinates(activity) and bool(str(activity.get("activityStaticMapUrl", "")).strip())
-    show_qr = bool(source_url)
+    show_qr = True
     show_side_column = show_map or show_qr
     text_width = card_inner_width - MAP_WIDTH - 32 if show_side_column else card_inner_width
 
