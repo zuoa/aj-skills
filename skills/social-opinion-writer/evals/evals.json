@@ -1,0 +1,157 @@
+{
+  "skill_name": "social-opinion-writer",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "请以“某社区垃圾分类投放点设置不合理，居民经常找不到桶点”为主题，帮我写一篇可直接报送市里的社情民意信息。",
+      "expected_output": "Skill 应先执行层级筛题，判断该问题本身偏区街社区事务，不宜直接作为市级社情民意选题；要么明确说明不宜按当前层级直接成稿，要么将其上提为具有全市普遍性的制度、规划或协同机制堵点后再写，不能直接把社区细务包装成市级正式报送稿。",
+      "assertions": [
+        {
+          "name": "screens_out_low_level_topic",
+          "description": "应识别原始题目属于区街社区事务，不能直接按市级正式报送稿处理。"
+        },
+        {
+          "name": "reframes_to_systemic_issue_or_declines",
+          "description": "应上提为市级制度或协同机制问题，或者明确说明该题不宜作为当前层级社情民意选题。"
+        },
+        {
+          "name": "avoids_direct_city_level_packaging",
+          "description": "不能把单个社区桶点设置问题直接包装成市级决策议题。"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "围绕“基层医院检查检验结果互认落地仍有堵点”写一篇民主党派报送的社情民意信息，要补充最新政策、最新公开案例和可核实数据，按正式报送稿写法出定稿。",
+      "expected_output": "Skill 应联网核实最新政策与案例，按“现状/前言-主要问题-对策建议”三段式起草，正文重点放在 `3-4` 个有证据支撑的问题和与之逐项对应的建议，整体篇幅控制在约 `1500-2000` 字，并同步生成 `03-source-log.md`，保留原文 URL 供人工复核。",
+      "assertions": [
+        {
+          "name": "uses_three_part_structure",
+          "description": "应按“现状/前言-主要问题-对策建议”三段式组织正文。"
+        },
+        {
+          "name": "limits_problem_count_to_three_or_four",
+          "description": "问题部分应聚焦 `3-4` 个问题，并为每个问题提供证据支撑。"
+        },
+        {
+          "name": "matches_recommendations_to_problems",
+          "description": "建议应与前文问题逐项对应，形成闭环。"
+        },
+        {
+          "name": "builds_source_log_with_original_urls",
+          "description": "应生成 `03-source-log.md`，并记录原文 URL 供人工复核。"
+        },
+        {
+          "name": "checks_latest_policy_instead_of_memory",
+          "description": "用户要求最新政策和案例时，应联网核实，不能凭记忆写作。"
+        },
+        {
+          "name": "avoids_generic_memo_title",
+          "description": "标题不应落入“关于……的建议”“关于进一步加强……”式普通公文题，应更精简、准确、切中问题。"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "请围绕“校外培训机构转入非学科素质教育后监管出现灰区”起草一篇社情民意，并把你查到的资料都记进 source log。注意：网上很多文章是新浪、网易转载和公众号二次加工内容，你要自己甄别。",
+      "expected_output": "Skill 应优先使用政策原文、主管部门通报、统计数据和权威媒体原始报道；对门户转载、自媒体和二次加工内容进行信源回溯，不能直接当证据。`03-source-log.md` 中应记录可直接打开的原文 URL、原始发布单位、发布日期和可信度，并对转载页或无法回溯原文的内容降级或剔除。",
+      "assertions": [
+        {
+          "name": "prefers_primary_sources",
+          "description": "应优先采用政策原文、主管部门通报、统计数据和权威媒体原始报道。"
+        },
+        {
+          "name": "traces_portal_reposts_back_to_origin",
+          "description": "面对门户转载和二次加工内容，应追溯原始信源，不能直接将转载页作为最终证据。"
+        },
+        {
+          "name": "records_source_log_fields_for_human_review",
+          "description": "`03-source-log.md` 应保留原文 URL、原始发布单位、发布日期和可信度，便于人工复核。"
+        },
+        {
+          "name": "drops_untraceable_or_low_confidence_items",
+          "description": "无法回溯原文或可信度不足的内容应降级或剔除。"
+        },
+        {
+          "name": "uses_issue_driven_title",
+          "description": "标题应体现问题意识和监管灰区特征，而不是写成普通的“关于校外培训监管的建议”。"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "我已经写了一版关于“县域普通高中教师流失”的信息稿，但里面有些数据来自短视频评论区整理，也有些案例是 AI 帮我编的。你先不要简单润色，帮我补资料、剔除不实内容、重写成能报送的版本。",
+      "expected_output": "Skill 应先做问题诊断，再清理不可溯源数据和虚构案例，重新建立可复查证据链后重写，而不是机械润色原稿。定稿应避免论文腔和宣传腔，保留真实一手观察，使用可核实的数据与案例支撑 `3-4` 个问题，并给出与问题闭环对应的建议。",
+      "assertions": [
+        {
+          "name": "diagnoses_draft_before_rewriting",
+          "description": "应先识别初稿中的脏数据、虚构案例和证据缺口，而不是直接润色。"
+        },
+        {
+          "name": "removes_ai_hallucinated_or_comment_sourced_claims",
+          "description": "应剔除来自短视频评论区和 AI 编造的不可溯源数据与案例。"
+        },
+        {
+          "name": "rebuilds_evidence_chain",
+          "description": "应重新建立可复查证据链，再重写定稿。"
+        },
+        {
+          "name": "keeps_work_report_style",
+          "description": "定稿应避免论文腔、宣传腔和机械润色痕迹，保留真实一手观察并写成信息稿口吻。"
+        },
+        {
+          "name": "avoids_generic_memo_title_after_rewrite",
+          "description": "重写后的标题应更像问题判断句或风险提示句，而不是“关于县域普通高中教师流失的建议”。"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "请写一篇关于“外卖骑手劳动保障”的社情民意，前半部分重点写本市平台治理问题，建议部分同时给出省级财政安排、国家立法修改和街道网格管理措施，内容越全面越好。",
+      "expected_output": "Skill 应识别该提示存在明显层级混写风险，主动收敛为单一报送层级，不应在同一篇稿件中同时提出市级、省级、国家级和街道层面的并列建议。应优先固定一个报送层级，再围绕该层级权限内可推动的机制问题组织问题与建议。",
+      "assertions": [
+        {
+          "name": "detects_mixed_reporting_levels",
+          "description": "应识别用户提示把市级、省级、国家级和街道层面混在一篇稿里。"
+        },
+        {
+          "name": "forces_single_reporting_level",
+          "description": "应主动固定为单一报送层级，而不是照单全收。"
+        },
+        {
+          "name": "keeps_recommendations_within_level_authority",
+          "description": "建议应落在同一层级权限范围内，避免层级错配。"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "请围绕“私域直播诱导老年人冲动消费”写一篇社情民意，先给我 5 个标题备选，再按其中最佳标题出定稿。标题不要太长，但要正式一些。",
+      "expected_output": "Skill 应给出 `2-5` 个精简、准确、带问题意识的标题备选，优先体现风险、对象和治理重点，例如“警惕私域直播围猎银发群体”这一路径，而不是落回“关于加强私域直播监管的建议”这类普通公文题。最终定稿标题应在问题识别和报送语感之间取得平衡。",
+      "assertions": [
+        {
+          "name": "provides_multiple_title_options",
+          "description": "应先提供多个标题备选，而不是直接只给一个标题。"
+        },
+        {
+          "name": "avoids_about_suggestion_title_pattern",
+          "description": "标题备选不应主要落在“关于……的建议”“关于进一步加强……”这类模式。"
+        },
+        {
+          "name": "titles_are_brief_and_issue_driven",
+          "description": "标题应精简、准确，能够直接体现风险、对象或关键堵点。"
+        },
+        {
+          "name": "final_title_matches_best_option_style",
+          "description": "最终定稿标题应延续最佳备选的短、准、带问题意识风格。"
+        }
+      ],
+      "files": []
+    }
+  ]
+}
