@@ -24,7 +24,7 @@
     {
       "id": 2,
       "prompt": "围绕“基层医院检查检验结果互认落地仍有堵点”写一篇民主党派报送的社情民意信息，要补充最新政策、最新公开案例和可核实数据，按正式报送稿写法出定稿。",
-      "expected_output": "Skill 应联网核实最新政策与案例，按“现状/前言-主要问题-对策建议”三段式起草，正文重点放在 `3-4` 个有证据支撑的问题和与之逐项对应的建议，整体篇幅控制在约 `1500-2000` 字，并同步生成 `03-source-log.md`，保留原文 URL 供人工复核。",
+      "expected_output": "Skill 应联网核实最新政策与案例，按“现状/前言-主要问题-对策建议”三段式起草，正文重点放在 `3-4` 个有证据支撑的问题和与之逐项对应的建议，整体篇幅控制在约 `1500-2000` 字，并同步生成 `03-source-log.md`，保留原文 URL 供人工复核。在 `markdown` 定稿之外，还应先调用 `humanizer-zh` 做去 AI 味处理，再生成一个按中国大陆机关公文常见版式排版的 `docx` 文件。",
       "assertions": [
         {
           "name": "uses_three_part_structure",
@@ -49,6 +49,14 @@
         {
           "name": "avoids_generic_memo_title",
           "description": "标题不应落入“关于……的建议”“关于进一步加强……”式普通公文题，应更精简、准确、切中问题。"
+        },
+        {
+          "name": "exports_docx_with_mainland_official_layout",
+          "description": "应在最终 `markdown` 定稿之外，再导出一个参照中国大陆机关材料常见版式的 `docx` 文件。"
+        },
+        {
+          "name": "runs_humanizer_before_docx_export",
+          "description": "应先对定稿调用 `humanizer-zh` 去 AI 味，再导出 `docx`，而不是直接拿原始定稿转 Word。"
         }
       ],
       "files": []
@@ -149,6 +157,30 @@
         {
           "name": "final_title_matches_best_option_style",
           "description": "最终定稿标题应延续最佳备选的短、准、带问题意识风格。"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 7,
+      "prompt": "请围绕“基层托育服务供给与工薪家庭需求错位”写一篇可报送的社情民意，完成定稿后再给我一个适合打印报送的 Word 版本，版式参照中国大陆机关公文常见要求。",
+      "expected_output": "Skill 除了生成标准社情民意定稿外，还应先调用 `humanizer-zh` 生成去 AI 味版本，再输出一个 `docx` 文件，并按默认规则采用 `A4` 纵向、标题 `二号`、正文 `三号仿宋`、标题下空一行、正文固定值 `28pt` 行距、首行缩进两字符等大陆机关材料常见版式；如用户未提供模板，不应擅自添加红头、文号或版记。",
+      "assertions": [
+        {
+          "name": "produces_word_version_after_final_markdown",
+          "description": "应在 `markdown` 定稿完成后继续生成 `docx` 正式稿，而不是只停留在文本输出。"
+        },
+        {
+          "name": "humanizes_before_word_export_without_losing_formality",
+          "description": "应先调用 `humanizer-zh` 去 AI 味，但不能把正式报送材料改成口语化、情绪化或第一人称文风。"
+        },
+        {
+          "name": "uses_mainland_official_style_defaults",
+          "description": "应采用 A4、二号标题、三号正文、固定值 28pt 行距、首行缩进两字符等大陆机关材料常见版式默认值。"
+        },
+        {
+          "name": "does_not_invent_red_header_elements",
+          "description": "在用户未提供模板时，不应擅自添加红头、发文字号、版记等正式党政机关公文专属要素。"
         }
       ],
       "files": []
