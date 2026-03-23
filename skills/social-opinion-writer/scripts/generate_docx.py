@@ -13,6 +13,8 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Mm, Pt
 
+from normalize_cn_punctuation import normalize_markdown_text
+
 TITLE_FONT = "方正小标宋简体"
 BODY_FONT = "仿宋_GB2312"
 LEVEL1_FONT = "黑体"
@@ -197,7 +199,7 @@ def main() -> int:
     input_path = Path(args.input)
     output_path = Path(args.output)
 
-    text = input_path.read_text(encoding="utf-8")
+    text = normalize_markdown_text(input_path.read_text(encoding="utf-8"))
     title, blocks = markdown_to_blocks(text)
     if not title:
         raise SystemExit("No title found in markdown input.")

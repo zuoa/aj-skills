@@ -24,7 +24,7 @@
     {
       "id": 2,
       "prompt": "围绕“基层医院检查检验结果互认落地仍有堵点”写一篇民主党派报送的社情民意信息，要补充最新政策、最新公开案例和可核实数据，按正式报送稿写法出定稿。",
-      "expected_output": "Skill 应联网核实最新政策与案例，按“现状/前言-主要问题-对策建议”三段式起草，正文重点放在 `3-4` 个有证据支撑的问题和与之逐项对应的建议，整体篇幅控制在约 `1500-2000` 字，并同步生成 `03-source-log.md`，保留原文 URL 供人工复核。在 `markdown` 定稿之外，还应先调用 `humanizer-zh` 做去 AI 味处理，再生成一个按中国大陆机关公文常见版式排版的 `docx` 文件。",
+      "expected_output": "Skill 应联网核实最新政策与案例，按“现状/前言-主要问题-对策建议”三段式起草，正文重点放在 `3-4` 个有证据支撑的问题和与之逐项对应的建议。问题部分不能只有案例和定性判断，至少应体现若干可核实数据，并同步生成 `03-source-log.md`，保留原文 URL 供人工复核。定稿还应统一中文标点和中文引号，避免残留英文双引号。在 `markdown` 定稿之外，还应先调用 `humanizer-zh` 做去 AI 味处理，再生成一个按中国大陆机关公文常见版式排版的 `docx` 文件。",
       "assertions": [
         {
           "name": "uses_three_part_structure",
@@ -33,6 +33,10 @@
         {
           "name": "limits_problem_count_to_three_or_four",
           "description": "问题部分应聚焦 `3-4` 个问题，并为每个问题提供证据支撑。"
+        },
+        {
+          "name": "includes_some_quantitative_support",
+          "description": "问题部分不能只有案例，至少应体现若干可核实数据。"
         },
         {
           "name": "matches_recommendations_to_problems",
@@ -57,6 +61,10 @@
         {
           "name": "runs_humanizer_before_docx_export",
           "description": "应先对定稿调用 `humanizer-zh` 去 AI 味，再导出 `docx`，而不是直接拿原始定稿转 Word。"
+        },
+        {
+          "name": "normalizes_chinese_punctuation",
+          "description": "中文正文应统一使用中文标点和中文引号，不应残留英文双引号。"
         }
       ],
       "files": []
