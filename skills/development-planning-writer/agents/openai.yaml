@@ -1,0 +1,4 @@
+interface:
+  display_name: "Planning Writer"
+  short_description: "区域发展规划、地方专项规划与“十五五”规划文本生成"
+  default_prompt: "Use $development-planning-writer to draft a regional development plan or local special plan with planning basis, indicators, project list, and implementation matrix."
