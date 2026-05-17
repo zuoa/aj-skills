@@ -5,6 +5,7 @@
 - `skills/activity-push`：根据 `feeds.md` 抓取公众号 feed，由模型按文章语义判断是否为活动，提取结构化活动信息，生成审阅 Markdown 和推送文本，并通过 bash + curl 调用企业微信客户联系/客户群 API 推送到外部群
 - `skills/contract-review`：面向企业法务与业务团队的合同审核技能，支持条款拆解、法源与公司规定比对、风险分级、红线建议和审查报告生成
 - `skills/development-planning-writer`：面向区域发展规划、地方专项规划与“十五五”规划文本生成，支持上位规划衔接、指标体系、重大项目库和实施矩阵输出
+- `skills/aj-copyright-writer`：面向计算机软件著作权申请材料生成，支持联网调研、规格说明、10 个核心模块、登录页+模块高定制化指挥系统 HTML 原型截图（默认）、原型图 prompt、Gemini/Google API 生图、Java/React 源代码材料、操作手册 Markdown 与 docx、代码 docx 输出
 
 
 ```bash
@@ -21,6 +22,10 @@ npx skills add https://github.com/zuoa/aj-skills --skill contract-review
 
 ```bash
 npx skills add https://github.com/zuoa/aj-skills --skill development-planning-writer
+```
+
+```bash
+npx skills add https://github.com/zuoa/aj-skills --skill aj-copyright-writer
 ```
 
 ## 目录结构

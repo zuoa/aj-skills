@@ -1,0 +1,20 @@
+{
+  "skill_name": "aj-copyright-writer",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "为“城市餐厨垃圾智慧监管平台”生成软件著作权申请材料，输出完整目录，默认用 HTML 原型截图生成界面图片。",
+      "expected_output": "生成 01.spec、02.modules、03.prototype.html、04.prototype、05.code、06.manual、07.code.full 目录；模块和代码各 10 个编号文件，HTML 和图片包含 00-login、01-10 模块首页，并额外覆盖 40%-60% 功能点；HTML 原型使用 custom-command-system 高定制化指挥系统风格；每个模块包含 3-5 个功能点；04.prototype/batch.json 记录 HTML 截图任务状态；手册按政企操作手册模板组织，登录页引用 00-login.jpg，包含图X截图引用；先生成操作手册 draft，再保守去 AI 味生成最终 md 和 docx。"
+    },
+    {
+      "id": 2,
+      "prompt": "我只有软件名称“AI 合同风险审查系统”，请按软著申请材料要求扩展出规格说明、操作手册和代码文档，没有公开资料就按合理业务设定继续。",
+      "expected_output": "spec 明确区分公开资料和扩展设定；生成 10 个核心功能模块且每个模块有 3-5 个功能点；默认生成 00-login、10 个模块首页和 40%-60% 功能点自包含 HTML 原型并截图，视觉上不是普通后台页面；代码文件按 01-模块名称.txt 命名、每个 120-260 行，且同时包含 Java 后端和 React 前端；缺少 Playwright、浏览器或模板时清楚说明。"
+    },
+    {
+      "id": 3,
+      "prompt": "根据现有 reference/style.md 和 refrence/操作手册模版.docx，为“校园资产巡检管理软件”制作软著操作手册和源代码 docx。",
+      "expected_output": "读取本地风格文件和 Word 模板，生成登录页、模块首页与复杂功能点 HTML 原型、batch.json、截图图片引用、下方居中图注、操作手册 draft、保守去 AI 味后的操作手册 docx 和 07.code.full/${SOFTWARE_NAME}_代码.docx。"
+    }
+  ]
+}
