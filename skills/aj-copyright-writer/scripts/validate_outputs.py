@@ -18,6 +18,16 @@ MAX_PROTOTYPE_FUNCTION_COVERAGE = 0.6
 CODE_MIN_LINES = 120
 CODE_MAX_LINES = 260
 MAX_MANUAL_BODY_LIST_MARKERS = 35
+ALLOWED_PROTOTYPE_STYLES = {
+    "custom-command-system",
+    "gov-service-light",
+    "enterprise-data-station",
+    "industrial-iot-cockpit",
+    "medical-research-clean",
+    "education-campus-portal",
+    "finance-risk-terminal",
+    "mobile-business-console",
+}
 INTERNAL_DOCUMENT_LABEL_PATTERNS = [
     re.compile(r"模块\s*(?:0?[1-9]|10)(?=\s*[：:、，,。\s\)\]）\-]|$)"),
     re.compile(r"(?:第\s*)?(?:0?[1-9]|10)\s*号?模块"),
@@ -147,17 +157,30 @@ def validate_prototype_files(directory: Path, suffix: str, label: str, module_di
     return files
 
 
-def validate_html_prototypes(directory: Path, module_dir: Path | None = None) -> list[Path]:
+def validate_html_prototypes(
+    directory: Path,
+    module_dir: Path | None = None,
+    style_selection: Path | None = None,
+) -> list[Path]:
     files = validate_prototype_files(directory, ".html", "prototype html", module_dir)
+    expected_style = validate_style_selection(style_selection) if style_selection else None
     errors: list[str] = []
     for path in files:
         text = path.read_text(encoding="utf-8", errors="ignore")
-        if not re.search(
-            r"<meta\s+name=[\"']prototype-style[\"']\s+content=[\"']custom-command-system[\"']\s*/?>",
+        style_match = re.search(
+            r"<meta\s+name=[\"']prototype-style[\"']\s+content=[\"']([^\"']+)[\"']\s*/?>",
             text,
             flags=re.IGNORECASE,
-        ):
-            errors.append(f"{path.name}: missing <meta name=\"prototype-style\" content=\"custom-command-system\">")
+        )
+        if not style_match:
+            errors.append(f"{path.name}: missing <meta name=\"prototype-style\" content=\"...\">")
+        elif style_match.group(1) not in ALLOWED_PROTOTYPE_STYLES:
+            errors.append(
+                f"{path.name}: unsupported prototype style {style_match.group(1)!r}; "
+                f"expected one of {', '.join(sorted(ALLOWED_PROTOTYPE_STYLES))}"
+            )
+        elif expected_style and style_match.group(1) != expected_style:
+            errors.append(f"{path.name}: prototype style {style_match.group(1)!r} does not match confirmed style {expected_style!r}")
         if path.stem == "00-login":
             if not re.search(r"<meta\s+name=[\"']module[\"']\s+content=[\"']login[\"']\s*/?>", text, flags=re.IGNORECASE):
                 errors.append(f"{path.name}: login page must use <meta name=\"module\" content=\"login\">")
@@ -177,6 +200,28 @@ def validate_html_prototypes(directory: Path, module_dir: Path | None = None) ->
     if errors:
         raise ValidationError("prototype html style: " + "; ".join(errors))
     return files
+
+
+def validate_style_selection(path: Path) -> str:
+    validate_file_exists(path, "prototype style selection")
+    text = path.read_text(encoding="utf-8", errors="ignore")
+    confirmed_lines = [
+        line for line in text.splitlines() if re.search(r"用户确认|confirmed|confirmed_style|confirmed style", line, flags=re.IGNORECASE)
+    ]
+    if not confirmed_lines:
+        raise ValidationError("prototype style selection: should record the user-confirmed style")
+    for line in confirmed_lines:
+        for style in sorted(ALLOWED_PROTOTYPE_STYLES):
+            if style in line:
+                return style
+    found = [style for style in sorted(ALLOWED_PROTOTYPE_STYLES) if style in text]
+    if found:
+        raise ValidationError("prototype style selection: confirmed style line does not contain a valid style id")
+    else:
+        raise ValidationError(
+            "prototype style selection: missing confirmed style id; "
+            f"expected one of {', '.join(sorted(ALLOWED_PROTOTYPE_STYLES))}"
+        )
 
 
 def code_file_id(path: Path) -> str | None:
@@ -472,6 +517,8 @@ def infer_standard_dirs(root: Path, args: argparse.Namespace) -> None:
         args.prompt_dir = root / "03.prototype.prompt"
     if args.prototype_mode in {"html", "both"} and args.html_dir is None:
         args.html_dir = root / "03.prototype.html"
+    if args.style_selection is None:
+        args.style_selection = root / "03.prototype.style" / "selection.md"
     if args.prototype_dir is None:
         args.prototype_dir = root / "04.prototype"
     if args.code_dir is None:
@@ -501,7 +548,9 @@ def run_validation(args: argparse.Namespace) -> list[str]:
     if args.prompt_dir:
         checks.append(("prototype prompts", lambda: validate_prototype_files(args.prompt_dir, ".md", "prototype prompts", args.module_dir)))
     if args.html_dir:
-        checks.append(("prototype html", lambda: validate_html_prototypes(args.html_dir, args.module_dir)))
+        checks.append(("prototype html", lambda: validate_html_prototypes(args.html_dir, args.module_dir, args.style_selection)))
+    if args.style_selection:
+        checks.append(("prototype style selection", lambda: validate_style_selection(args.style_selection)))
     if args.prototype_dir:
         checks.append(("prototype images", lambda: validate_prototype_files(args.prototype_dir, ".jpg", "prototype images", args.module_dir)))
     if args.batch_file:
@@ -538,6 +587,7 @@ def main() -> int:
     parser.add_argument("--module-dir", type=Path)
     parser.add_argument("--prompt-dir", type=Path)
     parser.add_argument("--html-dir", type=Path)
+    parser.add_argument("--style-selection", type=Path)
     parser.add_argument("--prototype-dir", type=Path)
     parser.add_argument("--batch-file", type=Path)
     parser.add_argument("--code-dir", type=Path)

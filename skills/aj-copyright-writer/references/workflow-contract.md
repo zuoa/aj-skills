@@ -19,6 +19,8 @@
     10.html
     01-01.html
     ...
+  03.prototype.style/
+    selection.md
   03.prototype.prompt/
     00-login.md
     01.md
@@ -52,6 +54,7 @@
 - Numbered directories must contain exactly the expected files:
   - `02.modules`: `01.md` to `10.md`
   - `03.prototype.html`: `00-login.html`, `01.html` to `10.html`, plus function-point pages in default HTML mode
+  - `03.prototype.style`: `selection.md` recording the recommended and confirmed prototype style
   - `03.prototype.prompt`: `00-login.md`, `01.md` to `10.md`, plus function-point prompts in image mode
   - `04.prototype`: `00-login.jpg`, `01.jpg` to `10.jpg`, plus function-point screenshots
   - `05.code`: `01-模块名称.txt` to `10-模块名称.txt`
@@ -112,7 +115,7 @@ The final answer should mention:
 - Whether `style.md` was found.
 - Whether the manual template was found.
 - Prototype generation mode: `html` screenshot or `image` API.
-- Whether prototypes used the custom command-system style or a user-provided `style.md` override.
+- Recommended prototype style, user-confirmed style and whether a user-provided `style.md` was used as an overlay.
 - Whether the operation manual draft was humanized with the conservative copyright-manual humanizer.
 - Whether docx files were generated.
 - Any blocked step with the exact missing dependency, key or file.

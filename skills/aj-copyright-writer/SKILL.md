@@ -50,6 +50,7 @@ description: 编写中国计算机软件著作权登记申请材料的技能。�
 03.prototype.html/00-login.html
 03.prototype.html/01.html ... 10.html
 03.prototype.html/01-01.html ...        # 默认 html 模式，按需覆盖功能点
+03.prototype.style/selection.md
 03.prototype.prompt/00-login.md
 03.prototype.prompt/01.md ... 10.md
 03.prototype.prompt/01-01.md ...        # image 模式，按需覆盖功能点
@@ -100,9 +101,11 @@ python {baseDir}/scripts/validate_outputs.py \
 
 遍历 `02.modules/*.md`，挑选复杂功能或最能展示产品能力的界面。优先使用 `html` 模式；只有用户明确要求 AI 生图、Gemini 生图或只要 prompt 时，才使用 `image` 模式。
 
+生成原型前必须先读取 [references/prototype-ui-style.md](references/prototype-ui-style.md)，根据软件名称、`01.spec/spec.md` 和 `02.modules/*.md` 判断软件类型，推荐一个最佳页面风格和 1-2 个备选风格，并让用户确认。用户确认后生成 `03.prototype.style/selection.md`，记录推断类型、推荐理由、用户确认的 `style_id`、本地 `style.md` 是否参与覆盖。除非用户明确要求无人值守生成，否则不要在未确认风格时开始写 HTML 或 prompt。
+
 #### 默认：HTML 原型模式
 
-先读取 [references/prototype-ui-style.md](references/prototype-ui-style.md)，再结合本地 `style.md` 的视觉风格，生成自包含 HTML 原型。默认视觉方向是高定制化深色科技指挥系统，不是普通后台管理界面。
+使用用户确认后的风格，再结合本地 `style.md` 的视觉覆盖，生成自包含 HTML 原型。不同软件类型应使用不同视觉体系，例如监管/预警类可使用 `custom-command-system`，政务审批类可使用 `gov-service-light`，企业运营类可使用 `enterprise-data-station`，医疗科研类可使用 `medical-research-clean`。
 
 ```text
 03.prototype.html/00-login.html
@@ -116,12 +119,12 @@ python {baseDir}/scripts/validate_outputs.py \
 
 每个 HTML 文件必须：
 - 包含完整 `<!doctype html>`、内联 CSS、内联 JS 和 mock 数据。
-- 在 `<head>` 中写入 `<meta name="prototype-style" content="custom-command-system">`。
+- 在 `<head>` 中写入 `<meta name="prototype-style" content="{confirmed_style_id}">`，取值必须来自 `03.prototype.style/selection.md`。
 - 使用中文界面文案、真实业务字段、合理的统计卡片、表格、表单、弹窗或详情区域。
 - 固定 16:9、1920x1080 首屏布局，截图时不能出现文字重叠、滚动条遮挡、空白主区域或外部资源加载失败。
 - 在 `<head>` 中写入 `<meta name="module" content="02.modules/01.md">`，便于脚本记录 module 映射。
 - 不依赖 CDN、远程字体、远程图片或后端接口；所有 mock 数据写在页面内。
-- 页面应参考用户提供示例图的布局语言：顶部系统标题和导航、深色技术框架、查询/操作区、主内容表格或业务面板、发光边框和状态芯片；但需要做得更精致、更现代，不要逐像素复刻，也不要退化为普通后台页面。
+- 页面应符合用户确认的风格；若选择 `custom-command-system` 或 `industrial-iot-cockpit`，可参考用户提供示例图的顶部系统标题和导航、技术框架、查询/操作区、主内容表格或业务面板、发光边框和状态芯片；若选择轻量政务、医疗、教育或企业风格，则应按对应行业的清晰、正式、可读风格实现，不要强行套深色指挥舱。
 
 必须额外生成 `00-login.html`，截图为 `04.prototype/00-login.jpg`，只用于手册 `2.1、登录`。不要用任意模块截图替代登录截图。
 
@@ -135,7 +138,7 @@ python {baseDir}/scripts/validate_outputs.py \
 
 #### 可选：Gemini 生图模式
 
-先读取 [references/prototype-ui-style.md](references/prototype-ui-style.md)，再结合本地 `style.md` 的视觉风格生成：
+使用用户确认后的风格，再结合本地 `style.md` 的视觉覆盖生成：
 
 ```text
 03.prototype.prompt/00-login.md
@@ -146,7 +149,7 @@ python {baseDir}/scripts/validate_outputs.py \
 ...
 ```
 
-每个 prompt 都要固定 16:9、1920x1080、中文界面、真实业务数据、清晰层级、无重叠文字、可辨认控件和页面状态。视觉方向使用高定制化深色科技指挥系统，避免普通后台管理界面。编号要与后续图片和手册引用保持一致。必须额外生成 `00-login.md`，并要求生成真实登录页面，不得用模块首页代替。功能点截图覆盖同样遵循 `40%-60%` 规则。
+每个 prompt 都要固定 16:9、1920x1080、中文界面、真实业务数据、清晰层级、无重叠文字、可辨认控件和页面状态。prompt 必须明确写入用户确认的 `style_id`、风格名称和视觉要求，避免普通后台管理界面。编号要与后续图片和手册引用保持一致。必须额外生成 `00-login.md`，并要求生成真实登录页面，不得用模块首页代替。功能点截图覆盖同样遵循 `40%-60%` 规则。
 
 ### Step 4: 生成原型图片
 
@@ -155,6 +158,7 @@ python {baseDir}/scripts/validate_outputs.py \
 ```bash
 python {baseDir}/scripts/validate_outputs.py \
   --module-dir 02.modules \
+  --style-selection 03.prototype.style/selection.md \
   --html-dir 03.prototype.html
 
 python {baseDir}/scripts/screenshot_html_prototypes.py \
@@ -165,6 +169,7 @@ python {baseDir}/scripts/screenshot_html_prototypes.py \
   --viewport 1920x1080
 
 python {baseDir}/scripts/validate_outputs.py \
+  --style-selection 03.prototype.style/selection.md \
   --html-dir 03.prototype.html \
   --prototype-dir 04.prototype \
   --batch-file 04.prototype/batch.json
@@ -185,6 +190,7 @@ python -m playwright install chromium
 ```bash
 python {baseDir}/scripts/validate_outputs.py \
   --module-dir 02.modules \
+  --style-selection 03.prototype.style/selection.md \
   --prompt-dir 03.prototype.prompt
 
 python {baseDir}/scripts/generate_gemini_prototypes.py \
@@ -196,6 +202,7 @@ python {baseDir}/scripts/generate_gemini_prototypes.py \
   --size 1920x1080
 
 python {baseDir}/scripts/validate_outputs.py \
+  --style-selection 03.prototype.style/selection.md \
   --prototype-dir 04.prototype \
   --batch-file 04.prototype/batch.json
 ```
@@ -330,7 +337,8 @@ python {baseDir}/scripts/validate_outputs.py \
 - 操作手册正文是否避免大量 `1、2、3、` 或 `a）、b）、c）` 列表；编号主要保留在章节标题。
 - 操作手册最终稿是否已经按 `operation-manual-humanizer.md` 做过保守去 AI 味，且没有改动专有名称、页面按钮、字段、状态标签、图注和图片路径。
 - 规格说明和操作手册是否没有“模块01”“模块 01”“01模块”“功能点01”等内部编号标签。
-- 原型截图是否符合高定制化指挥系统风格，不能是普通后台管理页面。
+- 是否已生成 `03.prototype.style/selection.md`，并记录推荐风格、备选风格和用户确认结果。
+- 原型截图是否符合用户确认的页面风格，不能是普通后台管理页面，也不能把所有软件都套成同一种深色指挥舱。
 - `spec` 是否区分公开事实、推断和扩展设定。
 - 代码文件是否使用 `01-模块名称.txt` 命名，是否包含 Java 和 React 两部分，是否有实际业务逻辑，是否控制在 `120-260` 行。
 - docx 是否成功生成；能渲染检查时，抽查首页、目录附近、图片页和代码页。

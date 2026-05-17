@@ -70,6 +70,29 @@ Function point format:
 3. 功能点名称：说明用户如何触发、系统如何处理、产生什么结果。
 ```
 
+## `03.prototype.style/selection.md`
+
+Before writing prototype HTML or image prompts, read [prototype-ui-style.md](prototype-ui-style.md), recommend the best style for the software type, ask the user to confirm, and save the confirmed choice:
+
+```text
+03.prototype.style/selection.md
+```
+
+The selected style id must be one of:
+
+```text
+custom-command-system
+gov-service-light
+enterprise-data-station
+industrial-iot-cockpit
+medical-research-clean
+education-campus-portal
+finance-risk-terminal
+mobile-business-console
+```
+
+Use the confirmed style consistently across login, module overview pages and function-point pages. Local `style.md` can adjust colors or brand details, but should not replace the confirmed style selection.
+
 ## `03.prototype.html/*.html`
 
 Default prototype mode is HTML screenshot. Read [prototype-ui-style.md](prototype-ui-style.md) before writing these files. Each HTML file should be self-contained and use:
@@ -80,7 +103,7 @@ Default prototype mode is HTML screenshot. Read [prototype-ui-style.md](prototyp
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="prototype-style" content="custom-command-system">
+  <meta name="prototype-style" content="{confirmed_style_id}">
   <meta name="module" content="02.modules/01.md">
   <title>页面名称</title>
   <style>...</style>
@@ -100,14 +123,14 @@ HTML prototype rules:
 - The login page is a required screenshot source for the manual and must not be replaced by a module screenshot.
 - Match each file to the same-numbered module.
 - Use inline CSS and inline JavaScript only.
-- Use the custom command-system style from [prototype-ui-style.md](prototype-ui-style.md): dark technical cockpit, angular frame, top navigation, query/action strip, dense business workspace and luminous accents.
+- Use the confirmed style from `03.prototype.style/selection.md` and the matching guidance in [prototype-ui-style.md](prototype-ui-style.md).
 - Do not use CDN, external images, remote fonts or backend requests.
 - Include realistic mock data: names, dates, statuses, counts, amounts, organization names and records that fit the software domain.
 - Design for a 1920x1080 screenshot. Keep the primary UI within the first viewport.
 - Use stable dimensions for nav, toolbar, cards, tables, forms and dialogs.
 - Avoid text overlap, tiny unreadable labels, empty panels and decorative-only layouts.
 - Follow local `style.md` when available.
-- Do not produce a generic admin page, default dashboard, plain card table, Ant Design clone or Bootstrap-like CRUD screen.
+- Do not produce a generic admin page, default dashboard, plain card table, Ant Design clone or Bootstrap-like CRUD screen. Do not force every software type into the dark command-system style.
 - All buttons, fields, menus, status labels and prompts later described in the operation manual must be visible in the corresponding HTML screenshot. This consistency requirement belongs here, before screenshots are captured.
 - Prefer dedicated function-point screenshots for complex flows, data-entry forms, chart dashboards, monitoring/alert pages, audit handling, export/report features and configuration screens.
 
@@ -134,7 +157,7 @@ Prompt content must specify:
 - Chinese UI labels.
 - The screen's role, selected menu item, main workflow state and primary data.
 - Exact layout: navigation, toolbar, filters, table/form/chart/detail panel, modal or status drawer when needed.
-- High-end custom command-system visual style, not generic admin dashboard.
+- The user-confirmed style id and visual language from `03.prototype.style/selection.md`, not a generic admin dashboard.
 - Visual style from local `style.md` if present.
 - No text overlap, no unreadable tiny text, no meaningless placeholder blocks.
 
