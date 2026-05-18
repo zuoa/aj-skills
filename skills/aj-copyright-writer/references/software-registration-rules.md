@@ -51,6 +51,12 @@ For `07.code.full/${SOFTWARE_NAME}_代码.docx`:
 - Keep module order stable and source-like.
 - Include enough business logic to show software expression.
 - Do not create placeholder-only source files.
+- Generate 60 code pages when the source program is long enough, using the first 30 and last 30 pages under ordinary deposit practice.
+- Each source-program page should contain at least 50 lines; this skill's code-docx script uses 50 lines per page.
+- Use A4 source-code formatting: 宋体, 小五, left aligned, single line spacing.
+- The header should show the applied software name and version exactly as in the application form, with page number at the upper right.
+- The final source-program page should be the program ending page.
+- Source code should not contain blank lines or the word `copyright`.
 
 For `06.manual/*_操作手册.docx`:
 

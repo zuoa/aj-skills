@@ -32,6 +32,7 @@ description: 编写中国计算机软件著作权登记申请材料的技能。�
 
 可选输入：
 - 输出目录：默认创建 `copyright-materials/{software_slug}-{YYYYMMDD-HHMM}/`，所有指定路径都位于该目录内。
+- 软件版本号：默认 `V1.0`；如果用户或申请表提供了版本号，源代码文档页眉必须使用与申请表完全一致的软件名称和版本号。
 - 本地参考目录：默认在输出目录、当前目录和 `~/aj-skills` 中依次查找 `reference/`、`refence/`、`refrence/`。
 - 图片风格文件：默认查找 `reference/style.md`、`refence/style.md`、`refrence/style.md`。
 - 操作手册模板：默认查找 `reference/操作手册模版.docx`、`refrence/操作手册模版.docx`、`reference/操作手册模板.docx`、`refrence/操作手册模板.docx`。
@@ -238,10 +239,12 @@ Gemini 生图脚本会先生成 `04.prototype/batch.json`，每个任务包含 `
 每个文件包含：
 - Java 后端核心业务类、DTO 或控制器片段。
 - React 前端核心页面或组件片段。
-- 适量中文注释。
+- 中文注释率不少于 `10%`，按 `cloc` 输出的 `comment / (comment + code)` 计算；注释应解释业务口径、校验规则、状态流转、权限判断和非显而易见的处理逻辑。
 - 具体业务逻辑、校验、状态流转、异常处理和数据转换。
 
-代码要像项目中的人工业务代码：不过度分层，不堆模式名，不只写空壳接口，不使用完全相同的模板反复复制。每个代码文件控制在 `120-260` 行；文件名必须使用 `编号-模块名称.txt`，例如 `01-用户权限管理.txt`，不要只命名为 `01.txt`。
+代码要像项目中的人工业务代码：不过度分层，不堆模式名，不只写空壳接口，不使用完全相同的模板反复复制。每个代码文件应有充分业务逻辑，且中文注释率不得低于 `10%`；文件名必须使用 `编号-模块名称.txt`，例如 `01-用户权限管理.txt`，不要只命名为 `01.txt`。
+10 个代码文件去除空行后的总行数不得低于 `4000` 行；单个代码文件建议保持 `380-520` 个非空行，复杂模块可适度上浮。代码行数和注释率必须用 `cloc --by-file --force-lang=JavaScript,txt 05.code` 统计确认，非空行数按 `comment + code` 计算，`blank` 不计入。不得用空行、无意义重复代码或无业务含义的注释凑行数。
+源代码全文不得出现 `copyright` 字样，大小写都不允许；`05.code/*.txt` 不要包含空行，生成源代码文档前必须清理所有空白行。
 
 ### Step 6: 生成 Markdown 操作手册
 
@@ -311,22 +314,27 @@ python {baseDir}/scripts/validate_outputs.py \
 运行：
 
 ```bash
+cloc --by-file --force-lang=JavaScript,txt 05.code
+
 python {baseDir}/scripts/validate_outputs.py \
   --code-dir 05.code
 
 python {baseDir}/scripts/build_code_docx.py \
   --code-dir 05.code \
   --output "07.code.full/${SOFTWARE_NAME}_代码.docx" \
-  --software-name "${SOFTWARE_NAME}"
+  --software-name "${SOFTWARE_NAME}" \
+  --software-version "${SOFTWARE_VERSION:-V1.0}"
 
 python {baseDir}/scripts/validate_outputs.py \
   --code-dir 05.code \
-  --code-docx "07.code.full/${SOFTWARE_NAME}_代码.docx"
+  --code-docx "07.code.full/${SOFTWARE_NAME}_代码.docx" \
+  --software-name "${SOFTWARE_NAME}" \
+  --software-version "${SOFTWARE_VERSION:-V1.0}"
 ```
 
 如果使用 `--root` 做整体验证，必须同时传入 `--software-name "${SOFTWARE_NAME}"`，这样脚本会检查 `07.code.full/${SOFTWARE_NAME}_代码.docx`，而不是旧的 `code.docx`。
 
-如果用户提供了代码模板，用 `--template` 指定。代码 docx 顶部只显示软件名称，后面直接跟各模块代码；不要加入“软件源代码文档”“本文档由 05.code 目录下……”这类生成说明或内部解释。代码文档要保留模块编号和代码结构，避免把代码改写成说明文。
+如果用户提供了代码模板，用 `--template` 指定。代码 docx 不要生成封面、目录、模块标题页或“本文档由 05.code 目录下……”这类生成说明；正文直接从源程序开始。源代码文档必须共 `60` 页代码页，每页不少于 `50` 行，脚本默认每页输出 `50` 行；字体使用宋体、小五号，左对齐，单倍行距。页眉必须标注所申请软件名称和版本号，并与申请表中的相应内容完全一致；右上角标注页码。超过 60 页的源程序按普通交存口径取前 30 页和后 30 页连续代码，保证最后一页是程序结束页。源代码文档中不得出现 `copyright` 字样，不得保留空行。
 
 ## 质量检查
 
@@ -346,7 +354,8 @@ python {baseDir}/scripts/validate_outputs.py \
 - 是否已生成 `03.prototype.style/selection.md`，并记录推荐风格、备选风格和用户确认结果。
 - 原型截图是否符合用户确认的页面风格，不能是普通后台管理页面，也不能把所有软件都套成同一种深色指挥舱。
 - `spec` 是否区分公开事实、推断和扩展设定。
-- 代码文件是否使用 `01-模块名称.txt` 命名，是否包含 Java 和 React 两部分，是否有实际业务逻辑，是否控制在 `120-260` 行。
+- 代码文件是否使用 `01-模块名称.txt` 命名，是否包含 Java 和 React 两部分，是否有实际业务逻辑；是否已用 `cloc --by-file --force-lang=JavaScript,txt 05.code` 确认 10 个代码文件 `comment + code` 总行数不少于 `4000` 行，且中文注释率不少于 `10%`。
+- 源代码文件和源代码 docx 是否不含空行、不含 `copyright` 字样；代码 docx 是否为 60 页代码页、每页 50 行、宋体小五、左对齐、单倍行距，页眉名称和版本号是否与申请表一致，右上角是否有页码。
 - docx 是否成功生成；能渲染检查时，抽查首页、目录附近、图片页和代码页。
 
 ## 交付说明

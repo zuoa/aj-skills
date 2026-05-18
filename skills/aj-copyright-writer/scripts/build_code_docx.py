@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import re
 import sys
 from pathlib import Path
 
@@ -20,10 +19,13 @@ def import_docx():
     try:
         from docx import Document
         from docx.enum.style import WD_STYLE_TYPE
-        from docx.shared import Pt
+        from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK, WD_TAB_ALIGNMENT
+        from docx.oxml import OxmlElement
+        from docx.oxml.ns import qn
+        from docx.shared import Cm, Pt
     except ImportError as exc:
         raise SystemExit("Missing dependency: pip install python-docx") from exc
-    return Document, WD_STYLE_TYPE, Pt
+    return Document, WD_STYLE_TYPE, WD_ALIGN_PARAGRAPH, WD_BREAK, WD_TAB_ALIGNMENT, OxmlElement, qn, Cm, Pt
 
 
 def resolve_template(template: str | None, cwd: Path) -> Path | None:
@@ -48,35 +50,92 @@ def resolve_template(template: str | None, cwd: Path) -> Path | None:
     return None
 
 
-def ensure_code_style(document, style_type, pt):
+def set_run_font(run, qn, pt, font_name: str = "宋体", font_size: float = 9) -> None:
+    run.font.name = font_name
+    run.font.size = pt(font_size)
+    run._element.rPr.rFonts.set(qn("w:eastAsia"), font_name)
+
+
+def ensure_code_style(document, style_type, align, qn, pt):
     styles = document.styles
     try:
         style = styles["AJ Code"]
     except KeyError:
         style = styles.add_style("AJ Code", style_type.PARAGRAPH)
-    style.font.name = "Consolas"
-    style.font.size = pt(8.5)
+    style.font.name = "宋体"
+    style.font.size = pt(9)
+    style._element.rPr.rFonts.set(qn("w:eastAsia"), "宋体")
+    style.paragraph_format.alignment = align.LEFT
+    style.paragraph_format.line_spacing = 1
+    style.paragraph_format.space_before = pt(0)
+    style.paragraph_format.space_after = pt(0)
     return style
 
 
-def module_title(path: Path, text: str) -> str:
-    for line in text.splitlines()[:10]:
-        stripped = line.strip()
-        if stripped.startswith("// 模块:"):
-            return stripped.replace("// 模块:", "").strip()
-        if stripped.startswith("#"):
-            return stripped.lstrip("#").strip()
-    if "-" in path.stem:
-        return path.stem.split("-", 1)[1]
-    return path.stem
+def clear_body(document, qn) -> None:
+    body = document._body._element
+    for child in list(body):
+        if child.tag != qn("w:sectPr"):
+            body.remove(child)
 
 
-def add_code_lines(document, text: str, style_name: str, line_numbers: bool) -> None:
-    for number, line in enumerate(text.splitlines(), start=1):
-        paragraph = document.add_paragraph(style=style_name)
-        if line_numbers:
-            paragraph.add_run(f"{number:04d}  ")
-        paragraph.add_run(line if line else " ")
+def configure_page(document, cm) -> None:
+    section = document.sections[0]
+    section.page_width = cm(21)
+    section.page_height = cm(29.7)
+    section.top_margin = cm(1.8)
+    section.bottom_margin = cm(1.6)
+    section.left_margin = cm(2.0)
+    section.right_margin = cm(2.0)
+    section.header_distance = cm(0.8)
+    section.footer_distance = cm(0.8)
+
+
+def clear_paragraph(paragraph) -> None:
+    paragraph._element.clear_content()
+
+
+def add_page_number(paragraph, oxml_element, qn, pt) -> None:
+    run = paragraph.add_run("第 ")
+    set_run_font(run, qn, pt)
+
+    begin = oxml_element("w:fldChar")
+    begin.set(qn("w:fldCharType"), "begin")
+    instr = oxml_element("w:instrText")
+    instr.set(qn("xml:space"), "preserve")
+    instr.text = "PAGE"
+    separate = oxml_element("w:fldChar")
+    separate.set(qn("w:fldCharType"), "separate")
+    end = oxml_element("w:fldChar")
+    end.set(qn("w:fldCharType"), "end")
+
+    field_run = paragraph.add_run()
+    field_run._r.append(begin)
+    field_run._r.append(instr)
+    field_run._r.append(separate)
+    field_run._r.append(end)
+
+    run = paragraph.add_run(" 页")
+    set_run_font(run, qn, pt)
+
+
+def configure_header(document, software_name: str, software_version: str, align, tab_align, oxml_element, qn, pt) -> None:
+    section = document.sections[0]
+    header = section.header
+    paragraph = header.paragraphs[0] if header.paragraphs else header.add_paragraph()
+    clear_paragraph(paragraph)
+    paragraph.paragraph_format.alignment = align.LEFT
+    paragraph.paragraph_format.line_spacing = 1
+    paragraph.paragraph_format.space_before = pt(0)
+    paragraph.paragraph_format.space_after = pt(0)
+    content_width = section.page_width - section.left_margin - section.right_margin
+    paragraph.paragraph_format.tab_stops.add_tab_stop(content_width, tab_align.RIGHT)
+
+    title_run = paragraph.add_run(f"{software_name} {software_version}")
+    set_run_font(title_run, qn, pt)
+    tab_run = paragraph.add_run("\t")
+    set_run_font(tab_run, qn, pt)
+    add_page_number(paragraph, oxml_element, qn, pt)
 
 
 def code_files(code_dir: Path) -> list[Path]:
@@ -90,27 +149,67 @@ def infer_software_name(output_path: Path) -> str:
     return stem
 
 
+def source_lines_for_deposit(paths: list[Path], required_lines: int) -> list[str]:
+    lines: list[str] = []
+    errors: list[str] = []
+    for path in paths:
+        for line_number, raw_line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            if "copyright" in raw_line.lower():
+                errors.append(f"{path.name}:{line_number}: contains copyright")
+            if not raw_line.strip():
+                errors.append(f"{path.name}:{line_number}: blank source line")
+                continue
+            lines.append(raw_line.rstrip())
+
+    if errors:
+        preview = "; ".join(errors[:20])
+        if len(errors) > 20:
+            preview += f"; ... and {len(errors) - 20} more"
+        raise ValidationError("source code content: " + preview)
+    if len(lines) < required_lines:
+        raise ValidationError(f"source code content: expected at least {required_lines} non-empty source lines, found {len(lines)}")
+    if len(lines) == required_lines:
+        return lines
+
+    first_half = required_lines // 2
+    last_half = required_lines - first_half
+    return lines[:first_half] + lines[-last_half:]
+
+
+def add_deposit_code_pages(document, lines: list[str], style_name: str, line_numbers: bool, lines_per_page: int, wd_break, qn, pt) -> None:
+    for index, line in enumerate(lines, start=1):
+        paragraph = document.add_paragraph(style=style_name)
+        paragraph.paragraph_format.left_indent = None
+        paragraph.paragraph_format.first_line_indent = None
+        if line_numbers:
+            number_run = paragraph.add_run(f"{index:04d}  ")
+            set_run_font(number_run, qn, pt)
+        run = paragraph.add_run(line)
+        set_run_font(run, qn, pt)
+        if index % lines_per_page == 0 and index != len(lines):
+            run.add_break(wd_break.PAGE)
+
+
 def build_docx(
     code_dir: Path,
     output_path: Path,
     template_path: Path | None,
     line_numbers: bool,
     software_name: str | None,
+    software_version: str,
 ) -> None:
-    Document, style_type, pt = import_docx()
+    Document, style_type, align, wd_break, tab_align, oxml_element, qn, cm, pt = import_docx()
     document = Document(str(template_path)) if template_path else Document()
-    if template_path and any(p.text.strip() for p in document.paragraphs):
-        document.add_page_break()
+    clear_body(document, qn)
+    configure_page(document, cm)
+    ensure_code_style(document, style_type, align, qn, pt)
+    header_name = software_name or infer_software_name(output_path)
+    configure_header(document, header_name, software_version, align, tab_align, oxml_element, qn, pt)
 
-    ensure_code_style(document, style_type, pt)
-    document.add_heading(software_name or infer_software_name(output_path), level=1)
-
-    for path in code_files(code_dir):
-        text = path.read_text(encoding="utf-8")
-        document.add_page_break()
-        clean_title = re.sub(r"\s+", " ", module_title(path, text))
-        document.add_heading(f"{path.stem}. {clean_title}", level=2)
-        add_code_lines(document, text, "AJ Code", line_numbers)
+    lines_per_page = 50
+    total_pages = 60
+    selected_lines = source_lines_for_deposit(code_files(code_dir), lines_per_page * total_pages)
+    add_deposit_code_pages(document, selected_lines, "AJ Code", line_numbers, lines_per_page, wd_break, qn, pt)
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     document.save(str(output_path))
@@ -123,6 +222,7 @@ def main() -> int:
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--template")
     parser.add_argument("--software-name")
+    parser.add_argument("--software-version", default="V1.0")
     parser.add_argument("--line-numbers", action="store_true")
     args = parser.parse_args()
 
@@ -132,7 +232,7 @@ def main() -> int:
     else:
         print("Template not found; generating code docx without template.")
     try:
-        build_docx(args.code_dir, args.output, template_path, args.line_numbers, args.software_name)
+        build_docx(args.code_dir, args.output, template_path, args.line_numbers, args.software_name, args.software_version)
     except ValidationError as exc:
         print(f"Validation failed: {exc}", file=sys.stderr)
         return 1

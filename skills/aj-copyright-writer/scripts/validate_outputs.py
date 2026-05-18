@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import subprocess
 import sys
 import zipfile
 import xml.etree.ElementTree as ET
@@ -15,8 +16,10 @@ from pathlib import Path
 EXPECTED_IDS = [f"{index:02d}" for index in range(1, 11)]
 MIN_PROTOTYPE_FUNCTION_COVERAGE = 0.4
 MAX_PROTOTYPE_FUNCTION_COVERAGE = 0.6
-CODE_MIN_LINES = 120
-CODE_MAX_LINES = 260
+CODE_MIN_LINES = 360
+CODE_MAX_LINES = 700
+CODE_MIN_TOTAL_NONEMPTY_LINES = 4000
+CODE_MIN_COMMENT_RATIO = 0.10
 MAX_MANUAL_BODY_LIST_MARKERS = 35
 ALLOWED_PROTOTYPE_STYLES = {
     "custom-command-system",
@@ -231,7 +234,49 @@ def code_file_id(path: Path) -> str | None:
     return match.group(1)
 
 
-def validate_code_files(directory: Path, min_lines: int = CODE_MIN_LINES, max_lines: int = CODE_MAX_LINES) -> list[Path]:
+def cloc_code_stats(files: list[Path]) -> dict:
+    try:
+        result = subprocess.run(
+            ["cloc", "--json", "--by-file", "--force-lang=JavaScript,txt", *[str(path) for path in files]],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+    except FileNotFoundError as exc:
+        raise ValidationError("code files: cloc is required to confirm code line counts") from exc
+
+    if result.returncode != 0:
+        detail = (result.stderr or result.stdout).strip()
+        raise ValidationError(f"code files: cloc failed: {detail}")
+
+    try:
+        return json.loads(result.stdout)
+    except json.JSONDecodeError as exc:
+        raise ValidationError("code files: cloc returned invalid JSON") from exc
+
+
+def cloc_entry_for_path(stats: dict, path: Path) -> dict:
+    for key in (str(path), str(path.resolve()), path.name):
+        entry = stats.get(key)
+        if isinstance(entry, dict):
+            return entry
+
+    for key, entry in stats.items():
+        if key in {"header", "SUM"} or not isinstance(entry, dict):
+            continue
+        if Path(key).name == path.name:
+            return entry
+
+    raise ValidationError(f"code files: cloc did not report {path.name}")
+
+
+def validate_code_files(
+    directory: Path,
+    min_lines: int = CODE_MIN_LINES,
+    max_lines: int = CODE_MAX_LINES,
+    min_total_nonempty_lines: int = CODE_MIN_TOTAL_NONEMPTY_LINES,
+    min_comment_ratio: float = CODE_MIN_COMMENT_RATIO,
+) -> list[Path]:
     if not directory.exists():
         raise ValidationError(f"code files: directory does not exist: {directory}")
     if not directory.is_dir():
@@ -260,10 +305,44 @@ def validate_code_files(directory: Path, min_lines: int = CODE_MIN_LINES, max_li
         errors.append(f"expected {len(EXPECTED_IDS)} code files, found {len(files)}")
 
     valid_files = [paths[0] for file_id, paths in sorted(by_id.items()) if file_id in EXPECTED_IDS and len(paths) == 1]
+    stats = cloc_code_stats(valid_files) if valid_files else {"SUM": {"comment": 0, "code": 0}}
+    total_comment_lines = 0
+    total_code_lines = 0
     for path in valid_files:
-        line_count = len(path.read_text(encoding="utf-8").splitlines())
-        if line_count < min_lines or line_count > max_lines:
-            errors.append(f"{path.name}: expected {min_lines}-{max_lines} lines, found {line_count}")
+        text = path.read_text(encoding="utf-8")
+        blank_lines = [index for index, line in enumerate(text.splitlines(), 1) if not line.strip()]
+        if blank_lines:
+            preview = ", ".join(str(index) for index in blank_lines[:10])
+            if len(blank_lines) > 10:
+                preview += f", ... and {len(blank_lines) - 10} more"
+            errors.append(f"{path.name}: source code must not contain blank lines ({preview})")
+        copyright_matches = [index for index, line in enumerate(text.splitlines(), 1) if "copyright" in line.lower()]
+        if copyright_matches:
+            preview = ", ".join(str(index) for index in copyright_matches[:10])
+            if len(copyright_matches) > 10:
+                preview += f", ... and {len(copyright_matches) - 10} more"
+            errors.append(f"{path.name}: source code must not contain copyright ({preview})")
+        entry = cloc_entry_for_path(stats, path)
+        comment_lines = int(entry.get("comment", 0))
+        code_lines = int(entry.get("code", 0))
+        nonempty_line_count = comment_lines + code_lines
+        total_comment_lines += comment_lines
+        total_code_lines += code_lines
+        if nonempty_line_count < min_lines or nonempty_line_count > max_lines:
+            errors.append(
+                f"{path.name}: expected {min_lines}-{max_lines} non-empty cloc lines, found {nonempty_line_count}"
+            )
+    total_nonempty_lines = total_comment_lines + total_code_lines
+    if total_nonempty_lines < min_total_nonempty_lines:
+        errors.append(
+            f"expected at least {min_total_nonempty_lines} total non-empty cloc lines, found {total_nonempty_lines}"
+        )
+    if total_nonempty_lines:
+        comment_ratio = total_comment_lines / total_nonempty_lines
+        if comment_ratio < min_comment_ratio:
+            errors.append(
+                f"expected at least {min_comment_ratio:.0%} cloc comment ratio, found {comment_ratio:.1%}"
+            )
 
     if errors:
         raise ValidationError("code files: " + "; ".join(errors))
@@ -417,6 +496,34 @@ def validate_manual_docx(path: Path, label: str) -> None:
     validate_no_rigid_manual_labels(text, label)
 
 
+def count_docx_page_breaks(path: Path) -> int:
+    try:
+        with zipfile.ZipFile(path) as archive:
+            root = ET.fromstring(archive.read("word/document.xml"))
+    except (zipfile.BadZipFile, KeyError, ET.ParseError) as exc:
+        raise ValidationError(f"code docx: unable to read document XML: {exc}") from exc
+    word_ns = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+    page_breaks = 0
+    for element in root.iter():
+        if element.tag.endswith("}br") and element.get(f"{{{word_ns}}}type") == "page":
+            page_breaks += 1
+    return page_breaks
+
+
+def validate_code_docx(path: Path, label: str, software_name: str | None = None, software_version: str | None = None) -> None:
+    validate_file_exists(path, label)
+    text = extract_docx_text(path)
+    if "copyright" in text.lower():
+        raise ValidationError(f"{label}: source-code document must not contain copyright")
+    if software_name and software_name not in text:
+        raise ValidationError(f"{label}: header should contain software name {software_name!r}")
+    if software_version and software_version not in text:
+        raise ValidationError(f"{label}: header should contain software version {software_version!r}")
+    page_breaks = count_docx_page_breaks(path)
+    if page_breaks != 59:
+        raise ValidationError(f"{label}: expected 59 explicit page breaks for 60 code pages, found {page_breaks}")
+
+
 def extract_protected_manual_terms(text: str) -> list[str]:
     terms: list[str] = []
     for line in text.splitlines():
@@ -556,7 +663,16 @@ def run_validation(args: argparse.Namespace) -> list[str]:
     if args.batch_file:
         checks.append(("batch manifest", lambda: validate_batch_manifest(args.batch_file, not args.allow_incomplete_batch, args.module_dir)))
     if args.code_dir:
-        checks.append(("code files", lambda: validate_code_files(args.code_dir, args.code_min_lines, args.code_max_lines)))
+        checks.append((
+            "code files",
+            lambda: validate_code_files(
+                args.code_dir,
+                args.code_min_lines,
+                args.code_max_lines,
+                args.code_min_total_nonempty_lines,
+                args.code_min_comment_ratio,
+            ),
+        ))
     if args.spec_md:
         checks.append(("spec markdown", lambda: validate_deliverable_markdown(args.spec_md, "spec markdown")))
     if args.manual_draft_md:
@@ -568,7 +684,7 @@ def run_validation(args: argparse.Namespace) -> list[str]:
     if args.manual_docx:
         checks.append(("manual docx", lambda: validate_manual_docx(args.manual_docx, "manual docx")))
     if args.code_docx:
-        checks.append(("code docx", lambda: validate_file_exists(args.code_docx, "code docx")))
+        checks.append(("code docx", lambda: validate_code_docx(args.code_docx, "code docx", args.software_name, args.software_version)))
 
     errors: list[str] = []
     for label, check in checks:
@@ -597,8 +713,11 @@ def main() -> int:
     parser.add_argument("--manual-docx", type=Path)
     parser.add_argument("--code-docx", type=Path)
     parser.add_argument("--software-name")
+    parser.add_argument("--software-version", default="V1.0")
     parser.add_argument("--code-min-lines", default=CODE_MIN_LINES, type=int)
     parser.add_argument("--code-max-lines", default=CODE_MAX_LINES, type=int)
+    parser.add_argument("--code-min-total-nonempty-lines", default=CODE_MIN_TOTAL_NONEMPTY_LINES, type=int)
+    parser.add_argument("--code-min-comment-ratio", default=CODE_MIN_COMMENT_RATIO, type=float)
     parser.add_argument("--allow-incomplete-batch", action="store_true")
     parser.add_argument("--skip-module-function-points", action="store_true")
     args = parser.parse_args()

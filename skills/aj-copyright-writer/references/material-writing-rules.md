@@ -170,10 +170,8 @@ Each file should contain:
 ```text
 // 模块: 01. 模块名称
 // 说明: ...
-
 ===== Java Backend =====
 ...
-
 ===== React Frontend =====
 ...
 ```
@@ -184,9 +182,14 @@ Code style:
 - Include validation, state transitions, permission checks, duplicate checks, calculations, sorting, filtering or audit logging where the module needs them.
 - Keep React code as a real component with state, effects, event handlers and conditional rendering.
 - Do not over-abstract into many empty layers.
-- Include comments only where they explain business intent or non-obvious logic.
+- Keep the comment ratio no lower than 10%, calculated from `cloc` as comment lines divided by `comment + code` lines.
+- Use Chinese comments to explain business intent, validation rules, state transitions, permission checks and non-obvious logic. Do not pad the ratio with meaningless line-by-line comments.
 - It is acceptable that the code is illustrative rather than directly compilable, but it must look like source code, not pseudocode.
-- Keep each code file between 120 and 260 lines.
+- Confirm line counts with `cloc --by-file --force-lang=JavaScript,txt 05.code`; use `comment + code` as the non-empty line count and exclude `blank`.
+- The 10 files under `05.code/` must contain at least 4000 `cloc` non-empty lines in total after removing blank lines.
+- Target 380-520 non-empty lines per code file; complex modules may be longer when needed. Do not pad the line count with blank lines, meaningless duplicate code or comments that do not explain real business logic.
+- Do not leave blank lines in `05.code/*.txt`.
+- Do not use the word `copyright` anywhere in source-code files, regardless of case.
 
 ## `06.manual/*_操作手册.md`
 
@@ -242,10 +245,13 @@ The image alt text is the figure caption. In Word output it must appear below th
 
 The code document should:
 
-- Show only the software name as the top title.
-- Preserve module order.
-- Use a monospace font for code blocks.
-- Start each module on a new page when possible.
-- Avoid adding explanatory prose between every code line.
+- Contain exactly 60 code pages.
+- Use 50 source lines per page, with no blank source lines.
+- Use SimSun/宋体, 9 pt (小五), left alignment and single line spacing.
+- Put the applied software name and version in the header exactly as they appear in the application form.
+- Put page numbers in the upper-right header area.
+- Preserve module order in the source stream.
+- For source streams longer than 60 pages, use the first 30 pages and last 30 pages so the final page is the program ending page.
+- Avoid adding explanatory prose, cover pages, directories, module heading pages or generated-material notes between code lines.
 - Do not add generated-material explanations such as `软件源代码文档` or `本文档由 05.code 目录下的核心业务代码文件合并生成`.
-- Keep original Java and React sections from `05.code/*.txt`.
+- Do not include the word `copyright` anywhere in the code document.
