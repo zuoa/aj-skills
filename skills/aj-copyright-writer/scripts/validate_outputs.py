@@ -41,6 +41,59 @@ RIGID_MANUAL_LABEL_PATTERNS = [
     re.compile(r"^\s*(页面内容说明|页面区域说明|功能说明|操作前提|字段说明|按钮说明|操作步骤|操作过程|预期结果|异常提示)\s*[：:]"),
 ]
 MANUAL_BODY_LIST_MARKER_PATTERN = re.compile(r"^\s*(?:[-*]\s+|\d+[.)、]\s+|[a-zA-Z]）、|[一二三四五六七八九十]+[、.)]\s*)")
+APPLICATION_INFO_FIELD_LIMITS = {
+    "开发的硬件环境": 50,
+    "运行的硬件环境": 50,
+    "操作系统": 50,
+    "软件开发环境 / 开发工具": 50,
+    "该软件的运行平台 / 操作系统": 50,
+    "软件运行支撑环境 / 支持软件": 50,
+    "开发目的": 50,
+    "面向领域 / 行业": 50,
+    "软件的主要功能": 200,
+}
+APPLICATION_INFO_FIELD_ALIASES = {
+    "开发的硬件环境": ("开发的硬件环境",),
+    "运行的硬件环境": ("运行的硬件环境",),
+    "操作系统": ("操作系统",),
+    "软件开发环境 / 开发工具": ("软件开发环境 / 开发工具", "软件开发环境/开发工具"),
+    "该软件的运行平台 / 操作系统": ("该软件的运行平台 / 操作系统", "该软件的运行平台/操作系统"),
+    "软件运行支撑环境 / 支持软件": ("软件运行支撑环境 / 支持软件", "软件运行支撑环境/支持软件"),
+    "编程语言": ("编程语言",),
+    "开发目的": ("开发目的",),
+    "面向领域 / 行业": ("面向领域 / 行业", "面向领域/行业", "行业"),
+    "软件的主要功能": ("软件的主要功能",),
+    "软件的技术特点": ("软件的技术特点",),
+}
+APPLICATION_INFO_SOFTWARE_TYPES = {
+    "APP",
+    "游戏软件",
+    "教育软件",
+    "金融软件",
+    "医疗软件",
+    "地理信息软件",
+    "云计算软件",
+    "信息安全软件",
+    "大数据软件",
+    "人工智能软件",
+    "VR软件",
+    "5G软件",
+    "小程序",
+    "物联网软件",
+    "智慧城市软件",
+}
+APPLICATION_INFO_FORBIDDEN_TEMPLATE_MARKERS = [
+    "限50个字符",
+    "限200个字",
+    "限200字",
+    "限100个字",
+    "限100字",
+    "指开发登记软件",
+    "指运行登记软件",
+    "登记软件的创作目的",
+    "面向领域 / 行业，限",
+    "请选择该软件属于以下哪一种",
+]
 
 
 class ValidationError(ValueError):
@@ -524,6 +577,125 @@ def validate_code_docx(path: Path, label: str, software_name: str | None = None,
         raise ValidationError(f"{label}: expected 59 explicit page breaks for 60 code pages, found {page_breaks}")
 
 
+def normalize_application_info_char(char: str) -> str:
+    if char in {"／", "/"}:
+        return "/"
+    return char
+
+
+def consume_application_info_label(line: str, label: str) -> str | None:
+    label_chars = [normalize_application_info_char(char) for char in label if not char.isspace()]
+    if not label_chars:
+        return None
+
+    label_index = 0
+    for index, char in enumerate(line):
+        if char.isspace():
+            continue
+        if label_index >= len(label_chars):
+            return line[index:]
+        if normalize_application_info_char(char) != label_chars[label_index]:
+            return None
+        label_index += 1
+        if label_index == len(label_chars):
+            return line[index + 1 :]
+    return "" if label_index == len(label_chars) else None
+
+
+def strip_application_info_value_prefix(value: str) -> str:
+    return value.strip().lstrip("\t ：:").strip()
+
+
+def application_info_char_count(value: str) -> int:
+    return len(re.sub(r"\s+", "", value))
+
+
+def is_application_info_label_line(line: str) -> bool:
+    stripped = line.strip()
+    if not stripped:
+        return False
+    labels = ["开发该软件的"]
+    for aliases in APPLICATION_INFO_FIELD_ALIASES.values():
+        labels.extend(aliases)
+    return any(consume_application_info_label(stripped, label) is not None for label in labels)
+
+
+def extract_application_info_value(lines: list[str], label: str) -> str:
+    for index, line in enumerate(lines):
+        stripped = line.strip()
+        if not stripped:
+            continue
+        for alias in APPLICATION_INFO_FIELD_ALIASES[label]:
+            remainder = consume_application_info_label(stripped, alias)
+            if remainder is None:
+                continue
+            value = strip_application_info_value_prefix(remainder)
+            if value:
+                return value
+            for next_line in lines[index + 1 :]:
+                candidate = next_line.strip()
+                if not candidate:
+                    continue
+                if is_application_info_label_line(candidate):
+                    return ""
+                return candidate
+            return ""
+    return ""
+
+
+def validate_application_info_txt(path: Path) -> None:
+    validate_file_exists(path, "application info txt")
+    text = path.read_text(encoding="utf-8", errors="ignore")
+    lines = text.splitlines()
+    errors: list[str] = []
+
+    for marker in APPLICATION_INFO_FORBIDDEN_TEMPLATE_MARKERS:
+        if marker in text:
+            errors.append(f"should not keep template prompt marker {marker!r}")
+
+    for label, limit in APPLICATION_INFO_FIELD_LIMITS.items():
+        value = extract_application_info_value(lines, label)
+        if not value:
+            errors.append(f"missing value for {label}")
+            continue
+        char_count = application_info_char_count(value)
+        if char_count > limit:
+            errors.append(f"{label}: expected <= {limit} characters, found {char_count}")
+
+    language_value = extract_application_info_value(lines, "编程语言")
+    if not language_value:
+        errors.append("missing value for 编程语言")
+    else:
+        for token in ("语言", "版本", "源程序量", "行"):
+            if token not in language_value:
+                errors.append(f"编程语言: missing {token!r}")
+        if not re.search(r"源程序量\s*[：:\t ]*\d+\s*行", language_value):
+            errors.append("编程语言: 源程序量 should be a numeric line count like 源程序量 4000 行")
+
+    tech_value = extract_application_info_value(lines, "软件的技术特点")
+    if not tech_value:
+        errors.append("missing value for 软件的技术特点")
+    else:
+        found_types = [software_type for software_type in sorted(APPLICATION_INFO_SOFTWARE_TYPES, key=len, reverse=True) if software_type in tech_value]
+        if not found_types:
+            errors.append("软件的技术特点: should include one software type from the configured list")
+        elif len(set(found_types)) > 1:
+            errors.append(f"软件的技术特点: choose one software type, found {', '.join(found_types)}")
+        else:
+            description = re.sub(r"^\s*类型\s*[：:]\s*", "", tech_value)
+            description = description.replace(found_types[0], "", 1).lstrip("。；;:：，,、 ")
+            if not description:
+                errors.append("软件的技术特点: missing technical description after software type")
+            elif application_info_char_count(description) > 100:
+                errors.append(
+                    f"软件的技术特点: technical description expected <= 100 characters, "
+                    f"found {application_info_char_count(description)}"
+                )
+
+    if errors:
+        raise ValidationError("application info txt: " + "; ".join(errors))
+
+
 def extract_protected_manual_terms(text: str) -> list[str]:
     terms: list[str] = []
     for line in text.splitlines():
@@ -635,6 +807,11 @@ def infer_standard_dirs(root: Path, args: argparse.Namespace) -> None:
             args.code_docx = root / "07.code.full" / f"{args.software_name}_代码.docx"
         else:
             raise ValidationError("--root validation requires --software-name to infer 07.code.full/{SOFTWARE_NAME}_代码.docx")
+    if args.application_info_txt is None:
+        if args.software_name:
+            args.application_info_txt = root / "08.application-info" / f"{args.software_name}_软著申请表信息.txt"
+        else:
+            raise ValidationError("--root validation requires --software-name to infer 08.application-info/{SOFTWARE_NAME}_软著申请表信息.txt")
     if args.batch_file is None:
         args.batch_file = root / "04.prototype" / "batch.json"
 
@@ -685,6 +862,8 @@ def run_validation(args: argparse.Namespace) -> list[str]:
         checks.append(("manual docx", lambda: validate_manual_docx(args.manual_docx, "manual docx")))
     if args.code_docx:
         checks.append(("code docx", lambda: validate_code_docx(args.code_docx, "code docx", args.software_name, args.software_version)))
+    if args.application_info_txt:
+        checks.append(("application info txt", lambda: validate_application_info_txt(args.application_info_txt)))
 
     errors: list[str] = []
     for label, check in checks:
@@ -712,6 +891,7 @@ def main() -> int:
     parser.add_argument("--manual-md", type=Path)
     parser.add_argument("--manual-docx", type=Path)
     parser.add_argument("--code-docx", type=Path)
+    parser.add_argument("--application-info-txt", type=Path)
     parser.add_argument("--software-name")
     parser.add_argument("--software-version", default="V1.0")
     parser.add_argument("--code-min-lines", default=CODE_MIN_LINES, type=int)

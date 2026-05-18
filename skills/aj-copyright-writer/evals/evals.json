@@ -4,17 +4,17 @@
     {
       "id": 1,
       "prompt": "为“城市餐厨垃圾智慧监管平台”生成软件著作权申请材料，输出完整目录，默认用 HTML 原型截图生成界面图片。",
-      "expected_output": "生成 01.spec、02.modules、03.prototype.style、03.prototype.html、04.prototype、05.code、06.manual、07.code.full 目录；模块和代码各 10 个编号文件；先根据软件类型推荐页面风格并经用户确认，selection.md 记录确认风格；HTML 和图片包含 00-login、01-10 模块首页，并额外覆盖 40%-60% 功能点；HTML 原型使用确认后的行业匹配风格而不是通用后台；每个模块包含 3-5 个功能点；04.prototype/batch.json 记录 HTML 截图任务状态；手册按政企操作手册模板组织，登录页引用 00-login.jpg，包含图X截图引用；先生成操作手册 draft，再保守去 AI 味生成最终 md 和 docx。"
+      "expected_output": "生成 01.spec、02.modules、03.prototype.style、03.prototype.html、04.prototype、05.code、06.manual、07.code.full、08.application-info 目录；模块和代码各 10 个编号文件；先根据软件类型推荐页面风格并经用户确认，selection.md 记录确认风格；HTML 和图片包含 00-login、01-10 模块首页，并额外覆盖 40%-60% 功能点；HTML 原型使用确认后的行业匹配风格而不是通用后台；每个模块包含 3-5 个功能点；04.prototype/batch.json 记录 HTML 截图任务状态；手册按政企操作手册模板组织，登录页引用 00-login.jpg，包含图X截图引用；先生成操作手册 draft，再保守去 AI 味生成最终 md 和 docx；最后生成 08.application-info/${SOFTWARE_NAME}_软著申请表信息.txt，包含硬件环境、操作系统、开发工具、运行平台、支撑环境、编程语言、源程序量、开发目的、面向领域、主要功能和技术特点。"
     },
     {
       "id": 2,
       "prompt": "我只有软件名称“AI 合同风险审查系统”，请按软著申请材料要求扩展出规格说明、操作手册和代码文档，没有公开资料就按合理业务设定继续。",
-      "expected_output": "spec 明确区分公开资料和扩展设定；生成 10 个核心功能模块且每个模块有 3-5 个功能点；先按合同风险审查场景推荐 finance-risk-terminal 等匹配风格并等待确认；默认生成 00-login、10 个模块首页和 40%-60% 功能点自包含 HTML 原型并截图，视觉上不是普通后台页面；代码文件按 01-模块名称.txt 命名，使用 cloc 统计确认 comment + code 总行数不少于 4000 行，中文注释率不少于 10%，且同时包含 Java 后端和 React 前端；代码文件和代码 docx 不含空行和 copyright 字样；代码 docx 为 60 页代码页、每页 50 行、宋体小五、左对齐、单倍行距，页眉包含软件名称和版本号，右上角有页码，最后一页为程序结束页；缺少 Playwright、浏览器或模板时清楚说明。"
+      "expected_output": "spec 明确区分公开资料和扩展设定；生成 10 个核心功能模块且每个模块有 3-5 个功能点；先按合同风险审查场景推荐 finance-risk-terminal 等匹配风格并等待确认；默认生成 00-login、10 个模块首页和 40%-60% 功能点自包含 HTML 原型并截图，视觉上不是普通后台页面；代码文件按 01-模块名称.txt 命名，使用 cloc 统计确认 comment + code 总行数不少于 4000 行，中文注释率不少于 10%，且同时包含 Java 后端和 React 前端；代码文件和代码 docx 不含空行和 copyright 字样；代码 docx 为 60 页代码页、每页 50 行、宋体小五、左对齐、单倍行距，页眉包含软件名称和版本号，右上角有页码，最后一页为程序结束页；最后生成 08.application-info/${SOFTWARE_NAME}_软著申请表信息.txt，源程序量来自 cloc 或明确说明的备用统计口径，技术特点从指定软件类型中单选；缺少 Playwright、浏览器或模板时清楚说明。"
     },
     {
       "id": 3,
       "prompt": "根据现有 reference/style.md 和 refrence/操作手册模版.docx，为“校园资产巡检管理软件”制作软著操作手册和源代码 docx。",
-      "expected_output": "读取本地风格文件和 Word 模板，先按校园资产巡检场景推荐 education-campus-portal、enterprise-data-station 或 mobile-business-console 等风格并等待确认，生成登录页、模块首页与复杂功能点 HTML 原型、batch.json、截图图片引用、下方居中图注、操作手册 draft、保守去 AI 味后的操作手册 docx 和 07.code.full/${SOFTWARE_NAME}_代码.docx。"
+      "expected_output": "读取本地风格文件和 Word 模板，先按校园资产巡检场景推荐 education-campus-portal、enterprise-data-station 或 mobile-business-console 等风格并等待确认，生成登录页、模块首页与复杂功能点 HTML 原型、batch.json、截图图片引用、下方居中图注、操作手册 draft、保守去 AI 味后的操作手册 docx、07.code.full/${SOFTWARE_NAME}_代码.docx 和 08.application-info/${SOFTWARE_NAME}_软著申请表信息.txt。"
     }
   ]
 }

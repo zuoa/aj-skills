@@ -62,3 +62,9 @@ For `06.manual/*_操作手册.docx`:
 
 - Use operation steps and screenshots to show a concrete operable product.
 - Keep the document consistent with module names, screenshots and code files.
+
+For `08.application-info/${SOFTWARE_NAME}_软著申请表信息.txt`:
+
+- Treat the file as concise application-form assistance, not a separate explanatory report.
+- Keep software name, version, programming language, source-line count, functions and operating environments consistent with the generated specification, source code and document materials.
+- Do not leave form hints or parenthetical instructions in the final text.

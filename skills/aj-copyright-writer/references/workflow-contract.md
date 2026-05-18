@@ -46,6 +46,8 @@
     {SOFTWARE_NAME}_操作手册.docx
   07.code.full/
     {SOFTWARE_NAME}_代码.docx
+  08.application-info/
+    {SOFTWARE_NAME}_软著申请表信息.txt
 ```
 
 ## Numbering Rules
@@ -118,6 +120,7 @@ The final answer should mention:
 - Recommended prototype style, user-confirmed style and whether a user-provided `style.md` was used as an overlay.
 - Whether the operation manual draft was humanized with the conservative copyright-manual humanizer.
 - Whether docx files were generated.
+- Whether `08.application-info/{SOFTWARE_NAME}_软著申请表信息.txt` was generated, and which line-count source was used for `源程序量`.
 - Any blocked step with the exact missing dependency, key or file.
 
 ## Step Boundaries

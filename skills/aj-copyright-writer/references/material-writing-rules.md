@@ -255,3 +255,14 @@ The code document should:
 - Avoid adding explanatory prose, cover pages, directories, module heading pages or generated-material notes between code lines.
 - Do not add generated-material explanations such as `软件源代码文档` or `本文档由 05.code 目录下的核心业务代码文件合并生成`.
 - Do not include the word `copyright` anywhere in the code document.
+
+## `08.application-info/${SOFTWARE_NAME}_软著申请表信息.txt`
+
+Generate this final text file after the manual and code document are complete. It supports application-form entry, so keep it concise and directly fillable rather than explanatory.
+
+- Use the field order defined in `SKILL.md` Step 9.
+- Remove parenthetical prompt text from the final file.
+- Keep hardware environments, operating systems, development tools, runtime support, development purpose and target industry within 50 characters each.
+- Keep the main function summary within 200 Chinese characters.
+- Pick exactly one software type from the Step 9 list, then describe technical characteristics within 100 Chinese characters.
+- Set `源程序量` from `cloc` `comment + code` totals for `05.code` when available; otherwise use the nonblank generated source-line count and record that fallback in the delivery note.
