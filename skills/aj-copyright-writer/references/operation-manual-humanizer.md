@@ -9,6 +9,7 @@ This is a conservative, professional humanizing pass for software copyright oper
 Rewrite the draft so it sounds like a careful technical writer prepared it from the actual screens. The degree of rewriting should be moderate:
 
 - Keep the document structure, chapter headings, image links and business coverage stable.
+- Keep `1.4、术语定义` as structured `术语：定义` entries; improve wording only inside the definition text when necessary.
 - Rewrite repetitive paragraphs, stiff transitions and obvious template traces.
 - Preserve professional wording, legal/material formality and operational clarity.
 - Do not add product features, buttons, fields, screenshots or outcomes that are not present in the modules or prototypes.
@@ -39,6 +40,8 @@ Reduce these AI-like patterns:
 - Stacked transitions, such as `同时`, `此外`, `进一步`, `通过以上操作`.
 - Hard labels in the body, such as `页面内容说明：`, `操作过程：`, `预期结果：`, `异常提示：`.
 
+The `术语：定义` entries under `1.4、术语定义` are not considered hard labels and should not be merged into natural paragraphs.
+
 ## How To Rewrite
 
 Use a restrained editorial pass:
@@ -57,6 +60,7 @@ Use a restrained editorial pass:
 - Do not simplify the manual into a blog-like explanation.
 - Do not change exact UI text, button names, field names, module names or figure captions.
 - Do not change screenshot paths.
+- Do not rewrite `1.4、术语定义` into continuous prose; keep one structured term entry per term.
 - Do not remove required coverage for login, module pages or function-point pages.
 - Do not add unsupported success messages. If the screenshot or module does not contain the text, use a generic but professional description such as `系统显示处理结果并刷新列表`.
 

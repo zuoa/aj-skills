@@ -36,6 +36,7 @@ Use this format:
 - All HTML pages use `<meta name="prototype-style" content="{confirmed_style_id}">`.
 - All prompts explicitly mention `{confirmed_style_name}` and its visual tokens.
 - Local `style.md` is treated as an overlay, not as permission to ignore the confirmed style.
+- Prototype screens must not include copyright notices, developer company names, technical support units, producer names, contractor names or similar company attribution.
 ```
 
 ## Style Library
@@ -178,6 +179,8 @@ Use the confirmed style, but keep these rules for every style:
 - Avoid text overlap, tiny unreadable labels, empty panels and decorative-only layouts.
 - Do not use CDN, external images, remote fonts or backend requests.
 - Do not use default Ant Design / Element / Bootstrap visual language.
+- Do not place copyright notices, developer company names, technical support units, producer names, contractor names or similar company attribution anywhere in the prototype, including footer areas, login pages, title bars, watermarks and about dialogs.
+- Show only the software name, business modules, roles, mock data and operation controls.
 
 ## Login Rules
 

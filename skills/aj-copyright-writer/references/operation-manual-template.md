@@ -9,11 +9,12 @@ Use this template when generating `06.manual/${SOFTWARE_NAME}_操作手册.md`. 
 - Every primary function module must describe purpose, page entry, key indicators, buttons and actual use flow.
 - Function sections should not be too short. Explain what the user sees, why the operation matters, what should happen after the operation, and what common exception messages mean.
 - Use numbered headings such as `1、`, `1.1、`, `2.2.1、` only for chapters and sections. Avoid repeated numbered lists inside every function; body text should be natural paragraphs.
+- `1.4、术语定义` is an exception to the natural-paragraph rule: write structured term entries in `术语：定义` format.
 - Reserve screenshot positions for every main page and important child page using `图X 页面名称`.
 - Write for operators, not developers. Avoid database, API and implementation details unless they directly affect user operation.
 - Keep module names, button names and field names consistent with `02.modules/*.md`, `03.prototype.html/*.html` or `03.prototype.prompt/*.md`, and screenshots.
 - Do not expose internal numbering labels from source files. Avoid wording such as `模块01`, `模块 01`, `01模块`, `功能点01` and `第01功能点`; use the real module/function name with normal chapter numbering.
-- Do not use rigid labels such as `页面内容说明：`, `页面区域说明：`, `功能说明：`, `操作前提：`, `字段说明：`, `按钮说明：`, `操作步骤：`, `操作过程：`, `预期结果：` or `异常提示：` in the final manual. These aspects must be blended into regular paragraphs.
+- Do not use rigid labels such as `页面内容说明：`, `页面区域说明：`, `功能说明：`, `操作前提：`, `字段说明：`, `按钮说明：`, `操作步骤：`, `操作过程：`, `预期结果：` or `异常提示：` in the final manual. These aspects must be blended into regular paragraphs. This restriction does not prohibit structured `术语：定义` entries in `1.4、术语定义`.
 - After the draft is complete, apply [operation-manual-humanizer.md](operation-manual-humanizer.md). Keep the tone formal and professional; only reduce repetitive AI-like phrasing and template traces. Do not change any software name, module name, UI label, button, field, status tag, prompt, figure caption or image path.
 
 ## Required Structure
@@ -33,7 +34,7 @@ Use this template when generating `06.manual/${SOFTWARE_NAME}_操作手册.md`. 
 [说明管理人员、业务人员、技术员、运维人员、科研人员等角色如何使用系统。]
 
 ### 1.4、术语定义
-[解释系统中的重要业务术语和技术术语。]
+[以“术语：定义”的结构化条目解释系统中的重要业务术语和技术术语。]
 
 ### 1.5、软件开发目的
 [说明业务价值、管理价值、技术价值和建设必要性。]
@@ -90,13 +91,23 @@ Use this template when generating `06.manual/${SOFTWARE_NAME}_操作手册.md`. 
 管理人员主要用于查看全局数据、审批关键流程并掌握系统运行状态。业务人员主要用于录入、处理、查询和导出日常业务数据。运维人员主要用于维护基础配置、查看运行异常并处理系统告警。
 ```
 
-`1.4、术语定义` should use concise paragraph entries. Keep entries short, but do not force lettered numbering:
+`1.4、术语定义` should use concise structured entries. Use one entry per term in `术语：定义` format, with a full-width colon `：`. Keep entries short, but do not force lettered numbering, tables or a continuous natural-language paragraph:
 
 ```markdown
-{术语}是指{定义}。
+{术语}：指{定义}。
 
-{术语}是指{定义}。
+{术语}：{定义}。
 ```
+
+Examples of the expected shape:
+
+```markdown
+个体识别：指通过图像特征提取与比对技术，唯一标识每只种鹅的身份信息。
+
+行为分析：基于视频序列对种鹅的活动模式（如采食、饮水、交配、踱步、静卧等）进行自动分类与量化。
+```
+
+When generating a manual for other software, replace the example terms with software-specific business and technical terms. Do not rewrite this section as a fully natural prose explanation.
 
 `1.5、软件开发目的` should cover:
 

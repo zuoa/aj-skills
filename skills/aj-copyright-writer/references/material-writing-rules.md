@@ -212,10 +212,12 @@ Manual style:
 
 - Write for end users: "点击", "选择", "输入", "提交", "查看", "导出".
 - Use the formal project-delivery style, but blend function description, operation path, field explanation, button explanation, operation flow, system feedback and exceptions into natural paragraphs.
+- `1.4、术语定义` must keep a structured `术语：定义` shape, such as `个体识别：指通过图像特征提取与比对技术，唯一标识每只种鹅的身份信息。` The example only shows the format; generated manuals must replace it with software-specific business or technical terms. Do not turn this section into continuous natural prose.
 - After drafting the manual, apply [operation-manual-humanizer.md](operation-manual-humanizer.md) as a conservative professional humanizing pass. This should reduce formulaic AI phrasing without making the manual casual.
 - Preserve software names, module names, function names, UI labels, button names, field names, status tags, prompts, figure captions and image paths exactly during the humanizing pass.
 - Do not expose internal file labels or planning labels such as `模块01`, `模块 01`, `01模块`, `功能点01`, `第01功能点`. Use business names such as `用户权限管理` and `告警处置` instead.
 - Do not write rigid labels such as `页面内容说明：`, `页面区域说明：`, `功能说明：`, `操作前提：`, `字段说明：`, `按钮说明：`, `操作步骤：`, `操作过程：`, `预期结果：` or `异常提示：` in final manual text.
+- The rigid-label rule does not apply to `1.4、术语定义`; that section should intentionally use `术语：定义` entries.
 - Avoid filling the body with repeated numbered or lettered lists. Keep numbering mainly in headings; use 2-4 connected paragraphs for each function point.
 - Include one image per module when available.
 - Reserve figure captions as `图X 页面名称`, and keep figure numbers increasing from `图1`.
