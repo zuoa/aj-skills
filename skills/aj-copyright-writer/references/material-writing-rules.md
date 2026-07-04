@@ -60,6 +60,26 @@ Rules:
 - Each module should contain enough logic to generate Java and React code.
 - Keep names consistent across all later files.
 
+**Module representativeness & uniqueness (anti-duplication)**
+
+The review institution runs similarity checks on the submitted identification materials against a database of previously registered software. Duplication flags almost always start at the module level: function points, fields, code and manual text all derive from the module list, so generic modules leak generic content downstream. Anchoring modules to this software's proprietary business is the most effective way to lower the duplication risk, which is why this guide sits here rather than in the code or manual sections.
+
+Avoid (these read as a copy of countless prior registrations):
+
+- A 10-module set built mostly from generic support modules such as `用户管理 / 角色管理 / 权限管理 / 数据字典 / 操作日志 / 系统设置 / 帮助中心 / 首页`.
+- Generic verb-noun names that fit any system, such as `XX管理`, `XX维护`, `XX查询`, `XX统计`.
+- Universal field stacks like `名称 / 编码 / 类型 / 状态 / 创建时间` that carry no business meaning.
+
+Prefer:
+
+- Module names that encode an industry- or business-specific concept, e.g. `个体识别与谱系管理`, `告警分级处置与工单闭环`, `合同风险条款抽取与批注`, `冷链温湿度异常追溯`.
+- Compress login, permission, dictionary, log and settings capabilities into 1-2 modules or fold them into business modules; reserve the core module slots for what shows the software's originality.
+- Function-point names, field names, status values and validation rules that carry this software's business semantics.
+
+Required line: under `## 模块定位`, each module file must include one sentence stating why this module is a core capability that distinguishes the software from similar products. This sentence anchors the rest of the writing and supports originality during review.
+
+Downstream consistency: module uniqueness flows into `05.code` (class/method names, enums, validation, comment wording) and `06.manual` (chapter titles, terms, operation descriptions). Downstream files must not fall back to generic wording such as `数据管理` or `信息维护`.
+
 Function point format:
 
 ```markdown
