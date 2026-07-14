@@ -1,0 +1,19 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+
+participant "数据库"
+participant "用户"
+participant "业务逻辑"
+participant "前端"
+participant "后端API"
+
+"用户" -> "前端": 发起请求
+"前端" -> "后端API": 调用接口
+"后端API" -> "业务逻辑": 处理请求
+"业务逻辑" -> "数据库": 查询数据
+"数据库" -> "业务逻辑": 返回数据
+"业务逻辑" -> "后端API": 返回结果
+"后端API" -> "前端": 响应
+"前端" -> "用户": 显示结果
+@enduml
