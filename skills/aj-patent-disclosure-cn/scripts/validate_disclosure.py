@@ -42,6 +42,44 @@ ALLOWED_FACT_STATUSES = {
     "to-confirm",
     "proposal",
 }
+ALLOWED_PRIOR_ART_SCOPES = {
+    "全文已核验",
+    "权利要求已核验",
+    "仅摘要",
+    "仅著录",
+    "待核验",
+    "full-text",
+    "claims",
+    "abstract-only",
+    "metadata-only",
+    "pending",
+}
+ALLOWED_SEARCH_STATUSES = {
+    "未检索",
+    "仅检索策略",
+    "摘要初筛",
+    "全文对比",
+    "区别特征反向检索完成",
+    "unsearched",
+    "strategy-only",
+    "abstract-screened",
+    "fulltext-compared",
+    "reverse-searched",
+}
+ALLOWED_INNOVATION_STATUSES = {
+    "核心候选",
+    "从属候选",
+    "高风险",
+    "淘汰",
+    "研发建议",
+    "待检索",
+    "core",
+    "dependent",
+    "high-risk",
+    "rejected",
+    "research-proposal",
+    "pending-search",
+}
 
 
 def parse_args() -> argparse.Namespace:
@@ -276,6 +314,60 @@ def validate_payload(
                 f"$.facts[{index}].status",
                 f"unrecognized fact status: {status}",
             )
+        if final and fact.get("used_for_claim") is True and status in {
+            "合理推断",
+            "建议方案",
+            "inferred",
+            "proposal",
+        }:
+            add(
+                errors,
+                "claim-fact-status",
+                f"$.facts[{index}]",
+                "a fact used for a proposed claim cannot remain inferred or a proposal",
+            )
+        if (
+            final
+            and fact.get("used_for_claim") is True
+            and status in {"用户已确认", "资料有据", "user-confirmed", "source-backed"}
+            and not text(fact.get("source"))
+        ):
+            add(
+                warnings,
+                "claim-fact-source",
+                f"$.facts[{index}]",
+                "add a traceable source for a fact used by a proposed claim",
+            )
+
+    project_sources = as_list(payload.get("project_sources"))
+    for index, source in enumerate(project_sources):
+        path = f"$.project_sources[{index}]"
+        if not isinstance(source, dict):
+            add(errors, "project-source-object", path, "project source must be an object")
+            continue
+        if not text(source.get("path")) and not text(source.get("name")):
+            add(errors, "project-source-name", path, "project source requires path or name")
+        if final and source.get("supports_claim") is True:
+            anchors = as_list(source.get("anchors")) or as_list(source.get("locations"))
+            if not anchors:
+                add(
+                    errors,
+                    "project-source-anchor",
+                    path,
+                    "a project source supporting a proposed claim requires line/page/section anchors",
+                )
+            if not (
+                text(source.get("sha256"))
+                or text(source.get("version"))
+                or text(source.get("commit"))
+                or text(source.get("date"))
+            ):
+                add(
+                    warnings,
+                    "project-source-version",
+                    path,
+                    "record a hash, version, commit, or date for claim-supporting material",
+                )
 
     prior_art = as_list(payload.get("prior_art"))
     for index, document in enumerate(prior_art):
@@ -283,12 +375,102 @@ def validate_payload(
             continue
         identifier = text(document.get("publication_no")) or text(document.get("document_id"))
         if identifier and not text(document.get("source_url")):
+            target = errors if final else warnings
             add(
-                warnings,
+                target,
                 "source-url",
                 f"$.prior_art[{index}]",
                 f"add a traceable source URL for {identifier}",
             )
+        scope = text(document.get("verification_scope")) or text(document.get("verification_status"))
+        if scope and scope not in ALLOWED_PRIOR_ART_SCOPES:
+            add(
+                warnings,
+                "prior-art-scope",
+                f"$.prior_art[{index}]",
+                f"unrecognized verification scope: {scope}",
+            )
+        if final and identifier and not scope:
+            add(
+                warnings,
+                "prior-art-scope",
+                f"$.prior_art[{index}]",
+                "state whether the full text, claims, abstract, or metadata was verified",
+            )
+        if final and identifier and not (
+            as_list(document.get("evidence_locations"))
+            or text(document.get("evidence_location"))
+            or text(document.get("claim_refs"))
+        ):
+            add(
+                warnings,
+                "prior-art-location",
+                f"$.prior_art[{index}]",
+                "add claim, paragraph, page, or figure locations for relied-on disclosure",
+            )
+
+    innovation_candidates = as_list(payload.get("innovation_candidates"))
+    for index, candidate in enumerate(innovation_candidates):
+        path = f"$.innovation_candidates[{index}]"
+        if not isinstance(candidate, dict):
+            add(errors, "innovation-object", path, "innovation candidate must be an object")
+            continue
+        status = text(candidate.get("status"))
+        if status and status not in ALLOWED_INNOVATION_STATUSES:
+            add(warnings, "innovation-status", path, f"unrecognized candidate status: {status}")
+        search_status = text(candidate.get("search_status"))
+        if search_status and search_status not in ALLOWED_SEARCH_STATUSES:
+            add(
+                warnings,
+                "innovation-search-status",
+                path,
+                f"unrecognized search status: {search_status}",
+            )
+        if final and status in {"核心候选", "从属候选", "core", "dependent"}:
+            if not (
+                as_list(candidate.get("distinguishing_features"))
+                or as_list(candidate.get("features"))
+            ):
+                add(
+                    errors,
+                    "innovation-features",
+                    path,
+                    "a retained candidate requires a distinguishing feature combination",
+                )
+            if not text(candidate.get("mechanism")):
+                add(
+                    warnings,
+                    "innovation-mechanism",
+                    path,
+                    "explain how the distinguishing features produce the technical effect",
+                )
+            if not (
+                text(candidate.get("effect"))
+                or as_list(candidate.get("technical_effects"))
+            ):
+                add(
+                    errors,
+                    "innovation-effect",
+                    path,
+                    "a retained candidate requires a technical effect",
+                )
+            if search_status not in {"区别特征反向检索完成", "reverse-searched"}:
+                add(
+                    warnings,
+                    "innovation-search-boundary",
+                    path,
+                    "label the candidate as pending-search unless reverse searching is complete",
+                )
+            if not (
+                as_list(candidate.get("support_locations"))
+                or as_list(candidate.get("fact_basis"))
+            ):
+                add(
+                    errors,
+                    "innovation-support",
+                    path,
+                    "a retained candidate requires project/disclosure support locations",
+                )
 
     claim_strategy = payload.get("claim_strategy", {})
     if isinstance(claim_strategy, dict):
@@ -301,6 +483,27 @@ def validate_payload(
                 "$.claim_strategy.support_matrix",
                 "add a support matrix for proposed independent subjects",
             )
+        for index, row in enumerate(support_matrix):
+            path = f"$.claim_strategy.support_matrix[{index}]"
+            if not isinstance(row, dict):
+                add(errors, "support-row", path, "support matrix row must be an object")
+                continue
+            if not text(row.get("feature")):
+                add(errors, "support-feature", path, "support matrix row requires a feature")
+            if final and not text(row.get("description_support")):
+                add(
+                    errors,
+                    "description-support",
+                    path,
+                    "proposed feature requires a description support location",
+                )
+            if final and not text(row.get("embodiment_support")):
+                add(
+                    warnings,
+                    "embodiment-support",
+                    path,
+                    "verify embodiment support for the proposed feature",
+                )
 
     for path, value in iter_strings(payload):
         if final and has_placeholder(value):

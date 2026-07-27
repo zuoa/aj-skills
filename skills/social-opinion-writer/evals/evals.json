@@ -24,7 +24,7 @@
     {
       "id": 2,
       "prompt": "围绕“基层医院检查检验结果互认落地仍有堵点”写一篇民主党派报送的社情民意信息，要补充最新政策、最新公开案例和可核实数据，按正式报送稿写法出定稿。",
-      "expected_output": "Skill 应联网核实最新政策与案例，按“现状/前言-主要问题-对策建议”三段式起草，正文重点放在 `3-4` 个有证据支撑的问题和与之逐项对应的建议。问题部分不能只有案例和定性判断，至少应体现若干可核实数据，并同步生成 `03-source-log.md`，保留原文 URL 供人工复核。定稿还应统一中文标点和中文引号，避免残留英文双引号。在 `markdown` 定稿之外，还应先调用 `humanizer-zh` 做去 AI 味处理，再生成一个按中国大陆机关公文常见版式排版的 `docx` 文件。",
+      "expected_output": "Skill 应联网核实最新政策与案例，按“现状/前言-主要问题-对策建议”三段式起草，正文重点放在 `3-4` 个有证据支撑的问题和与之逐项对应的建议。问题部分不能只有案例和定性判断，至少应体现若干可核实数据，并同步生成 `03-source-log.md`，保留原文 URL 供人工复核。正文中涉及数据、案例、政策表述处应以 `[n]` 角标标注来源，并单独输出含原文 URL 的引用表 `11-references.md`，角标与引用表一一对应。定稿还应统一中文标点和中文引号，避免残留英文双引号。在 `markdown` 定稿之外，还应先调用 `humanizer-zh` 做去 AI 味处理，再生成一个按中国大陆机关公文常见版式排版的 `docx` 文件。",
       "assertions": [
         {
           "name": "uses_three_part_structure",
@@ -45,6 +45,14 @@
         {
           "name": "builds_source_log_with_original_urls",
           "description": "应生成 `03-source-log.md`，并记录原文 URL 供人工复核。"
+        },
+        {
+          "name": "marks_citations_with_corner_marks",
+          "description": "正文中涉及数据、统计、典型事件、政策表述的句子应以 `[n]` 角标标注来源，置于句末标点之前。"
+        },
+        {
+          "name": "outputs_reference_table_with_urls",
+          "description": "应单独输出引用表 `11-references.md`，每条含可直接打开的原文 URL，且编号与正文角标一一对应。"
         },
         {
           "name": "checks_latest_policy_instead_of_memory",

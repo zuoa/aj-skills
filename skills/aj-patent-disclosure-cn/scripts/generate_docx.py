@@ -3,7 +3,8 @@
 Deterministic patent disclosure docx generator (Markdown -> DOCX via pypandoc).
 
 Usage:
-  python scripts/generate_docx.py --input disclosure.json --output outputs/交底书_xxx_v1.0.docx --word-only
+  python scripts/generate_docx.py --input disclosure.json \
+    --output outputs/交底书_xxx_v1.0.docx --with-markdown
 """
 
 from __future__ import annotations
@@ -34,6 +35,11 @@ def parse_args() -> argparse.Namespace:
         "--word-only",
         action="store_true",
         help="Require .docx output only; fail if conversion toolchain unavailable",
+    )
+    p.add_argument(
+        "--with-markdown",
+        action="store_true",
+        help="Also write a diff-friendly .md file next to the .docx",
     )
     return p.parse_args()
 
@@ -429,6 +435,8 @@ def render_markdown(payload: Dict[str, Any], strict_cnipa: bool = False) -> str:
         for key in (
             "terminology",
             "prior_art",
+            "project_sources",
+            "innovation_candidates",
             "claim_strategy",
             "facts",
             "assumptions",
@@ -439,30 +447,32 @@ def render_markdown(payload: Dict[str, Any], strict_cnipa: bool = False) -> str:
         lines.extend(["", "## 内部附录（代理撰写与复核用）", ""])
 
     _append_named_block(lines, "### A. 术语表", payload.get("terminology"))
-    _append_named_block(lines, "### B. 现有技术记录", payload.get("prior_art"))
+    _append_named_block(lines, "### B. 项目材料与证据来源", payload.get("project_sources"))
+    _append_named_block(lines, "### C. 现有技术记录", payload.get("prior_art"))
+    _append_named_block(lines, "### D. 创新点候选与检索状态", payload.get("innovation_candidates"))
 
     claim_strategy = payload.get("claim_strategy", {})
     if isinstance(claim_strategy, dict) and claim_strategy:
         _append_named_block(
             lines,
-            "### C. 拟保护的独立主题",
+            "### E. 拟保护的独立主题",
             claim_strategy.get("independent_subjects"),
         )
         _append_named_block(
             lines,
-            "### D. 从属限定候选",
+            "### F. 从属限定候选",
             claim_strategy.get("dependent_features"),
         )
         _append_named_block(
             lines,
-            "### E. 权利要求支撑矩阵",
+            "### G. 权利要求支撑矩阵",
             claim_strategy.get("support_matrix"),
         )
 
-    _append_named_block(lines, "### F. 事实状态表", payload.get("facts"))
-    _append_named_block(lines, "### G. 假设", payload.get("assumptions"))
-    _append_named_block(lines, "### H. 待确认项", payload.get("open_questions"))
-    _append_named_block(lines, "### I. 其他附件", appendices)
+    _append_named_block(lines, "### H. 事实状态表", payload.get("facts"))
+    _append_named_block(lines, "### I. 假设", payload.get("assumptions"))
+    _append_named_block(lines, "### J. 待确认项", payload.get("open_questions"))
+    _append_named_block(lines, "### K. 其他附件", appendices)
 
     return "\n".join(lines).strip() + "\n"
 
@@ -534,7 +544,15 @@ def main() -> int:
 
     input_hash = stable_hash(payload, strict_cnipa=strict_cnipa)
 
+    markdown_output = output_path.with_suffix(".md")
     if not args.overwrite and should_skip(output_path, input_hash):
+        if args.with_markdown and not should_skip(markdown_output, input_hash):
+            write_markdown_fallback(
+                render_markdown(payload, strict_cnipa=strict_cnipa),
+                markdown_output,
+            )
+            write_hash(markdown_output, input_hash)
+            print(f"Generated missing Markdown companion: {markdown_output}")
         print(f"Skip generation: unchanged input and existing output: {output_path}")
         return 0
 
@@ -553,6 +571,13 @@ def main() -> int:
         word_only=word_only,
     )
     write_hash(generated_path, input_hash)
+    if args.with_markdown:
+        write_markdown_fallback(
+            render_markdown(payload, strict_cnipa=strict_cnipa),
+            markdown_output,
+        )
+        write_hash(markdown_output, input_hash)
+        print(f"Generated Markdown companion: {markdown_output}")
     if mode == "docx":
         print(f"Generated: {generated_path}")
     else:
