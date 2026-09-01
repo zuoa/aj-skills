@@ -39,13 +39,21 @@ Correction mode must perform substantive source selection and document restructu
 
 ## Selected document
 
-Write exactly one primary identification document under `06.document`:
+Write one primary identification document under `06.document`:
 
 - operation manual for interaction-heavy products or an explicit user request;
 - software design specification for algorithm/backend/data/device products;
-- software design specification by default when correcting a template-like document.
+- the more representative type when correcting a template-like document, with design specification preferred when the distinguishing expression is internal processing logic.
+
+Generate exactly one selected document for each material set.
 
 Do not create a `.draft.md` formal artifact. Any temporary working text must remain outside the formal output tree or be removed before delivery.
+
+## DOCX typography
+
+Without a user template, `markdown_to_docx.py` uses A4 pages, SimSun/宋体 10.5 pt for Chinese body text, Times New Roman for Latin text and numbers, SimHei/黑体 for Chinese headings, and Arial for Latin headings. The converter must set `w:eastAsia`, `w:ascii` and `w:hAnsi` explicitly; renderer-dependent font fallback is not an acceptable formatting strategy. Lists use Word list styles, and tables use fixed widths, cell padding and explicit borders.
+
+When a template is supplied or discovered, it remains the source for existing cover and layout content. Generated body styles are normalized to the typography above so an unrelated theme font cannot leak into the formal document.
 
 ## Prototype contract
 

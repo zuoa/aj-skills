@@ -103,6 +103,23 @@ FORMAL_PROCESS_PATTERNS = [
     re.compile(r"模板化风险"),
     re.compile(r"生成过程说明"),
 ]
+DESIGN_IMPLEMENTATION_LEAK_PATTERNS = [
+    re.compile(r"本节(?:设计)?由.{0,100}落地"),
+    re.compile(r"对应源程序文件"),
+    re.compile(r"本(?:节|模块|功能).{0,24}(?:代码)?实现于"),
+    re.compile(r"(?:^|[\s（(])(?:0[1-9]|10)-[^\s，。；：:]{1,80}\.(?:txt|py|java|kt|js|jsx|ts|tsx|cs|cpp|c|h|hpp|go|rs|swift|dart)\b", re.IGNORECASE),
+    re.compile(r"(?:^|\s)(?:0[1-9]|10)?\.?05\.code(?:[/\\]|\b)", re.IGNORECASE),
+]
+DESIGN_AI_STYLE_PATTERNS = [
+    re.compile(r"本系统(?:旨在|致力于)"),
+    re.compile(r"(?:全面|显著|有效)(?:提升|提高|增强|保障)"),
+    re.compile(r"(?:赋能|打造)"),
+    re.compile(r"(?:形成|构建)(?:了|起)?(?:一套|完整|完善)?[^。；\n]{0,16}(?:闭环|体系)"),
+    re.compile(r"(?:提供|奠定)[^。；\n]{0,12}(?:有力支撑|坚实基础|可靠保障)"),
+    re.compile(r"具备良好的(?:可扩展性|可维护性|稳定性|兼容性)"),
+    re.compile(r"不仅[^。；\n]{0,40}而且"),
+]
+DESIGN_STOCK_OPENING_PATTERN = re.compile(r"^\s*(?:本系统|系统通过|通过[^。；]{0,20}实现)")
 GENERIC_SUPPORT_MODULE_PATTERN = re.compile(
     r"^(?:首页|(?:用户|角色|权限|数据字典|操作日志|系统设置|帮助)(?:管理|中心|配置)?|数据管理|信息维护|统计分析)$"
 )
@@ -700,11 +717,68 @@ def validate_no_formal_process_markers(text: str, label: str) -> None:
         raise ValidationError(f"{label}: contains generation or internal quality-control wording. {preview}")
 
 
+def validate_no_design_implementation_leaks(text: str, label: str) -> None:
+    findings: list[str] = []
+    in_code = False
+    for line_number, line in enumerate(text.splitlines(), 1):
+        if line.strip().startswith("```"):
+            in_code = not in_code
+            continue
+        if in_code:
+            continue
+        for pattern in DESIGN_IMPLEMENTATION_LEAK_PATTERNS:
+            match = pattern.search(line)
+            if match:
+                findings.append(f"line {line_number}: {match.group(0)!r}")
+    if findings:
+        preview = "; ".join(findings[:10])
+        raise ValidationError(
+            f"{label}: exposes delivery-package filenames or generated source-mapping wording. "
+            f"Use one design—implementation traceability appendix with logical components and verified symbols instead. {preview}"
+        )
+
+
+def validate_design_language(text: str, label: str) -> None:
+    findings: list[str] = []
+    stock_openings: list[str] = []
+    in_code = False
+    for line_number, line in enumerate(text.splitlines(), 1):
+        stripped = line.strip()
+        if stripped.startswith("```"):
+            in_code = not in_code
+            continue
+        if in_code or not stripped or stripped.startswith(("#", "|", "![")):
+            continue
+        for pattern in DESIGN_AI_STYLE_PATTERNS:
+            for match in pattern.finditer(line):
+                findings.append(f"line {line_number}: {match.group(0)!r}")
+        if DESIGN_STOCK_OPENING_PATTERN.search(line):
+            stock_openings.append(f"line {line_number}: {stripped[:50]!r}")
+
+    errors: list[str] = []
+    if len(findings) >= 4:
+        errors.append(f"stock benefit claims ({len(findings)}): " + "; ".join(findings[:6]))
+    if len(stock_openings) >= 4:
+        errors.append(f"repeated stock paragraph openings ({len(stock_openings)}): " + "; ".join(stock_openings[:6]))
+    if errors:
+        raise ValidationError(
+            f"{label}: writing is too abstract or repetitive. Replace claims with business objects, conditions, actions and results. "
+            + " | ".join(errors)
+        )
+
+
 def validate_deliverable_markdown(path: Path, label: str) -> None:
     validate_file_exists(path, label)
     text = path.read_text(encoding="utf-8", errors="ignore")
     validate_no_internal_document_labels(text, label)
     validate_no_formal_process_markers(text, label)
+
+
+def validate_design_markdown(path: Path, label: str) -> None:
+    validate_deliverable_markdown(path, label)
+    text = path.read_text(encoding="utf-8", errors="ignore")
+    validate_no_design_implementation_leaks(text, label)
+    validate_design_language(text, label)
 
 
 def validate_manual_markdown(path: Path, label: str) -> None:
@@ -751,6 +825,13 @@ def validate_deliverable_docx(path: Path, label: str) -> None:
     text = extract_docx_text(path)
     validate_no_internal_document_labels(text, label)
     validate_no_formal_process_markers(text, label)
+
+
+def validate_design_docx(path: Path, label: str) -> None:
+    validate_deliverable_docx(path, label)
+    text = extract_docx_text(path)
+    validate_no_design_implementation_leaks(text, label)
+    validate_design_language(text, label)
 
 
 def validate_manual_docx(path: Path, label: str) -> None:
@@ -1111,11 +1192,15 @@ def run_validation(args: argparse.Namespace) -> list[str]:
     if args.document_md:
         if "操作手册" in args.document_md.name:
             checks.append(("selected document markdown", lambda: validate_manual_markdown(args.document_md, "selected document markdown")))
+        elif "软件设计说明书" in args.document_md.name:
+            checks.append(("selected document markdown", lambda: validate_design_markdown(args.document_md, "selected document markdown")))
         else:
             checks.append(("selected document markdown", lambda: validate_deliverable_markdown(args.document_md, "selected document markdown")))
     if args.document_docx:
         if "操作手册" in args.document_docx.name:
             checks.append(("selected document docx", lambda: validate_manual_docx(args.document_docx, "selected document docx")))
+        elif "软件设计说明书" in args.document_docx.name:
+            checks.append(("selected document docx", lambda: validate_design_docx(args.document_docx, "selected document docx")))
         else:
             checks.append(("selected document docx", lambda: validate_deliverable_docx(args.document_docx, "selected document docx")))
     if args.code_docx:

@@ -105,16 +105,14 @@ The manifest records the ordered source stream used to build the code document. 
 
 The order defines the continuous program stream for the source-code document. Changing source after the audit invalidates the report and blocks DOCX generation.
 
-## Document selection
+## Selected document
 
-Follow this precedence:
+Generate at least one related document in both Markdown and DOCX form under `06.document`. Select the type that best expresses the submitted program:
 
-1. explicit user request;
-2. template-like-document correction notice → design specification by default;
-3. interaction-heavy product → operation manual;
-4. algorithm, backend, data-processing or device-integration product → design specification.
+- operation manual for interaction, approval, scheduling and operator-centered workflows;
+- software design specification for algorithms, backend processing, data flows, protocols, devices and complex business rules.
 
-The selected document must cover all ten modules, but it must not repeat one identical paragraph structure ten times.
+Honor an explicit user choice. Generate exactly one selected document for each material set. It must cover all ten modules without repeating one identical chapter or paragraph structure ten times.
 
 ## Operation manual
 
@@ -129,9 +127,15 @@ Write around real user tasks. Select the composition pattern that matches each f
 
 Vary the explanation according to the task. Include only fields, buttons, statuses and prompts visible in the corresponding prototype. Keep figure numbers increasing and use relative image paths. Do not save a `.draft.md` deliverable.
 
+For backend, algorithm or device software without a conventional frontend, describe the actual way users or operators run the software: commands, request parameters, job definitions, configuration, monitoring, result retrieval, logs and recovery actions. Use screenshots of those real operating carriers and do not fabricate a generic dashboard.
+
 ## Software design specification
 
-Use [software-design-template.md](software-design-template.md). Emphasize the domain model, processing logic, state transitions, algorithm inputs and outputs, interfaces, validation and exception recovery. Explain the relationship between each important design and the corresponding code file without copying source code into prose.
+When a design specification is selected, use [software-design-template.md](software-design-template.md). Emphasize architecture boundaries, domain models, processing logic, state transitions, algorithm inputs and outputs, interface contracts, data consistency and exception recovery.
+
+The design specification is an engineering document, not a source-program index. Never append sentences such as `本节设计由 01-…….py 落地` or `对应源程序文件`. Do not expose `05.code`, numbered delivery filenames or source-file extensions. If traceability is useful, put one `设计—实现追踪表` at the end and identify verified logical components, classes/services and methods rather than package filenames.
+
+Before DOCX conversion, apply [design-specification-humanizer.md](design-specification-humanizer.md). Replace abstract benefit claims with actual objects, conditions, actions and results. Preserve verified technical terms and do not invent concrete numbers during the rewrite.
 
 ## Prototypes
 
@@ -175,6 +179,7 @@ Hardware, operating-system, tool, platform, support, purpose and industry values
 Before delivery confirm that:
 
 - all ten module names appear in the selected document;
+- the selected document agrees with the source program;
 - code filenames and manifest module ids agree;
 - domain fields and statuses agree across spec, code, prototype and document;
 - buttons and prompts described by an operation manual appear in screenshots;

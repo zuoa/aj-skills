@@ -39,7 +39,7 @@ Article 12 permits the specified exceptional-deposit methods, including the firs
 
 ## Selected document
 
-The document may describe content, composition, design, functional specifications, development, testing or use. Choose a document whose expression corresponds to the submitted program. Ensure the final Word layout meets the applicable page and line rules before filing.
+The related document may describe content, composition, design, functional specifications, development, testing or use. Choose the operation manual or software design specification whose expression corresponds most directly to the submitted program. Generate exactly one selected document and ensure its final Word form corresponds to the submitted program and meets the applicable page and line rules before filing.
 
 ## Legal-quality boundary
 
