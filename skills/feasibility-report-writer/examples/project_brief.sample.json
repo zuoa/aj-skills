@@ -1,0 +1,35 @@
+{
+  "_comment": "样例项目画像（结构化），可作为 Stage 0/1 的机读底稿种子。事实底稿正本仍以 outputs/project_brief.md 落盘。证据状态字段：用户已确认 / 资料有据 / 合理推断 / 待确认 / 建议方案。",
+  "project": {
+    "name": "早熟栽培水果番茄智能巡检与绿色防控关键技术研究及示范应用",
+    "type": "公益类科技计划项目",
+    "lead_unit": "宁波市农业科学研究院",
+    "partner_units": ["（示例）某某科技企业", "（示例）示范基地"],
+    "pi": {
+      "name": "李佳丹",
+      "degree": "博士",
+      "major": "农业遥感与信息技术",
+      "direction": "农业农村区划、农业信息化"
+    },
+    "start": "2025-09",
+    "end": "2027-08",
+    "budget": "（示例）XX 万元"
+  },
+  "key_facts": [
+    {"topic": "研究对象与场景", "content": "宁波水果番茄大棚早熟栽培，灰霉病/青枯病高发，依赖人工巡检", "evidence_status": "资料有据", "source": "可行性分析报告.doc 第 1 段"},
+    {"topic": "核心问题", "content": "青枯病初期症状与缺水混淆，人工难及时诊断；缺适配单体棚的智能巡检装备", "evidence_status": "用户已确认"},
+    {"topic": "研究内容", "content": "吊轨式智能巡检系统 + 病害/生育期识别模型 + 协同防控平台", "evidence_status": "资料有据"},
+    {"topic": "技术路线", "content": "自动巡检—智能感知—智能诊断—环境调控—绿色防控 一体化", "evidence_status": "合理推断", "open": "待确认：具体算法选型"},
+    {"topic": "团队与基础", "content": "畜禽所重点实验室 + 农村发展与信息研究所，前期物联网/遥感/系统开发基础", "evidence_status": "资料有据"}
+  ],
+  "expected_indicators": {
+    "technical": {"patents": 3, "software_copyrights": 2, "papers": 2, "sci": 1, "new_device": "吊轨式智能巡检系统样机"},
+    "benefit": {"economic": "亩均增收（测算依据待补）", "social": "带动农户/示范基地 2-3 个", "ecological": "减少化学农药用量"},
+    "talent": {"graduates": 2, "backbone": 3}
+  },
+  "open_questions": [
+    "负责人近 3 年代表项目与第一/通讯作者论文清单",
+    "合作单位全称、分工与已取得阶段成果",
+    "经济效益测算的基线与口径"
+  ]
+}
