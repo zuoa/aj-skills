@@ -1,138 +1,84 @@
 # Workflow Contract
 
-此文件定义 `aj-copyright-writer` 的产物约定。执行时以用户指定目录为准；用户未指定时创建独立输出目录，避免污染项目根目录。
-
-## Directory Layout
+## Directory layout
 
 ```text
 {output_root}/
-  01.spec/
-    spec.md
-  02.modules/
-    01.md
-    ...
-    10.md
-  03.prototype.html/
-    00-login.html
-    01.html
-    ...
-    10.html
-    01-01.html
-    ...
-  03.prototype.style/
-    selection.md
-  03.prototype.prompt/
-    00-login.md
-    01.md
-    ...
-    10.md
-    01-01.md
-    ...
-  04.prototype/
-    batch.json
-    00-login.jpg
-    01.jpg
-    ...
-    10.jpg
-    01-01.jpg
-    ...
-  05.code/
-    01-模块名称.txt
-    ...
-    10-模块名称.txt
-  06.manual/
-    {SOFTWARE_NAME}_操作手册.draft.md
-    {SOFTWARE_NAME}_操作手册.md
-    {SOFTWARE_NAME}_操作手册.docx
-  07.code.full/
-    {SOFTWARE_NAME}_代码.docx
-  08.application-info/
-    {SOFTWARE_NAME}_软著申请表信息.txt
+  01.spec/spec.md
+  02.modules/01.md ... 10.md
+  03.prototype.style/selection.md
+  03.prototype.html/*.html              # HTML mode
+  03.prototype.prompt/*.md               # image mode
+  04.prototype/batch.json、*.jpg
+  05.code/01-模块名称.txt ... 10-模块名称.txt
+  06.document/{软件名称}_操作手册.md/.docx
+  或 06.document/{软件名称}_软件设计说明书.md/.docx
+  07.code.full/{软件名称}_代码.docx
+  08.application-info/{软件名称}_软著申请表信息.txt
+  09.originality-audit/source-manifest.json
+  09.originality-audit/originality-report.json
+  09.originality-audit/originality-report.md
 ```
 
-## Numbering Rules
+`01` through `08` are formal materials. `09` is internal quality-control material and is never merged into a submitted document.
 
-- Always use two-digit file names: `01` to `10`.
-- Numbered directories must contain exactly the expected files:
-  - `02.modules`: `01.md` to `10.md`
-  - `03.prototype.html`: `00-login.html`, `01.html` to `10.html`, plus function-point pages in default HTML mode
-  - `03.prototype.style`: `selection.md` recording the recommended and confirmed prototype style
-  - `03.prototype.prompt`: `00-login.md`, `01.md` to `10.md`, plus function-point prompts in image mode
-  - `04.prototype`: `00-login.jpg`, `01.jpg` to `10.jpg`, plus function-point screenshots
-  - `05.code`: `01-模块名称.txt` to `10-模块名称.txt`
-- Keep the same number across module, prompt, prototype image and code:
-  - `02.modules/03.md`
-  - `03.prototype.html/03.html` or `03.prototype.prompt/03.md`
-  - `04.prototype/03.jpg`
-  - `05.code/03-模块名称.txt`
-- Function-point pages use `模块编号-功能点编号`, for example `03-02.html`, `03-02.md`, `03-02.jpg`.
-- Every module needs a module overview screenshot. In addition, cover `40%-60%` of all function points with dedicated screenshots.
-- Prioritize complex workflows, data-entry pages, chart/data visualization, monitoring/alert screens, audit flows, report export and configuration pages.
+## Modes
 
-## Batch Manifest
+- `normal`: create a new complete material set.
+- `correction`: read the correction notice and existing materials, create a new timestamped output root, and rebuild the representative program and document without overwriting the originals.
 
-Prototype image generation uses `04.prototype/batch.json` as a resumable manifest. Create or refresh it before taking screenshots or making API calls.
+Correction mode must perform substantive source selection and document restructuring. Renaming variables, replacing synonyms or shuffling sections is not sufficient.
 
-Each item must include:
+## Numbering
 
-```json
-{
-  "id": "00-login",
-  "mode": "html",
-  "module": "login",
-  "html": "/abs/path/03.prototype.html/00-login.html",
-  "output": "/abs/path/04.prototype/00-login.jpg",
-  "retry": {
-    "attempts": 0,
-    "max": 3
-  },
-  "status": "pending"
-}
-```
+- `02.modules` contains exactly `01.md` through `10.md`.
+- `05.code` contains exactly ten `编号-模块名称.txt` files.
+- Module ids remain consistent across modules, code, manifest and any module-specific prototypes.
+- At least eight module names are domain-specific; generic support modules total no more than two.
+- Code-file lengths may differ substantially. Only the total minimum of 3000 nonblank source lines is fixed.
 
-In `image` mode, each item uses `prompt` instead of `html`. The manifest must contain 11 items: `00-login` and `01` to `10`. Allowed statuses: `pending`, `running`, `success`, `failed`. Re-running the prototype script should skip `success` items whose output file still exists, unless `--force` is passed.
+## Selected document
 
-## Reference Directory Resolution
+Write exactly one primary identification document under `06.document`:
 
-When the user mentions `reference`, `refence` or `refrence`, treat them as possible local reference directories. Search in this order:
+- operation manual for interaction-heavy products or an explicit user request;
+- software design specification for algorithm/backend/data/device products;
+- software design specification by default when correcting a template-like document.
 
-1. `{output_root}/reference`
-2. `{output_root}/refence`
-3. `{output_root}/refrence`
-4. `{cwd}/reference`
-5. `{cwd}/refence`
-6. `{cwd}/refrence`
-7. `~/aj-skills/reference`
-8. `~/aj-skills/refence`
-9. `~/aj-skills/refrence`
+Do not create a `.draft.md` formal artifact. Any temporary working text must remain outside the formal output tree or be removed before delivery.
 
-Do not rename the user's directories.
+## Prototype contract
 
-## Required User-Visible Artifacts
+Operation manuals use ten module overview images and representative complex function images. Add `00-login` only when the software has an authentication flow; otherwise use the real entry or task-start screen and pass `--no-login` to prototype scripts and validation. Design specifications use only visuals that materially explain system architecture, processing flows, states, data relationships or actual processing results.
 
-The final answer should mention:
+`04.prototype/batch.json` remains the resumable manifest for generated images. Every item includes `id`, `mode`, `module`, `html` or `prompt`, `output`, retry information and status.
 
-- Output root.
-- Whether live web research succeeded.
-- Whether `style.md` was found.
-- Whether the manual template was found.
-- Prototype generation mode: `html` screenshot or `image` API.
-- Recommended prototype style, user-confirmed style and whether a user-provided `style.md` was used as an overlay.
-- Whether the operation manual draft was humanized with the conservative copyright-manual humanizer.
-- Whether docx files were generated.
-- Whether `08.application-info/{SOFTWARE_NAME}_软著申请表信息.txt` was generated, and which line-count source was used for `源程序量`.
-- Any blocked step with the exact missing dependency, key or file.
+## Source manifest
 
-## Step Boundaries
+`09.originality-audit/source-manifest.json` defines the source concatenation order. Its `files` list must match all ten files under `05.code`, use safe relative paths and carry current SHA-256 fingerprints. The code-document builder uses this order, not an independently invented order.
 
-Do not skip a numbered step silently. If a step cannot be completed:
+## Quality gate
 
-1. Write the best possible upstream artifacts.
-2. Stop before fabricating downstream artifacts that depend on the missing result.
-3. Explain the blocker and the command or file needed to continue.
+Run `audit_originality.py` after code and document generation and before building the code DOCX. A failing report blocks final delivery. After any source change, rerun the audit so the report fingerprints remain current.
 
-Examples:
+The audit's similarity thresholds are internal heuristics. Formal materials must not refer to them or to the generation process.
 
-- If `GEMINI_API_KEY` is missing, still create prototype prompts, but do not create fake `04.prototype/*.jpg`.
-- If the Word template is missing, generate a docx without template and record that it is untemplated.
-- If public information about the software is scarce, continue from reasonable assumptions and label them as assumptions.
+## Reference-directory resolution
+
+Search `reference`, `refence` and `refrence` under the output root, current directory and `~/aj-skills`, in that order. Do not rename the user's directories.
+
+## Step boundaries
+
+Do not silently fabricate a downstream artifact when a required dependency or upstream result is missing. Report the exact missing dependency or file. Missing a user template is not blocking: produce a correctly formatted DOCX without the template and record that fact in the final response.
+
+## Delivery summary
+
+Report only:
+
+- output root;
+- selected document type;
+- selected technology stack;
+- core formal files;
+- template usage;
+- audit and validation result;
+- concrete unfinished or blocked items.

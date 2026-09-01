@@ -1,14 +1,14 @@
 # Operation Manual Humanizer
 
-Use this reference after drafting `06.manual/${SOFTWARE_NAME}_操作手册.draft.md` and before writing the final `06.manual/${SOFTWARE_NAME}_操作手册.md`.
+Use this reference as the final editorial pass before saving `06.document/${SOFTWARE_NAME}_操作手册.md`. Do not create a `.draft.md` formal artifact.
 
 This is a conservative, professional humanizing pass for software copyright operation manuals. It borrows the useful parts of Humanizer-zh: remove formulaic AI phrasing, reduce inflated claims, vary sentence rhythm and avoid repeated templates. Do not make the manual casual. The final document should still read like a government or enterprise delivery document.
 
 ## Goal
 
-Rewrite the draft so it sounds like a careful technical writer prepared it from the actual screens. The degree of rewriting should be moderate:
+Edit the working text so it sounds like a careful technical writer prepared it from the actual screens. The degree of rewriting should be moderate:
 
-- Keep the document structure, chapter headings, image links and business coverage stable.
+- Keep business coverage, module/function names, UI labels and image links stable. When adjacent sections repeat a mechanical skeleton, merge or reorder supporting paragraphs and adjust non-business heading depth as needed; do not preserve templating merely for structural stability.
 - Keep `1.4、术语定义` as structured `术语：定义` entries; improve wording only inside the definition text when necessary.
 - Rewrite repetitive paragraphs, stiff transitions and obvious template traces.
 - Preserve professional wording, legal/material formality and operational clarity.
@@ -16,14 +16,14 @@ Rewrite the draft so it sounds like a careful technical writer prepared it from 
 
 ## Protected Text
 
-Do not change these strings unless the draft contains an obvious typo and the same corrected wording is already used in the module or prototype:
+Do not change these strings unless the working text contains an obvious typo and the same corrected wording is already used in the module or prototype:
 
 - Software name and version.
 - Module names and function names from `02.modules/*.md`.
 - UI labels from prototypes, including menu names, tab names, button names, field names, status tags and prompt text.
 - Any text inside Chinese corner quotes such as `「新增」`, `「保存」`, `「告警中心」`.
 - Figure captions and image paths, for example `![图3 告警处置](../04.prototype/03-02.jpg)`.
-- Chapter numbers and heading hierarchy, such as `### 2.4、告警中心` and `#### 2.4.2、告警处置`.
+- Business-bearing chapter titles such as `告警中心` and `告警处置`. Renumber headings consistently if sections are merged or reordered.
 - Legal and application-material terms, such as `计算机软件著作权登记`, `操作手册`, `源程序`, `鉴别材料`.
 - Numbers, dates, percentages, filenames and directory paths.
 
@@ -61,7 +61,7 @@ Use a restrained editorial pass:
 - Do not change exact UI text, button names, field names, module names or figure captions.
 - Do not change screenshot paths.
 - Do not rewrite `1.4、术语定义` into continuous prose; keep one structured term entry per term.
-- Do not remove required coverage for login, module pages or function-point pages.
+- Do not remove required coverage for module and representative function pages. Preserve login coverage only when the software actually has an authentication flow.
 - Do not add unsupported success messages. If the screenshot or module does not contain the text, use a generic but professional description such as `系统显示处理结果并刷新列表`.
 
 ## Examples
@@ -95,9 +95,8 @@ After:
 The final manual must pass:
 
 ```bash
-python {baseDir}/scripts/validate_outputs.py \
-  --manual-draft-md "06.manual/${SOFTWARE_NAME}_操作手册.draft.md" \
-  --manual-md "06.manual/${SOFTWARE_NAME}_操作手册.md"
+python3 {baseDir}/scripts/validate_outputs.py \
+  --document-md "06.document/${SOFTWARE_NAME}_操作手册.md"
 ```
 
-If validation reports missing protected terms, restore the exact original term and adjust only surrounding prose.
+If the editorial pass changed protected terms, restore the exact original term and adjust only surrounding prose before saving the formal file.

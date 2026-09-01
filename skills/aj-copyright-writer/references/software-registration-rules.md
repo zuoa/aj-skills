@@ -1,70 +1,46 @@
 # Software Registration Rules
 
-Use this reference when writing `01.spec/spec.md`, operation manuals and source-code materials for Chinese computer software copyright registration.
+Primary source: 《计算机软件著作权登记办法》（国家版权局令第 1 号）。 Official page: https://www.ncac.gov.cn/xxfb/flfg/bmgz/202410/t20241015_869486.html
 
-Primary legal source:
+Related source: 《计算机软件保护条例》. Official page: https://xzfg.moj.gov.cn/front/law/detail?LawID=914
 
-- 《计算机软件著作权登记办法》，中华人民共和国国家版权局令第 1 号，2002-02-20 发布。
-- Public mirror: https://www.sz.gov.cn/cn/xxgk/zfxxgj/zcfg/content/post_8965812.html
+## Hard material rules
 
-## Hard Material Constraints
+- Registration materials include the application form, software identification materials and relevant proof documents.
+- Identification materials include a source program and any one kind of related document.
+- For ordinary deposit, submit the first and last continuous 30 pages of the source program and document. If either complete material is fewer than 60 pages, submit it in full.
+- Unless a special rule applies, each program page contains at least 50 lines and each document page at least 30 lines.
+- The registered software must be independently developed, or be an authorized modification with important functional or performance improvements.
+- Names of the software and right holder must remain consistent across application materials.
+- Application files use Chinese and A4 paper.
+- A requested correction must be submitted within the specified period; Article 22 states 30 days for corrections requested by the registration institution.
 
-The application material set generally includes:
+## Exceptional deposit
 
-- Software copyright registration application form.
-- Identification materials of the software.
-- Relevant proof documents.
+Article 12 permits the specified exceptional-deposit methods, including the first continuous 10 source pages plus any continuous 50 source pages. Do not describe arbitrary fragment stitching as continuous deposit. Use an exceptional method only when the applicant intentionally selects it and the material is organized accordingly.
 
-The software identification materials include:
+## Implications for this skill
 
-- Program identification materials.
-- Documentation identification materials.
+- Prefer actual project source and documentation when supplied.
+- When generating from a software name, produce one internally coherent software expression rather than unrelated snippets.
+- Use a stable manifest order to define the submitted source stream, then take the first and last continuous portions from that stream.
+- Keep required imports inside selected business files; exclude low-value standalone files instead of damaging program coherence.
+- Select the one document type that best demonstrates the software: an operation manual for distinctive interaction flows or a design specification for distinctive processing logic.
+- Do not present internal similarity thresholds as registration rules; the authority has not published a universal “template percentage” threshold.
 
-For ordinary deposit:
+## Code document
 
-- Source program and documentation are formed from the first and last continuous 30 pages.
-- If the whole program or document is fewer than 60 pages, submit the whole program or document.
-- Unless a special rule applies, each program page should have at least 50 lines, and each documentation page should have at least 30 lines.
+- exactly 60 pages when the source stream is long enough;
+- 50 source lines per page;
+- first 1500 and last 1500 lines from the ordered stream when the stream exceeds 3000 lines;
+- name and version in the header, page number at upper right;
+- A4, SimSun/宋体 9 pt, left aligned and single spaced;
+- no covers, directories or generated-material explanations between code lines.
 
-Other relevant points:
+## Selected document
 
-- Registration software should be independently developed, or be an authorized derivative with important functional or performance improvements.
-- Application documents should use Chinese; foreign-language certificates or proof documents should include Chinese translations.
-- Application files use A4 paper format.
-- Software name and right-holder names must stay consistent across application files unless supporting proof is provided.
+The document may describe content, composition, design, functional specifications, development, testing or use. Choose a document whose expression corresponds to the submitted program. Ensure the final Word layout meets the applicable page and line rules before filing.
 
-## Implications for This Skill
+## Legal-quality boundary
 
-When the user has real code or manuals:
-
-- Prefer extracting and formatting real materials instead of inventing replacement code.
-- Preserve actual module names, version names and right-holder naming.
-
-When the user only provides a software name:
-
-- Generated code and manuals are draft application materials.
-- State in `01.spec/spec.md` that unverifiable content is an expanded business setting.
-- The applicant must verify the materials against the actual software before filing.
-
-For `07.code.full/${SOFTWARE_NAME}_代码.docx`:
-
-- Keep module order stable and source-like.
-- Include enough business logic to show software expression.
-- Do not create placeholder-only source files.
-- Generate 60 code pages when the source program is long enough, using the first 30 and last 30 pages under ordinary deposit practice.
-- Each source-program page should contain at least 50 lines; this skill's code-docx script uses 50 lines per page.
-- Use A4 source-code formatting: 宋体, 小五, left aligned, single line spacing.
-- The header should show the applied software name and version exactly as in the application form, with page number at the upper right.
-- The final source-program page should be the program ending page.
-- Source code should not contain blank lines or the word `copyright`.
-
-For `06.manual/*_操作手册.docx`:
-
-- Use operation steps and screenshots to show a concrete operable product.
-- Keep the document consistent with module names, screenshots and code files.
-
-For `08.application-info/${SOFTWARE_NAME}_软著申请表信息.txt`:
-
-- Treat the file as concise application-form assistance, not a separate explanatory report.
-- Keep software name, version, programming language, source-line count, functions and operating environments consistent with the generated specification, source code and document materials.
-- Do not leave form hints or parenthetical instructions in the final text.
+The skill improves material quality and consistency; it does not invent an official similarity threshold or guarantee an administrative outcome. Formal output itself should contain only the software material, while these process notes remain in the skill instructions.

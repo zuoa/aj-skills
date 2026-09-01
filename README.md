@@ -19,7 +19,7 @@ Skill 名称以各目录 `SKILL.md` 中的 `name` 字段为准，可使用 `--sk
 | Skill 名称 | 功能 | 安装命令 |
 | --- | --- | --- |
 | `aj-patent-disclosure-cn` | 生成、审校和优化中国发明专利技术交底书，支持专利点挖掘、技术方案补全、现有技术检索、充分公开检查、附图规划和 Word 文档交付。 | `npx skills add https://github.com/zuoa/aj-skills --skill aj-patent-disclosure-cn` |
-| `aj-copyright-writer` | 生成中国计算机软件著作权登记材料，包括功能规格、模块说明、软件原型与截图、代码文档、操作手册和申请表信息。 | `npx skills add https://github.com/zuoa/aj-skills --skill aj-copyright-writer` |
+| `aj-copyright-writer` | 生成和补正中国计算机软件著作权登记材料，支持代表性文档自动选择、自洽技术栈、软件原型、源程序文档、申请表信息及内部独创性审计。 | `npx skills add https://github.com/zuoa/aj-skills --skill aj-copyright-writer` |
 | `contract-review` | 审核 NDA、采购、服务、SaaS、合作、许可及劳动顾问等合同，输出风险分级、条款比对、红线建议、签署意见和审查报告。 | `npx skills add https://github.com/zuoa/aj-skills --skill contract-review` |
 | `development-planning-writer` | 编制区域发展规划、地方专项规划及“十五五”规划文本，支持上位政策与数据检索，并输出指标表、项目清单和实施矩阵。 | `npx skills add https://github.com/zuoa/aj-skills --skill development-planning-writer` |
 | `social-opinion-writer` | 撰写民主党派、政协和统战系统的社情民意、信息专报及建言材料，支持政策数据调研、多轮校验和正式文档交付。 | `npx skills add https://github.com/zuoa/aj-skills --skill social-opinion-writer` |

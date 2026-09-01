@@ -4,9 +4,9 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
-import subprocess
 import sys
 import zipfile
 import xml.etree.ElementTree as ET
@@ -16,10 +16,10 @@ from pathlib import Path
 EXPECTED_IDS = [f"{index:02d}" for index in range(1, 11)]
 MIN_PROTOTYPE_FUNCTION_COVERAGE = 0.4
 MAX_PROTOTYPE_FUNCTION_COVERAGE = 0.6
-CODE_MIN_LINES = 360
-CODE_MAX_LINES = 700
-CODE_MIN_TOTAL_NONEMPTY_LINES = 4000
-CODE_MIN_COMMENT_RATIO = 0.10
+CODE_MIN_LINES = 0
+CODE_MAX_LINES = 0
+CODE_MIN_TOTAL_NONEMPTY_LINES = 3000
+CODE_MIN_COMMENT_RATIO = 0.0
 MAX_MANUAL_BODY_LIST_MARKERS = 35
 ALLOWED_PROTOTYPE_STYLES = {
     "custom-command-system",
@@ -94,6 +94,18 @@ APPLICATION_INFO_FORBIDDEN_TEMPLATE_MARKERS = [
     "面向领域 / 行业，限",
     "请选择该软件属于以下哪一种",
 ]
+FORMAL_PROCESS_PATTERNS = [
+    re.compile(r"(?:本文|本材料|本说明书|本手册).{0,8}草案|(?:材料|文档|说明书|操作手册)草案|草案版本"),
+    re.compile(r"扩展设定"),
+    re.compile(r"待申请人(?:核验|确认)"),
+    re.compile(r"(?:本文|本材料|该文档).{0,8}AI\s*(?:生成|编写|辅助)"),
+    re.compile(r"独创性(?:与模板化风险)?审计"),
+    re.compile(r"模板化风险"),
+    re.compile(r"生成过程说明"),
+]
+GENERIC_SUPPORT_MODULE_PATTERN = re.compile(
+    r"^(?:首页|(?:用户|角色|权限|数据字典|操作日志|系统设置|帮助)(?:管理|中心|配置)?|数据管理|信息维护|统计分析)$"
+)
 
 
 class ValidationError(ValueError):
@@ -147,17 +159,24 @@ def parse_prototype_id(file_id: str) -> tuple[str, str | None]:
     raise ValidationError(f"invalid prototype id {file_id!r}; expected 00-login, 01, or 01-01")
 
 
-def expected_prototype_range(module_dir: Path | None) -> tuple[int, int, dict[str, int]]:
+def expected_prototype_range(module_dir: Path | None, require_login: bool = True) -> tuple[int, int, dict[str, int]]:
+    base_count = 1 if require_login else 0
     if module_dir is None:
-        return 11, 31, {}
+        return base_count + 10, base_count + 30, {}
     counts = module_function_counts(module_dir)
     total_function_points = sum(counts.values())
-    min_count = 1 + len(EXPECTED_IDS) + max(1, int(total_function_points * MIN_PROTOTYPE_FUNCTION_COVERAGE + 0.9999))
-    max_count = 1 + len(EXPECTED_IDS) + max(1, int(total_function_points * MAX_PROTOTYPE_FUNCTION_COVERAGE))
+    min_count = base_count + len(EXPECTED_IDS) + max(1, int(total_function_points * MIN_PROTOTYPE_FUNCTION_COVERAGE + 0.9999))
+    max_count = base_count + len(EXPECTED_IDS) + max(1, int(total_function_points * MAX_PROTOTYPE_FUNCTION_COVERAGE))
     return min_count, max_count, counts
 
 
-def validate_prototype_files(directory: Path, suffix: str, label: str, module_dir: Path | None = None) -> list[Path]:
+def validate_prototype_files(
+    directory: Path,
+    suffix: str,
+    label: str,
+    module_dir: Path | None = None,
+    require_login: bool = True,
+) -> list[Path]:
     if not directory.exists():
         raise ValidationError(f"{label}: directory does not exist: {directory}")
     if not directory.is_dir():
@@ -166,13 +185,13 @@ def validate_prototype_files(directory: Path, suffix: str, label: str, module_di
     files = sorted((path for path in directory.iterdir() if path.is_file() and path.suffix == suffix), key=lambda p: p.name)
     ids = [path.stem for path in files]
     errors: list[str] = []
-    if "00-login" not in ids:
+    if require_login and "00-login" not in ids:
         errors.append(f"missing 00-login{suffix}")
     for module_id in EXPECTED_IDS:
         if module_id not in ids:
             errors.append(f"missing module overview {module_id}{suffix}")
 
-    min_count, max_count, function_counts = expected_prototype_range(module_dir)
+    min_count, max_count, function_counts = expected_prototype_range(module_dir, require_login)
     if len(files) < min_count or len(files) > max_count:
         errors.append(f"expected {min_count}-{max_count} prototype files, found {len(files)}")
 
@@ -217,8 +236,9 @@ def validate_html_prototypes(
     directory: Path,
     module_dir: Path | None = None,
     style_selection: Path | None = None,
+    require_login: bool = True,
 ) -> list[Path]:
-    files = validate_prototype_files(directory, ".html", "prototype html", module_dir)
+    files = validate_prototype_files(directory, ".html", "prototype html", module_dir, require_login)
     expected_style = validate_style_selection(style_selection) if style_selection else None
     errors: list[str] = []
     for path in files:
@@ -287,28 +307,43 @@ def code_file_id(path: Path) -> str | None:
     return match.group(1)
 
 
-def cloc_code_stats(files: list[Path]) -> dict:
-    try:
-        result = subprocess.run(
-            ["cloc", "--json", "--by-file", "--force-lang=JavaScript,txt", *[str(path) for path in files]],
-            check=False,
-            capture_output=True,
-            text=True,
-        )
-    except FileNotFoundError as exc:
-        raise ValidationError("code files: cloc is required to confirm code line counts") from exc
+def source_code_stats(files: list[Path]) -> dict:
+    """Count mixed-language text sources without assuming every file is JavaScript."""
+    stats: dict[str, dict[str, int]] = {}
+    total_comment = 0
+    total_code = 0
+    total_blank = 0
+    for path in files:
+        comment = 0
+        code = 0
+        blank = 0
+        in_block_comment = False
+        for raw_line in path.read_text(encoding="utf-8").splitlines():
+            line = raw_line.strip()
+            if not line:
+                blank += 1
+                continue
+            if in_block_comment:
+                comment += 1
+                if "*/" in line:
+                    in_block_comment = False
+                continue
+            if line.startswith("/*"):
+                comment += 1
+                in_block_comment = "*/" not in line[2:]
+            elif line.startswith("//") or (line.startswith("#") and not line.startswith(("#!", "#include", "#define", "#pragma"))):
+                comment += 1
+            else:
+                code += 1
+        stats[str(path)] = {"comment": comment, "code": code, "blank": blank}
+        total_comment += comment
+        total_code += code
+        total_blank += blank
+    stats["SUM"] = {"comment": total_comment, "code": total_code, "blank": total_blank}
+    return stats
 
-    if result.returncode != 0:
-        detail = (result.stderr or result.stdout).strip()
-        raise ValidationError(f"code files: cloc failed: {detail}")
 
-    try:
-        return json.loads(result.stdout)
-    except json.JSONDecodeError as exc:
-        raise ValidationError("code files: cloc returned invalid JSON") from exc
-
-
-def cloc_entry_for_path(stats: dict, path: Path) -> dict:
+def source_stats_entry_for_path(stats: dict, path: Path) -> dict:
     for key in (str(path), str(path.resolve()), path.name):
         entry = stats.get(key)
         if isinstance(entry, dict):
@@ -320,7 +355,7 @@ def cloc_entry_for_path(stats: dict, path: Path) -> dict:
         if Path(key).name == path.name:
             return entry
 
-    raise ValidationError(f"code files: cloc did not report {path.name}")
+    raise ValidationError(f"code files: source statistics did not report {path.name}")
 
 
 def validate_code_files(
@@ -329,6 +364,7 @@ def validate_code_files(
     max_lines: int = CODE_MAX_LINES,
     min_total_nonempty_lines: int = CODE_MIN_TOTAL_NONEMPTY_LINES,
     min_comment_ratio: float = CODE_MIN_COMMENT_RATIO,
+    source_manifest: Path | None = None,
 ) -> list[Path]:
     if not directory.exists():
         raise ValidationError(f"code files: directory does not exist: {directory}")
@@ -358,48 +394,199 @@ def validate_code_files(
         errors.append(f"expected {len(EXPECTED_IDS)} code files, found {len(files)}")
 
     valid_files = [paths[0] for file_id, paths in sorted(by_id.items()) if file_id in EXPECTED_IDS and len(paths) == 1]
-    stats = cloc_code_stats(valid_files) if valid_files else {"SUM": {"comment": 0, "code": 0}}
+    if source_manifest is not None and valid_files:
+        manifest_order = validate_source_manifest(source_manifest, directory)
+        valid_by_name = {path.name: path for path in valid_files}
+        valid_files = [valid_by_name[name] for name in manifest_order if name in valid_by_name]
+    stats = source_code_stats(valid_files) if valid_files else {"SUM": {"comment": 0, "code": 0}}
     total_comment_lines = 0
     total_code_lines = 0
     for path in valid_files:
         text = path.read_text(encoding="utf-8")
-        blank_lines = [index for index, line in enumerate(text.splitlines(), 1) if not line.strip()]
-        if blank_lines:
-            preview = ", ".join(str(index) for index in blank_lines[:10])
-            if len(blank_lines) > 10:
-                preview += f", ... and {len(blank_lines) - 10} more"
-            errors.append(f"{path.name}: source code must not contain blank lines ({preview})")
         copyright_matches = [index for index, line in enumerate(text.splitlines(), 1) if "copyright" in line.lower()]
         if copyright_matches:
             preview = ", ".join(str(index) for index in copyright_matches[:10])
             if len(copyright_matches) > 10:
                 preview += f", ... and {len(copyright_matches) - 10} more"
             errors.append(f"{path.name}: source code must not contain copyright ({preview})")
-        entry = cloc_entry_for_path(stats, path)
+        entry = source_stats_entry_for_path(stats, path)
         comment_lines = int(entry.get("comment", 0))
         code_lines = int(entry.get("code", 0))
         nonempty_line_count = comment_lines + code_lines
         total_comment_lines += comment_lines
         total_code_lines += code_lines
-        if nonempty_line_count < min_lines or nonempty_line_count > max_lines:
-            errors.append(
-                f"{path.name}: expected {min_lines}-{max_lines} non-empty cloc lines, found {nonempty_line_count}"
-            )
+        if min_lines and nonempty_line_count < min_lines:
+            errors.append(f"{path.name}: expected at least {min_lines} non-empty source lines, found {nonempty_line_count}")
+        if max_lines and nonempty_line_count > max_lines:
+            errors.append(f"{path.name}: expected at most {max_lines} non-empty source lines, found {nonempty_line_count}")
     total_nonempty_lines = total_comment_lines + total_code_lines
     if total_nonempty_lines < min_total_nonempty_lines:
         errors.append(
-            f"expected at least {min_total_nonempty_lines} total non-empty cloc lines, found {total_nonempty_lines}"
+                f"expected at least {min_total_nonempty_lines} total non-empty source lines, found {total_nonempty_lines}"
         )
     if total_nonempty_lines:
         comment_ratio = total_comment_lines / total_nonempty_lines
         if comment_ratio < min_comment_ratio:
             errors.append(
-                f"expected at least {min_comment_ratio:.0%} cloc comment ratio, found {comment_ratio:.1%}"
+                f"expected at least {min_comment_ratio:.0%} source comment ratio, found {comment_ratio:.1%}"
             )
 
     if errors:
         raise ValidationError("code files: " + "; ".join(errors))
     return valid_files
+
+
+def validate_source_manifest(path: Path, code_dir: Path | None = None) -> list[str]:
+    validate_file_exists(path, "source manifest")
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise ValidationError("source manifest: invalid JSON") from exc
+    if not isinstance(data, dict):
+        raise ValidationError("source manifest: root must be an object")
+    entries = data.get("files")
+    if not isinstance(entries, list) or not entries:
+        raise ValidationError("source manifest: files must be a non-empty array")
+    errors: list[str] = []
+    if data.get("version") != 1:
+        errors.append("version must be 1")
+    if not isinstance(data.get("technology_stack"), list) or not data.get("technology_stack"):
+        errors.append("technology_stack must be a non-empty array")
+    if not isinstance(data.get("business_terms"), list):
+        errors.append("business_terms must be an array")
+    if len(entries) != len(EXPECTED_IDS):
+        errors.append(f"expected {len(EXPECTED_IDS)} files, found {len(entries)}")
+    ordered_paths: list[str] = []
+    seen: set[str] = set()
+    for expected_order, entry in enumerate(entries, 1):
+        if not isinstance(entry, dict):
+            errors.append(f"entry {expected_order}: expected object")
+            continue
+        required_fields = {
+            "order", "path", "module_id", "module_name", "languages", "core_methods",
+            "nonempty_lines", "low_value_lines", "low_value_ratio", "sha256", "selection_reason",
+        }
+        missing_fields = sorted(required_fields - set(entry))
+        if missing_fields:
+            errors.append(f"entry {expected_order}: missing fields {', '.join(missing_fields)}")
+        relative = str(entry.get("path", ""))
+        if not relative or Path(relative).is_absolute() or ".." in Path(relative).parts:
+            errors.append(f"entry {expected_order}: invalid relative path {relative!r}")
+            continue
+        if entry.get("order") != expected_order:
+            errors.append(f"{relative}: expected order {expected_order}, found {entry.get('order')!r}")
+        module_id = entry.get("module_id")
+        if module_id is not None and str(module_id) != relative[:2]:
+            errors.append(f"{relative}: module_id {module_id!r} does not match filename prefix")
+        if not isinstance(entry.get("languages"), list) or not entry.get("languages"):
+            errors.append(f"{relative}: languages must be a non-empty array")
+        if not isinstance(entry.get("core_methods"), list) or not entry.get("core_methods"):
+            errors.append(f"{relative}: core_methods must be a non-empty array")
+        if not str(entry.get("selection_reason", "")).strip():
+            errors.append(f"{relative}: selection_reason must be non-empty")
+        if not re.fullmatch(r"[0-9a-f]{64}", str(entry.get("sha256", ""))):
+            errors.append(f"{relative}: sha256 must be a lowercase SHA-256 digest")
+        if relative in seen:
+            errors.append(f"{relative}: duplicate manifest entry")
+        seen.add(relative)
+        ordered_paths.append(relative)
+        if code_dir is not None:
+            source = code_dir / relative
+            try:
+                source.resolve().relative_to(code_dir.resolve())
+            except ValueError:
+                errors.append(f"{relative}: resolves outside {code_dir}")
+                continue
+            if not source.is_file():
+                errors.append(f"{relative}: file does not exist under {code_dir}")
+            else:
+                actual_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+                if entry.get("sha256") is not None and entry.get("sha256") != actual_hash:
+                    errors.append(f"{relative}: sha256 does not match current source")
+                actual_nonempty = sum(bool(line.strip()) for line in source.read_text(encoding="utf-8").splitlines())
+                if entry.get("nonempty_lines") is not None and entry.get("nonempty_lines") != actual_nonempty:
+                    errors.append(f"{relative}: nonempty_lines does not match current source")
+    if code_dir is not None:
+        actual = {item.name for item in code_dir.glob("*.txt") if item.is_file()}
+        if set(ordered_paths) != actual:
+            errors.append("manifest paths must match all 05.code/*.txt files exactly")
+    if errors:
+        raise ValidationError("source manifest: " + "; ".join(errors))
+    return ordered_paths
+
+
+def validate_originality_report(
+    path: Path,
+    code_dir: Path | None = None,
+    source_manifest: Path | None = None,
+) -> None:
+    validate_file_exists(path, "originality report")
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise ValidationError("originality report: invalid JSON") from exc
+    if not isinstance(data, dict):
+        raise ValidationError("originality report: root must be an object")
+    if data.get("version") != 1:
+        raise ValidationError("originality report: version must be 1")
+    raw_issues = data.get("issues")
+    if not isinstance(raw_issues, list):
+        raise ValidationError("originality report: issues must be an array")
+    report_errors = [
+        issue.get("message", issue.get("code", "unknown"))
+        for issue in raw_issues
+        if isinstance(issue, dict) and issue.get("severity") == "error"
+    ]
+    if data.get("status") != "pass":
+        detail = "; ".join(str(item) for item in report_errors[:10]) or "report status is not pass"
+        raise ValidationError(f"originality report: {detail}")
+    if report_errors:
+        raise ValidationError("originality report: pass status conflicts with error findings")
+    if source_manifest is not None:
+        validate_file_exists(source_manifest, "source manifest")
+        try:
+            manifest_data = json.loads(source_manifest.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            raise ValidationError("source manifest: invalid JSON") from exc
+        if not isinstance(manifest_data, dict):
+            raise ValidationError("source manifest: root must be an object")
+        manifest_hash = hashlib.sha256(
+            json.dumps(manifest_data, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        ).hexdigest()
+        if data.get("source_manifest_sha256") != manifest_hash:
+            raise ValidationError("originality report: source manifest changed after audit")
+    if code_dir is not None:
+        reported = data.get("source_files")
+        if not isinstance(reported, list) or not reported:
+            raise ValidationError("originality report: missing source file fingerprints")
+        errors: list[str] = []
+        reported_paths: set[str] = set()
+        for entry in reported:
+            if isinstance(entry, dict):
+                reported_paths.add(str(entry.get("path", "")))
+            else:
+                errors.append("source fingerprint entry must be an object")
+        actual_paths = {path.name for path in code_dir.glob("*.txt") if path.is_file()}
+        if len(reported) != len(reported_paths):
+            errors.append("source fingerprint entries contain duplicates or invalid paths")
+        if reported_paths != actual_paths:
+            errors.append("audited source set does not match current 05.code files")
+        for entry in reported:
+            if not isinstance(entry, dict):
+                continue
+            relative = str(entry.get("path", ""))
+            if not relative or Path(relative).is_absolute() or ".." in Path(relative).parts:
+                errors.append(f"invalid audited source path: {relative!r}")
+                continue
+            source = code_dir / relative
+            if not source.is_file():
+                errors.append(f"missing audited source {relative}")
+                continue
+            actual = hashlib.sha256(source.read_bytes()).hexdigest()
+            if actual != entry.get("sha256"):
+                errors.append(f"source changed after audit: {relative}")
+        if errors:
+            raise ValidationError("originality report: " + "; ".join(errors))
 
 
 def count_module_function_points(text: str) -> int | None:
@@ -416,12 +603,19 @@ def count_module_function_points(text: str) -> int | None:
 def validate_module_function_points(module_dir: Path) -> None:
     files = validate_numbered_files(module_dir, ".md", "modules")
     errors: list[str] = []
+    generic_names: list[str] = []
     for path in files:
-        count = count_module_function_points(path.read_text(encoding="utf-8"))
+        text = path.read_text(encoding="utf-8")
+        count = count_module_function_points(text)
         if count is None:
             errors.append(f"{path.name}: missing ## 功能点清单")
         elif count < 3 or count > 5:
             errors.append(f"{path.name}: expected 3-5 function points, found {count}")
+        heading = re.search(r"^#\s+(?:\d{2}[.、\s-]+)?(.+?)\s*$", text, flags=re.MULTILINE)
+        if heading and GENERIC_SUPPORT_MODULE_PATTERN.fullmatch(heading.group(1).strip()):
+            generic_names.append(heading.group(1).strip())
+    if len(generic_names) > 2:
+        errors.append(f"expected at least 8 domain-specific modules; generic support modules: {', '.join(generic_names)}")
     if errors:
         raise ValidationError("modules function points: " + "; ".join(errors))
 
@@ -494,9 +688,23 @@ def validate_manual_list_density(text: str, label: str, max_markers: int = MAX_M
         )
 
 
+def validate_no_formal_process_markers(text: str, label: str) -> None:
+    findings: list[str] = []
+    for line_number, line in enumerate(text.splitlines(), 1):
+        for pattern in FORMAL_PROCESS_PATTERNS:
+            match = pattern.search(line)
+            if match:
+                findings.append(f"line {line_number}: {match.group(0)!r}")
+    if findings:
+        preview = "; ".join(findings[:10])
+        raise ValidationError(f"{label}: contains generation or internal quality-control wording. {preview}")
+
+
 def validate_deliverable_markdown(path: Path, label: str) -> None:
     validate_file_exists(path, label)
-    validate_no_internal_document_labels(path.read_text(encoding="utf-8", errors="ignore"), label)
+    text = path.read_text(encoding="utf-8", errors="ignore")
+    validate_no_internal_document_labels(text, label)
+    validate_no_formal_process_markers(text, label)
 
 
 def validate_manual_markdown(path: Path, label: str) -> None:
@@ -505,6 +713,7 @@ def validate_manual_markdown(path: Path, label: str) -> None:
     validate_no_internal_document_labels(text, label)
     validate_no_rigid_manual_labels(text, label)
     validate_manual_list_density(text, label)
+    validate_no_formal_process_markers(text, label)
 
 
 def extract_docx_text(path: Path) -> str:
@@ -539,7 +748,9 @@ def extract_docx_text(path: Path) -> str:
 
 def validate_deliverable_docx(path: Path, label: str) -> None:
     validate_file_exists(path, label)
-    validate_no_internal_document_labels(extract_docx_text(path), label)
+    text = extract_docx_text(path)
+    validate_no_internal_document_labels(text, label)
+    validate_no_formal_process_markers(text, label)
 
 
 def validate_manual_docx(path: Path, label: str) -> None:
@@ -547,6 +758,7 @@ def validate_manual_docx(path: Path, label: str) -> None:
     text = extract_docx_text(path)
     validate_no_internal_document_labels(text, label)
     validate_no_rigid_manual_labels(text, label)
+    validate_no_formal_process_markers(text, label)
 
 
 def count_docx_page_breaks(path: Path) -> int:
@@ -646,6 +858,7 @@ def extract_application_info_value(lines: list[str], label: str) -> str:
 def validate_application_info_txt(path: Path) -> None:
     validate_file_exists(path, "application info txt")
     text = path.read_text(encoding="utf-8", errors="ignore")
+    validate_no_formal_process_markers(text, "application info txt")
     lines = text.splitlines()
     errors: list[str] = []
 
@@ -670,7 +883,7 @@ def validate_application_info_txt(path: Path) -> None:
             if token not in language_value:
                 errors.append(f"编程语言: missing {token!r}")
         if not re.search(r"源程序量\s*[：:\t ]*\d+\s*行", language_value):
-            errors.append("编程语言: 源程序量 should be a numeric line count like 源程序量 4000 行")
+            errors.append("编程语言: 源程序量 should be a numeric line count like 源程序量 3000 行")
 
     tech_value = extract_application_info_value(lines, "软件的技术特点")
     if not tech_value:
@@ -736,7 +949,12 @@ def validate_manual_preserved_terms(draft_path: Path, final_path: Path) -> None:
         )
 
 
-def validate_batch_manifest(path: Path, require_success: bool = True, module_dir: Path | None = None) -> None:
+def validate_batch_manifest(
+    path: Path,
+    require_success: bool = True,
+    module_dir: Path | None = None,
+    require_login: bool = True,
+) -> None:
     validate_file_exists(path, "batch manifest")
     data = json.loads(path.read_text(encoding="utf-8"))
     items = data.get("items", [])
@@ -745,13 +963,13 @@ def validate_batch_manifest(path: Path, require_success: bool = True, module_dir
     ids = [str(item.get("id", "")) for item in items]
     errors: list[str] = []
     try:
-        min_count, max_count, function_counts = expected_prototype_range(module_dir)
+        min_count, max_count, function_counts = expected_prototype_range(module_dir, require_login)
     except ValidationError as exc:
         errors.append(str(exc))
-        min_count, max_count, function_counts = 11, 31, {}
+        min_count, max_count, function_counts = (11, 31, {}) if require_login else (10, 30, {})
     if len(items) < min_count or len(items) > max_count:
         errors.append(f"expected {min_count}-{max_count} items, found {len(items)}")
-    if "00-login" not in ids:
+    if require_login and "00-login" not in ids:
         errors.append("missing id 00-login")
     for module_id in EXPECTED_IDS:
         if module_id not in ids:
@@ -802,6 +1020,31 @@ def infer_standard_dirs(root: Path, args: argparse.Namespace) -> None:
         args.prototype_dir = root / "04.prototype"
     if args.code_dir is None:
         args.code_dir = root / "05.code"
+    if args.source_manifest is None:
+        args.source_manifest = root / "09.originality-audit" / "source-manifest.json"
+    if args.originality_report is None:
+        args.originality_report = root / "09.originality-audit" / "originality-report.json"
+    if args.document_md is None or args.document_docx is None:
+        candidates = []
+        for directory in (root / "06.document", root / "06.manual"):
+            if directory.exists():
+                candidates.extend(directory.iterdir())
+        if args.document_md is None:
+            markdown = sorted(
+                path
+                for path in candidates
+                if path.is_file()
+                and path.suffix == ".md"
+                and not path.name.endswith((".working.md", ".draft.md"))
+            )
+            if len(markdown) != 1:
+                raise ValidationError(f"--root validation requires exactly one final selected-document markdown, found {len(markdown)}")
+            args.document_md = markdown[0]
+        if args.document_docx is None:
+            documents = sorted(path for path in candidates if path.is_file() and path.suffix == ".docx")
+            if len(documents) != 1:
+                raise ValidationError(f"--root validation requires exactly one final selected-document docx, found {len(documents)}")
+            args.document_docx = documents[0]
     if args.code_docx is None:
         if args.software_name:
             args.code_docx = root / "07.code.full" / f"{args.software_name}_代码.docx"
@@ -830,15 +1073,15 @@ def run_validation(args: argparse.Namespace) -> list[str]:
         else:
             checks.append(("modules", lambda: validate_module_function_points(args.module_dir)))
     if args.prompt_dir:
-        checks.append(("prototype prompts", lambda: validate_prototype_files(args.prompt_dir, ".md", "prototype prompts", args.module_dir)))
+        checks.append(("prototype prompts", lambda: validate_prototype_files(args.prompt_dir, ".md", "prototype prompts", args.module_dir, not args.no_login)))
     if args.html_dir:
-        checks.append(("prototype html", lambda: validate_html_prototypes(args.html_dir, args.module_dir, args.style_selection)))
+        checks.append(("prototype html", lambda: validate_html_prototypes(args.html_dir, args.module_dir, args.style_selection, not args.no_login)))
     if args.style_selection:
         checks.append(("prototype style selection", lambda: validate_style_selection(args.style_selection)))
     if args.prototype_dir:
-        checks.append(("prototype images", lambda: validate_prototype_files(args.prototype_dir, ".jpg", "prototype images", args.module_dir)))
+        checks.append(("prototype images", lambda: validate_prototype_files(args.prototype_dir, ".jpg", "prototype images", args.module_dir, not args.no_login)))
     if args.batch_file:
-        checks.append(("batch manifest", lambda: validate_batch_manifest(args.batch_file, not args.allow_incomplete_batch, args.module_dir)))
+        checks.append(("batch manifest", lambda: validate_batch_manifest(args.batch_file, not args.allow_incomplete_batch, args.module_dir, not args.no_login)))
     if args.code_dir:
         checks.append((
             "code files",
@@ -848,8 +1091,13 @@ def run_validation(args: argparse.Namespace) -> list[str]:
                 args.code_max_lines,
                 args.code_min_total_nonempty_lines,
                 args.code_min_comment_ratio,
+                args.source_manifest,
             ),
         ))
+    if args.source_manifest:
+        checks.append(("source manifest", lambda: validate_source_manifest(args.source_manifest, args.code_dir)))
+    if args.originality_report:
+        checks.append(("originality report", lambda: validate_originality_report(args.originality_report, args.code_dir, args.source_manifest)))
     if args.spec_md:
         checks.append(("spec markdown", lambda: validate_deliverable_markdown(args.spec_md, "spec markdown")))
     if args.manual_draft_md:
@@ -860,6 +1108,16 @@ def run_validation(args: argparse.Namespace) -> list[str]:
         checks.append(("manual protected terms", lambda: validate_manual_preserved_terms(args.manual_draft_md, args.manual_md)))
     if args.manual_docx:
         checks.append(("manual docx", lambda: validate_manual_docx(args.manual_docx, "manual docx")))
+    if args.document_md:
+        if "操作手册" in args.document_md.name:
+            checks.append(("selected document markdown", lambda: validate_manual_markdown(args.document_md, "selected document markdown")))
+        else:
+            checks.append(("selected document markdown", lambda: validate_deliverable_markdown(args.document_md, "selected document markdown")))
+    if args.document_docx:
+        if "操作手册" in args.document_docx.name:
+            checks.append(("selected document docx", lambda: validate_manual_docx(args.document_docx, "selected document docx")))
+        else:
+            checks.append(("selected document docx", lambda: validate_deliverable_docx(args.document_docx, "selected document docx")))
     if args.code_docx:
         checks.append(("code docx", lambda: validate_code_docx(args.code_docx, "code docx", args.software_name, args.software_version)))
     if args.application_info_txt:
@@ -886,10 +1144,14 @@ def main() -> int:
     parser.add_argument("--prototype-dir", type=Path)
     parser.add_argument("--batch-file", type=Path)
     parser.add_argument("--code-dir", type=Path)
+    parser.add_argument("--source-manifest", type=Path)
+    parser.add_argument("--originality-report", type=Path)
     parser.add_argument("--spec-md", type=Path)
     parser.add_argument("--manual-draft-md", type=Path)
     parser.add_argument("--manual-md", type=Path)
     parser.add_argument("--manual-docx", type=Path)
+    parser.add_argument("--document-md", type=Path)
+    parser.add_argument("--document-docx", type=Path)
     parser.add_argument("--code-docx", type=Path)
     parser.add_argument("--application-info-txt", type=Path)
     parser.add_argument("--software-name")
@@ -899,6 +1161,7 @@ def main() -> int:
     parser.add_argument("--code-min-total-nonempty-lines", default=CODE_MIN_TOTAL_NONEMPTY_LINES, type=int)
     parser.add_argument("--code-min-comment-ratio", default=CODE_MIN_COMMENT_RATIO, type=float)
     parser.add_argument("--allow-incomplete-batch", action="store_true")
+    parser.add_argument("--no-login", action="store_true", help="Do not require a login prototype when the software has no login flow")
     parser.add_argument("--skip-module-function-points", action="store_true")
     args = parser.parse_args()
 

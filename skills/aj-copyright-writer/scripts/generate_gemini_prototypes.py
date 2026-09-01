@@ -289,6 +289,7 @@ def main() -> int:
     parser.add_argument("--size", default="1920x1080", type=parse_size)
     parser.add_argument("--max-retries", default=3, type=int)
     parser.add_argument("--force", action="store_true", help="Regenerate all images and reset manifest status")
+    parser.add_argument("--no-login", action="store_true", help="Do not require a 00-login prototype")
     parser.add_argument("--sleep", default=1.0, type=float, help="Seconds to pause between API calls")
     args = parser.parse_args()
     if args.max_retries < 1:
@@ -314,7 +315,7 @@ def main() -> int:
 
     try:
         module_dir = args.module_dir or args.prompt_dir.parent / "02.modules"
-        prompt_files = validate_prototype_files(args.prompt_dir, ".md", "prototype prompts", module_dir if module_dir.exists() else None)
+        prompt_files = validate_prototype_files(args.prompt_dir, ".md", "prototype prompts", module_dir if module_dir.exists() else None, not args.no_login)
         if module_dir.exists():
             validate_numbered_files(module_dir, ".md", "modules")
     except ValidationError as exc:
@@ -374,7 +375,7 @@ def main() -> int:
             print(f"- {failure}", file=sys.stderr)
         return 1
     try:
-        validate_prototype_files(args.output_dir, ".jpg", "prototype images", module_dir if module_dir.exists() else None)
+        validate_prototype_files(args.output_dir, ".jpg", "prototype images", module_dir if module_dir.exists() else None, not args.no_login)
     except ValidationError as exc:
         print(f"Validation failed after generation: {exc}", file=sys.stderr)
         return 1

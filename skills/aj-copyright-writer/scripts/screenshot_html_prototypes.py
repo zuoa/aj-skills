@@ -200,6 +200,7 @@ def main() -> int:
     parser.add_argument("--wait-ms", default=500, type=int)
     parser.add_argument("--max-retries", default=2, type=int)
     parser.add_argument("--force", action="store_true")
+    parser.add_argument("--no-login", action="store_true", help="Do not require a 00-login prototype")
     args = parser.parse_args()
 
     if args.max_retries < 1:
@@ -208,7 +209,7 @@ def main() -> int:
 
     try:
         module_dir = args.module_dir or args.html_dir.parent / "02.modules"
-        html_files = validate_html_prototypes(args.html_dir, module_dir if module_dir.exists() else None)
+        html_files = validate_html_prototypes(args.html_dir, module_dir if module_dir.exists() else None, require_login=not args.no_login)
         if module_dir.exists():
             validate_numbered_files(module_dir, ".md", "modules")
     except ValidationError as exc:
@@ -233,7 +234,7 @@ def main() -> int:
             print(f"- {failure}", file=sys.stderr)
         return 1
     try:
-        validate_prototype_files(args.output_dir, ".jpg", "prototype images", module_dir if module_dir.exists() else None)
+        validate_prototype_files(args.output_dir, ".jpg", "prototype images", module_dir if module_dir.exists() else None, not args.no_login)
     except ValidationError as exc:
         print(f"Validation failed after screenshot: {exc}", file=sys.stderr)
         return 1

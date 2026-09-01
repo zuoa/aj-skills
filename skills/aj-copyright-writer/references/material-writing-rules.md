@@ -1,38 +1,29 @@
 # Material Writing Rules
 
-Use these rules when writing the spec, modules, prompts, source-code files and operation manual.
+Use these rules for the specification, ten modules, source program, selected identification document, prototypes and application information.
+
+## Formal-material boundary
+
+Files under `01.spec` through `08.application-info` are formal deliverables. They must describe the software directly and must not contain process labels such as “本文为草案”, “AI 生成”, “模板化材料”, “基于推断扩展” or internal-audit results. Preserve legitimate product names and business terms such as `AI 合同审查` or `合同模板`.
 
 ## `01.spec/spec.md`
 
-Recommended structure:
+Use a product-specific structure covering:
 
-```markdown
-# {SOFTWARE_NAME} 软件规格说明
+- software purpose and target users;
+- end-to-end business flows;
+- roles and operational boundaries;
+- coherent technical architecture;
+- domain entities, fields and status transitions;
+- ten core modules;
+- validation, exception and recovery rules;
+- performance, security and traceability requirements.
 
-## 1. 编写说明
-## 2. 资料来源与事实边界
-## 3. 软件概述
-## 4. 目标用户与使用场景
-## 5. 总体业务流程
-## 6. 角色与权限
-## 7. 系统架构
-## 8. 核心功能总览
-## 9. 数据对象与业务口径
-## 10. 非功能要求
-## 11. 申请材料扩展设定
-```
-
-Rules:
-
-- Separate verified public facts from inferred product design.
-- Use stable module names that can flow into manual chapters and code files.
-- Prefer specific business verbs: submit, review, dispatch, reconcile, archive, export, remind, verify.
-- Avoid pure marketing claims such as "industry-leading" unless a cited public source supports them.
-- Because this is a user-visible application material, do not write internal labels such as `模块01`, `模块 01`, `01模块` or `功能点01`. Use the real module/function name and normal chapter numbering instead.
+Use stable domain terminology that can flow into later artifacts. Do not use internal labels such as `模块01` or prose that explains how the material was created.
 
 ## `02.modules/*.md`
 
-Each module file should use:
+Generate exactly ten files. Each uses:
 
 ```markdown
 # 01. 模块名称
@@ -48,241 +39,144 @@ Each module file should use:
 ## 异常与边界
 ## 权限与审计
 ## 界面要点
-## 代码生成提示
+## 代码实现重点
 ```
 
-Rules:
+Each module contains three to five function points. At least eight modules must express domain-specific work. No more than two may be generic support modules such as user, role, permission, dictionary, log, setting or help.
 
-- Module count is exactly 10.
-- Each module must include exactly 3 to 5 function points under `## 功能点清单`.
-- Each function point should have a short name and 1 to 2 sentences explaining user action, system behavior and output.
-- Select modules that show business complexity, not merely "首页", "设置", "帮助".
-- Each module should contain enough logic to generate Java and React code.
-- Keep names consistent across all later files.
+Prefer names such as `冷链温湿度异常追溯`, `合同风险条款定位与批注` and `告警分级处置闭环`. Avoid generic names such as `数据管理`, `信息维护` and `统计分析`.
 
-**Module representativeness & uniqueness (anti-duplication)**
+Each module must define concrete fields, statuses, validation rules and exception branches. Universal field stacks such as `名称 / 编码 / 类型 / 状态 / 创建时间` are insufficient unless supplemented by the software's real domain fields.
 
-The review institution runs similarity checks on the submitted identification materials against a database of previously registered software. Duplication flags almost always start at the module level: function points, fields, code and manual text all derive from the module list, so generic modules leak generic content downstream. Anchoring modules to this software's proprietary business is the most effective way to lower the duplication risk, which is why this guide sits here rather than in the code or manual sections.
+The fixed ten-module structure is an internal delivery convention, not an official registration rule. Similarity controls in this skill are internal quality heuristics, not claims about an unpublished review algorithm.
 
-Avoid (these read as a copy of countless prior registrations):
+## Technology-stack selection
 
-- A 10-module set built mostly from generic support modules such as `用户管理 / 角色管理 / 权限管理 / 数据字典 / 操作日志 / 系统设置 / 帮助中心 / 首页`.
-- Generic verb-noun names that fit any system, such as `XX管理`, `XX维护`, `XX查询`, `XX统计`.
-- Universal field stacks like `名称 / 编码 / 类型 / 状态 / 创建时间` that carry no business meaning.
+Use the user's actual stack when supplied. Otherwise choose one coherent stack based on the software:
 
-Prefer:
+- workflow and enterprise services: Java/Spring, C#/.NET, Python/FastAPI or Node.js/NestJS;
+- data and algorithm engines: Python or C++ with the appropriate service layer;
+- device and protocol systems: Go, C/C++, Java or another fitting stack;
+- desktop applications: C#/.NET, JavaFX, Qt or Electron when appropriate;
+- user-interface-heavy web applications: one backend stack plus one matching frontend stack.
 
-- Module names that encode an industry- or business-specific concept, e.g. `个体识别与谱系管理`, `告警分级处置与工单闭环`, `合同风险条款抽取与批注`, `冷链温湿度异常追溯`.
-- Compress login, permission, dictionary, log and settings capabilities into 1-2 modules or fold them into business modules; reserve the core module slots for what shows the software's originality.
-- Function-point names, field names, status values and validation rules that carry this software's business semantics.
-
-Required line: under `## 模块定位`, each module file must include one sentence stating why this module is a core capability that distinguishes the software from similar products. This sentence anchors the rest of the writing and supports originality during review.
-
-Downstream consistency: module uniqueness flows into `05.code` (class/method names, enums, validation, comment wording) and `06.manual` (chapter titles, terms, operation descriptions). Downstream files must not fall back to generic wording such as `数据管理` or `信息维护`.
-
-Function point format:
-
-```markdown
-## 功能点清单
-
-1. 功能点名称：说明用户如何触发、系统如何处理、产生什么结果。
-2. 功能点名称：说明用户如何触发、系统如何处理、产生什么结果。
-3. 功能点名称：说明用户如何触发、系统如何处理、产生什么结果。
-```
-
-## `03.prototype.style/selection.md`
-
-Before writing prototype HTML or image prompts, read [prototype-ui-style.md](prototype-ui-style.md), recommend the best style for the software type, ask the user to confirm, and save the confirmed choice:
-
-```text
-03.prototype.style/selection.md
-```
-
-The selected style id must be one of:
-
-```text
-custom-command-system
-gov-service-light
-enterprise-data-station
-industrial-iot-cockpit
-medical-research-clean
-education-campus-portal
-finance-risk-terminal
-mobile-business-console
-```
-
-Use the confirmed style consistently across login, module overview pages and function-point pages. Local `style.md` can adjust colors or brand details, but should not replace the confirmed style selection.
-
-## `03.prototype.html/*.html`
-
-Default prototype mode is HTML screenshot. Read [prototype-ui-style.md](prototype-ui-style.md) before writing these files. Each HTML file should be self-contained and use:
-
-```html
-<!doctype html>
-<html lang="zh-CN">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="prototype-style" content="{confirmed_style_id}">
-  <meta name="module" content="02.modules/01.md">
-  <title>页面名称</title>
-  <style>...</style>
-</head>
-<body>
-  ...
-  <script>
-    const mockData = [...];
-  </script>
-</body>
-</html>
-```
-
-HTML prototype rules:
-
-- Generate `00-login.html` for the login page, 10 module overview files `01.html` to `10.html`, and dedicated function-point files named `模块编号-功能点编号.html` for `40%-60%` of all function points.
-- The login page is a required screenshot source for the manual and must not be replaced by a module screenshot.
-- Match each file to the same-numbered module.
-- Use inline CSS and inline JavaScript only.
-- Use the confirmed style from `03.prototype.style/selection.md` and the matching guidance in [prototype-ui-style.md](prototype-ui-style.md).
-- Do not use CDN, external images, remote fonts or backend requests.
-- Include realistic mock data: names, dates, statuses, counts, amounts, organization names and records that fit the software domain.
-- Design for a 1920x1080 screenshot. Keep the primary UI within the first viewport.
-- Use stable dimensions for nav, toolbar, cards, tables, forms and dialogs.
-- Avoid text overlap, tiny unreadable labels, empty panels and decorative-only layouts.
-- Follow local `style.md` when available.
-- Do not produce a generic admin page, default dashboard, plain card table, Ant Design clone or Bootstrap-like CRUD screen. Do not force every software type into the dark command-system style.
-- All buttons, fields, menus, status labels and prompts later described in the operation manual must be visible in the corresponding HTML screenshot. This consistency requirement belongs here, before screenshots are captured.
-- Prefer dedicated function-point screenshots for complex flows, data-entry forms, chart dashboards, monitoring/alert pages, audit handling, export/report features and configuration screens.
-
-## `03.prototype.prompt/*.md`
-
-Use this only when the user selects Gemini/API image generation mode. Read [prototype-ui-style.md](prototype-ui-style.md) first. Generate `00-login.md`, module overview prompts `01.md` to `10.md`, and function-point prompts named `模块编号-功能点编号.md` for `40%-60%` of all function points.
-
-Prompt structure:
-
-```markdown
-# Prototype Prompt 01
-
-目标文件: 04.prototype/01.jpg
-对应模块: 02.modules/01.md
-界面名称: ...
-
-## 生成提示
-...
-```
-
-Prompt content must specify:
-
-- 16:9, 1920x1080, clean product UI screenshot.
-- Chinese UI labels.
-- The screen's role, selected menu item, main workflow state and primary data.
-- Exact layout: navigation, toolbar, filters, table/form/chart/detail panel, modal or status drawer when needed.
-- The user-confirmed style id and visual language from `03.prototype.style/selection.md`, not a generic admin dashboard.
-- Visual style from local `style.md` if present.
-- No text overlap, no unreadable tiny text, no meaningless placeholder blocks.
+Do not insert multiple unrelated languages merely to look complex. Record detected languages and architectural responsibilities in `source-manifest.json`, and use the same stack in the specification, design document and application information.
 
 ## `05.code/*.txt`
 
-Each file should be named with its module number and module name, such as `01-用户权限管理.txt`. Do not use bare names like `01.txt`.
+Generate exactly ten numbered files, but let architectural and business complexity determine each file's length. A file may contain a domain service, workflow engine, algorithm, protocol handler, repository with meaningful queries, interface adapter or UI workflow. It does not need identical backend and frontend sections.
 
-Each file should contain:
+### Prefer
 
-```text
-// 模块: 01. 模块名称
-// 说明: ...
-===== Java Backend =====
-...
-===== React Frontend =====
-...
-```
+- state transition and lifecycle logic;
+- calculations, matching, scoring and classification;
+- non-trivial validation and duplicate detection;
+- protocol parsing, data normalization and transformation;
+- permission boundaries tied to business roles;
+- exception recovery, idempotency and audit trails;
+- domain-specific queries and aggregation;
+- UI state handling for a real user task.
 
-Code style:
+### Exclude
 
-- Make the Java code concrete: a controller, service-like class, DTO, enum or repository stub can appear in the same file when useful.
-- Include validation, state transitions, permission checks, duplicate checks, calculations, sorting, filtering or audit logging where the module needs them.
-- Keep React code as a real component with state, effects, event handlers and conditional rendering.
-- Do not over-abstract into many empty layers.
-- Keep the comment ratio no lower than 10%, calculated from `cloc` as comment lines divided by `comment + code` lines.
-- Use Chinese comments to explain business intent, validation rules, state transitions, permission checks and non-obvious logic. Do not pad the ratio with meaningless line-by-line comments.
-- It is acceptable that the code is illustrative rather than directly compilable, but it must look like source code, not pseudocode.
-- Confirm line counts with `cloc --by-file --force-lang=JavaScript,txt 05.code`; use `comment + code` as the non-empty line count and exclude `blank`.
-- The 10 files under `05.code/` must contain at least 4000 `cloc` non-empty lines in total after removing blank lines.
-- Target 380-520 non-empty lines per code file; complex modules may be longer when needed. Do not pad the line count with blank lines, meaningless duplicate code or comments that do not explain real business logic.
-- Do not leave blank lines in `05.code/*.txt`.
-- Do not use the word `copyright` anywhere in source-code files, regardless of case.
+- import-only, package-only or dependency-only files;
+- environment/build configuration and framework bootstrap;
+- pure getters/setters and behavior-free DTO/entity files;
+- empty methods, interfaces or components;
+- TODOs, placeholder returns and fake implementations;
+- generated API clients, vendored libraries and framework source;
+- repeated CRUD scaffolds that differ only in names;
+- padded comments and meaningless duplication.
 
-## `06.manual/*_操作手册.md`
+Do not mechanically strip necessary imports from selected business files. Keep source structure coherent. The ten files must contain at least 3000 nonblank source lines in total; there is no default per-file minimum or maximum. Comments should explain business intent and non-obvious behavior, with no mechanical percentage target.
 
-Use [operation-manual-template.md](operation-manual-template.md) as the detailed template. The shorter structure below is only a navigation summary.
+Source files may retain normal blank lines for readability; line counting and code-DOCX composition ignore them. Source files must not contain the word `copyright`, regardless of case.
 
-```markdown
-# {SOFTWARE_NAME} V1.0
+## `09.originality-audit/source-manifest.json`
 
-## 1、系统阐述
-### 1.1、系统说明
-### 1.2、主要功能
-### 1.3、目标用户
-### 1.4、术语定义
-### 1.5、软件开发目的
+The manifest records the ordered source stream used to build the code document. It includes:
 
-## 2、实操指引
-### 2.1、登录
-### 2.2、模块名称
-#### 2.2.1、子功能名称
-```
+- selected technology stack and business terms;
+- file order and relative path;
+- module id and module name;
+- detected languages and core methods;
+- nonblank and low-value line counts;
+- SHA-256 fingerprint and selection reason.
 
-Manual style:
+The order defines the continuous program stream for the source-code document. Changing source after the audit invalidates the report and blocks DOCX generation.
 
-- Write for end users: "点击", "选择", "输入", "提交", "查看", "导出".
-- Use the formal project-delivery style, but blend function description, operation path, field explanation, button explanation, operation flow, system feedback and exceptions into natural paragraphs.
-- `1.4、术语定义` must keep a structured `术语：定义` shape, such as `个体识别：指通过图像特征提取与比对技术，唯一标识每只种鹅的身份信息。` The example only shows the format; generated manuals must replace it with software-specific business or technical terms. Do not turn this section into continuous natural prose.
-- After drafting the manual, apply [operation-manual-humanizer.md](operation-manual-humanizer.md) as a conservative professional humanizing pass. This should reduce formulaic AI phrasing without making the manual casual.
-- Preserve software names, module names, function names, UI labels, button names, field names, status tags, prompts, figure captions and image paths exactly during the humanizing pass.
-- Do not expose internal file labels or planning labels such as `模块01`, `模块 01`, `01模块`, `功能点01`, `第01功能点`. Use business names such as `用户权限管理` and `告警处置` instead.
-- Do not write rigid labels such as `页面内容说明：`, `页面区域说明：`, `功能说明：`, `操作前提：`, `字段说明：`, `按钮说明：`, `操作步骤：`, `操作过程：`, `预期结果：` or `异常提示：` in final manual text.
-- The rigid-label rule does not apply to `1.4、术语定义`; that section should intentionally use `术语：定义` entries.
-- Avoid filling the body with repeated numbered or lettered lists. Keep numbering mainly in headings; use 2-4 connected paragraphs for each function point.
-- Include one image per module when available.
-- Reserve figure captions as `图X 页面名称`, and keep figure numbers increasing from `图1`.
-- Convert business rules into operation tips, not implementation details.
-- Keep paragraphs short and procedural.
-- Use tables for field descriptions only when they improve clarity.
-- Each main module must include 3-5 child function sections derived from `## 功能点清单`.
-- The manual should include login screenshot, every module overview screenshot, and dedicated function-point screenshots for `40%-60%` of all function points. Prefer screenshots for complex and data-heavy functions.
-- Each function point explanation should cover page content, operation prerequisites, operation process, expected result and common exception prompts in prose, without rigid subsection labels.
+## Document selection
 
-Image insertion:
+Follow this precedence:
 
-```markdown
-![图1 登录页面](../04.prototype/00-login.jpg)
-![图2 模块名称](../04.prototype/01.jpg)
-![图3 功能点名称](../04.prototype/01-01.jpg)
-```
+1. explicit user request;
+2. template-like-document correction notice → design specification by default;
+3. interaction-heavy product → operation manual;
+4. algorithm, backend, data-processing or device-integration product → design specification.
 
-The image alt text is the figure caption. In Word output it must appear below the image and centered.
+The selected document must cover all ten modules, but it must not repeat one identical paragraph structure ten times.
+
+## Operation manual
+
+Write around real user tasks. Select the composition pattern that matches each function:
+
+- task submission or data entry;
+- review and approval loop;
+- monitoring and incident response;
+- analysis and comparison;
+- batch import/export;
+- rule configuration and validation.
+
+Vary the explanation according to the task. Include only fields, buttons, statuses and prompts visible in the corresponding prototype. Keep figure numbers increasing and use relative image paths. Do not save a `.draft.md` deliverable.
+
+## Software design specification
+
+Use [software-design-template.md](software-design-template.md). Emphasize the domain model, processing logic, state transitions, algorithm inputs and outputs, interfaces, validation and exception recovery. Explain the relationship between each important design and the corresponding code file without copying source code into prose.
+
+## Prototypes
+
+Use the confirmed industry style. HTML prototypes must be self-contained and use real business fields and states. Avoid generic admin dashboards, empty cards and decorative-only charts.
+
+For an operation manual, create ten module overview pages and dedicated pages for 40%–60% of complex function points. Add a login page only when authentication actually exists; otherwise use the real entry screen and run prototype validation with `--no-login`. For a design specification, create only visuals that prove structure, process or processing results; do not invent low-value screens solely to satisfy a screenshot count.
 
 ## `07.code.full/${SOFTWARE_NAME}_代码.docx`
 
-The code document should:
-
-- Contain exactly 60 code pages.
-- Use 50 source lines per page, with no blank source lines.
-- Use SimSun/宋体, 9 pt (小五), left alignment and single line spacing.
-- Put the applied software name and version in the header exactly as they appear in the application form.
-- Put page numbers in the upper-right header area.
-- Preserve module order in the source stream.
-- For source streams longer than 60 pages, use the first 30 pages and last 30 pages so the final page is the program ending page.
-- Avoid adding explanatory prose, cover pages, directories, module heading pages or generated-material notes between code lines.
-- Do not add generated-material explanations such as `软件源代码文档` or `本文档由 05.code 目录下的核心业务代码文件合并生成`.
-- Do not include the word `copyright` anywhere in the code document.
+- exactly 60 code pages and 50 source lines per page;
+- SimSun/宋体, 9 pt, left aligned, single spacing;
+- software name and version in the header, page number at upper right;
+- no cover, table of contents, generated-material note or module title page;
+- for a stream longer than 3000 lines, use the first 1500 and last 1500 lines in manifest order;
+- no blank source lines and no `copyright` text.
 
 ## `08.application-info/${SOFTWARE_NAME}_软著申请表信息.txt`
 
-Generate this final text file after the manual and code document are complete. It supports application-form entry, so keep it concise and directly fillable rather than explanatory.
+Use values that match the generated program and document. Read languages and source volume from the manifest and code statistics. Keep the established 50/100/200-character field limits, choose one software type, and do not leave instructional placeholders in the file.
 
-- Use the field order defined in `SKILL.md` Step 9.
-- Remove parenthetical prompt text from the final file.
-- Keep hardware environments, operating systems, development tools, runtime support, development purpose and target industry within 50 characters each.
-- Keep the main function summary within 200 Chinese characters.
-- Pick exactly one software type from the Step 9 list, then describe technical characteristics within 100 Chinese characters.
-- Set `源程序量` from `cloc` `comment + code` totals for `05.code` when available; otherwise use the nonblank generated source-line count and record that fallback in the delivery note.
+Use this field order:
+
+```text
+开发的硬件环境
+运行的硬件环境
+开发该软件的操作系统
+软件开发环境 / 开发工具
+该软件的运行平台 / 操作系统
+软件运行支撑环境 / 支持软件
+编程语言    语言：{languages}    版本：{versions}    源程序量    {nonblank_lines} 行
+开发目的
+面向领域 / 行业
+软件的主要功能
+软件的技术特点    类型：{one software type}。{technical description}
+```
+
+Hardware, operating-system, tool, platform, support, purpose and industry values are each at most 50 characters. Main functions are at most 200 Chinese characters and technical characteristics at most 100. The software type must be one of the types listed in `SKILL.md`.
+
+## Cross-material consistency
+
+Before delivery confirm that:
+
+- all ten module names appear in the selected document;
+- code filenames and manifest module ids agree;
+- domain fields and statuses agree across spec, code, prototype and document;
+- buttons and prompts described by an operation manual appear in screenshots;
+- technology stack and source volume agree with application information;
+- the originality report is `pass` and its source fingerprints are current.

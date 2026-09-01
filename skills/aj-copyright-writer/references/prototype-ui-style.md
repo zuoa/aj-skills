@@ -184,7 +184,7 @@ Use the confirmed style, but keep these rules for every style:
 
 ## Login Rules
 
-Every style needs a real login screenshot:
+When the software has an authentication flow, create a real login screenshot:
 
 - Show the software name prominently.
 - Include visible account, password, optional organization/code fields, remember-login checkbox and login button.
@@ -219,7 +219,7 @@ Then the corresponding screenshot must visibly contain these exact or very close
 The final screenshot should pass these checks:
 
 - At first glance it reads as a custom system matching the software type, not a generic backend.
-- The confirmed style is consistent across login, module overview pages and function-point pages.
+- The confirmed style is consistent across the real entry/login page, module overview pages and function-point pages.
 - Key operation buttons are visible.
 - Field names and table headers are readable at 1920x1080.
 - No text overlaps borders, icons or adjacent controls.

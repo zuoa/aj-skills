@@ -12,7 +12,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from validate_outputs import ValidationError, validate_code_files, validate_file_exists
+from validate_outputs import ValidationError, validate_code_files, validate_file_exists, validate_originality_report
 
 
 def import_docx():
@@ -138,8 +138,8 @@ def configure_header(document, software_name: str, software_version: str, align,
     add_page_number(paragraph, oxml_element, qn, pt)
 
 
-def code_files(code_dir: Path) -> list[Path]:
-    return validate_code_files(code_dir)
+def code_files(code_dir: Path, source_manifest: Path | None = None) -> list[Path]:
+    return validate_code_files(code_dir, source_manifest=source_manifest)
 
 
 def infer_software_name(output_path: Path) -> str:
@@ -157,7 +157,6 @@ def source_lines_for_deposit(paths: list[Path], required_lines: int) -> list[str
             if "copyright" in raw_line.lower():
                 errors.append(f"{path.name}:{line_number}: contains copyright")
             if not raw_line.strip():
-                errors.append(f"{path.name}:{line_number}: blank source line")
                 continue
             lines.append(raw_line.rstrip())
 
@@ -197,7 +196,12 @@ def build_docx(
     line_numbers: bool,
     software_name: str | None,
     software_version: str,
+    source_manifest: Path | None = None,
+    originality_report: Path | None = None,
 ) -> None:
+    if source_manifest is None or originality_report is None:
+        raise ValidationError("code docx requires a source manifest and a passed originality report")
+    validate_originality_report(originality_report, code_dir, source_manifest)
     Document, style_type, align, wd_break, tab_align, oxml_element, qn, cm, pt = import_docx()
     document = Document(str(template_path)) if template_path else Document()
     clear_body(document, qn)
@@ -208,7 +212,7 @@ def build_docx(
 
     lines_per_page = 50
     total_pages = 60
-    selected_lines = source_lines_for_deposit(code_files(code_dir), lines_per_page * total_pages)
+    selected_lines = source_lines_for_deposit(code_files(code_dir, source_manifest), lines_per_page * total_pages)
     add_deposit_code_pages(document, selected_lines, "AJ Code", line_numbers, lines_per_page, wd_break, qn, pt)
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -223,6 +227,8 @@ def main() -> int:
     parser.add_argument("--template")
     parser.add_argument("--software-name")
     parser.add_argument("--software-version", default="V1.0")
+    parser.add_argument("--source-manifest", required=True, type=Path)
+    parser.add_argument("--originality-report", required=True, type=Path)
     parser.add_argument("--line-numbers", action="store_true")
     args = parser.parse_args()
 
@@ -232,7 +238,16 @@ def main() -> int:
     else:
         print("Template not found; generating code docx without template.")
     try:
-        build_docx(args.code_dir, args.output, template_path, args.line_numbers, args.software_name, args.software_version)
+        build_docx(
+            args.code_dir,
+            args.output,
+            template_path,
+            args.line_numbers,
+            args.software_name,
+            args.software_version,
+            args.source_manifest,
+            args.originality_report,
+        )
     except ValidationError as exc:
         print(f"Validation failed: {exc}", file=sys.stderr)
         return 1
