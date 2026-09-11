@@ -9,8 +9,10 @@ Design constraints should make later visual and interaction work decidable. Reco
 - Information architecture, navigation, key journeys, and screen inventory.
 - Reference products/assets and what to borrow or avoid from each.
 - A visual thesis and at most one signature device that expresses something true about the product.
-- Typography roles, color semantics, spacing/grid, density, radius, elevation, motion, imagery, icon, and Emoji rules.
-- Component source: existing design system, chosen library, custom components, and override policy.
+- A concrete overall palette: canvas/surface/text/border/action/focus/disabled/status tokens, exact values per supported theme, semantic use, interaction states, and required contrast pairs.
+- A concrete typography system: font stacks and language fallbacks, source/license/loading, an exact size/line-height/weight/letter-spacing scale, responsive changes, and tabular-number or monospace rules where relevant.
+- Component-level typography and geometry for every component used by the screen inventory. At minimum resolve Button, Input/Select, Navigation/Tabs, Table/List, Card, Dialog/Drawer, and Toast/Alert as applicable; include font token and resolved font/size, height/padding/gap, radius/border/elevation, states, source, and override policy.
+- Spacing/grid, density, radius, elevation, motion, imagery, icon, and Emoji rules.
 - Responsive breakpoints based on content behavior; safe areas and input modes for mobile.
 - State matrix: loading, empty, error, partial, success, disabled, offline, permission denied, expired, and destructive confirmation.
 - Accessibility target, normally WCAG 2.2 AA for web unless another requirement governs.
@@ -43,6 +45,20 @@ Before choosing colors, type, layout, or motion, state:
 4. What to borrow and avoid from each reference, with a reason.
 
 Use typography and layout to express hierarchy before adding decoration. Let one justified signature device carry the distinctive character; keep surrounding elements quiet and consistent. Minimal directions require precise spacing and type, while expressive directions require a coherent system rather than more effects.
+
+### Minimum implementable visual system
+
+`DESIGN.md` is an implementation contract, not a mood board. A developer should be able to style a representative screen without inventing colors, font sizes, or component hierarchy.
+
+- Give color tokens concrete values such as HEX, RGB, HSL, or OKLCH. Define both foreground and background for status colors, and specify hover/pressed/selected/focus behavior. Record unsupported themes as `not-applicable`; do not silently omit them.
+- Name the full font stack for each script the product supports. Record generic fallbacks, available weights, font delivery and license assumptions, and how the UI behaves while a web font loads.
+- Express type sizes and line heights with implementation units; include a pixel reference when using `rem`. Define page title, section title, body, small body, label, action, helper/error, and data text when those roles appear.
+- Map components to type tokens, then repeat the resolved family/size in the component table so reviewers can verify the result without following an undocumented token chain. Include long text, localization, zoom, truncation/wrapping, and numeric alignment where relevant.
+- Record a base spacing unit and exact component measurements or tokens. A library name alone is insufficient because defaults, theme overrides, and versions can differ.
+
+When brand inputs are missing, separate brand identity from implementation basics. Keep the brand identity pending, but choose an accessible provisional palette and system-font/type-scale baseline, state why it is safe enough for prototyping, and add an owner plus a measurable revisit trigger. Do not leave every visual token pending: that merely transfers the design decision to the implementer.
+
+Before marking `implementation-ready`, verify representative desktop and mobile screens against the tables: computed fonts/sizes match, text at 200% zoom remains usable, supported themes meet the stated contrast targets, keyboard focus is visible on every surface, and status is understandable without color.
 
 Treat gradients, glass effects, oversized rounded cards, repeated pill containers, decorative dashboards, arbitrary `01/02/03` labels, ambient animation, sparkles, robot mascots, and generic AI imagery as review signals. They are not forbidden, but each needs a product-specific reason. Remove any choice that would survive unchanged if the product name and industry were swapped.
 

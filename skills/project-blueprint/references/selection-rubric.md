@@ -4,9 +4,33 @@
 
 1. State hard constraints: platform, region, compliance, deadline, team, budget, latency, availability, data and integration.
 2. Separate constraints from preferences.
-3. Establish the simplest viable baseline.
-4. Compare no more than three credible candidates.
-5. Recommend one, name its cost, and record a revisit trigger.
+3. Show the three mandatory reference stacks and assess each against those constraints.
+4. Establish the simplest viable baseline.
+5. Add up to two analysis-derived candidates when the mandatory set misses a material requirement.
+6. Recommend one candidate from the complete set, name its cost, and record a revisit trigger.
+
+## Mandatory reference stacks
+
+Every full-stack technology selection must show these three candidates in this order. They are stable comparison anchors, not automatic winners.
+
+| Candidate ID | Intended profile | Core stack | Typical strengths | Costs and review questions |
+|---|---|---|---|---|
+| `STACK-ENTERPRISE-JAVA-REACT` | Enterprise project | Java Spring Boot + React | Mature JVM ecosystem, explicit service boundaries, broad enterprise integration and governance support | Confirm Java/React capability, delivery overhead, runtime footprint, integration needs and whether organizational standards actually require it |
+| `STACK-TOOL-FASTAPI-VUE` | Tool-oriented project | Python FastAPI + Vue SPA | Fast API delivery, Python library access and a separately evolvable interactive client | Confirm SPA complexity is justified, define API/client versioning, and account for two build/deploy surfaces |
+| `STACK-RAPID-FLASK-JINJA` | Simple, rapid project | Python Flask + Jinja SSR | Small operational surface, direct server-rendered flows and low client-build overhead | Confirm the interaction model fits SSR, establish when frontend behavior or API consumers would force a split, and avoid growing ad hoc client code |
+
+For each project:
+
+- Keep all three rows even when one violates a hard constraint. Mark its fit as `not recommended` and name the conflicting constraint instead of silently removing it.
+- Do not infer that “enterprise” automatically means Spring Boot, that every internal tool needs a SPA, or that Flask is acceptable merely because the first release is small. Team capability, interaction model, integrations, assurance needs and operating environment decide fit.
+- Treat native or cross-platform mobile clients separately. The mandatory rows still compare the server and web/admin surface; add the actual mobile client candidate when mobile is in scope.
+- Add no more than two analysis-derived alternatives when they materially improve constraint fit. Examples may include an existing organizational stack, a full-stack TypeScript framework, Django, Go, or a mobile-specific client, but only when the project facts justify them.
+- Recommend one candidate across the mandatory and added alternatives. If evidence is insufficient, state the leading provisional option, the missing evidence and the decision deadline.
+
+Use this comparison table before recording the decision:
+
+| Candidate | Mandatory or derived | Constraint fit | Material advantages | Gaps/risks | Disposition |
+|---|---|---|---|---|---|
 
 Use this decision table:
 

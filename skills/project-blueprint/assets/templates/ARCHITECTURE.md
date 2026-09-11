@@ -38,6 +38,18 @@ last_reviewed: YYYY-MM-DD
 
 ## Technology and middleware decisions
 
+### Full-stack candidates
+
+Keep the three mandatory reference stacks in every full-stack selection. Add up to two constraint-derived rows when useful; do not delete a mandatory row merely because it is not recommended.
+
+| Candidate | Mandatory or derived | Constraint fit | Material advantages | Gaps/risks | Disposition |
+|---|---|---|---|---|---|
+| Java Spring Boot + React | mandatory — enterprise reference | | | | |
+| Python FastAPI + Vue SPA | mandatory — tool reference | | | | |
+| Python Flask + Jinja SSR | mandatory — simple/rapid reference | | | | |
+
+### Decisions
+
 | Decision | Hard constraints | Candidates | Recommendation | Tradeoff | State | Revisit trigger |
 |---|---|---|---|---|---|---|
 

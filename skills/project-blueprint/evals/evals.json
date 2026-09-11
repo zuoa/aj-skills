@@ -56,11 +56,14 @@
     {
       "id": 5,
       "prompt": "请为一家独立旧书店做库存与预订 SaaS 的项目蓝图，店员用桌面 Web，顾客用手机网页。老板只说想要‘现代、简洁、高级’，没有品牌手册或参考图。本轮不要追问；请诚实处理视觉信息不足，输出完整蓝图到指定目录。",
-      "expected_output": "把抽象风格词转化为与旧书检索、库存状态和预订任务有关的可评审设计约束；不套用通用 AI 落地页风格，也不虚构品牌、用户反馈或业务指标。",
+      "expected_output": "把抽象风格词转化为与旧书检索、库存状态和预订任务有关的可评审设计约束；给出有具体色值、字体层级和组件排版映射的 provisional 实现基线，不套用通用 AI 落地页风格，也不虚构品牌、用户反馈或业务指标。",
       "files": [],
       "expectations": [
         "DESIGN.md 明确目标用户、使用场景和每个关键界面的主要任务",
         "视觉方向说明参考依据、任务理由和最多一个识别性元素；信息不足处标记 provisional 或 pending",
+        "DESIGN.md 给出背景、表面、文字、边框、主操作、焦点、禁用与状态色的具体色值、语义和对比要求，而不是只写‘语义颜色’或全部 pending",
+        "DESIGN.md 给出字体栈以及标题、正文、标签、按钮、输入、辅助/错误文本、导航和列表/表格的字号、行高、字重，并说明移动端差异",
+        "Button、Input/Select、Navigation/Tabs、Table/List、Card、Dialog/Drawer、Toast/Alert 中实际采用的组件均映射到排版 token 和尺寸/状态约束；未采用项明确 not-applicable",
         "没有把渐变、玻璃卡片、巨大圆角卡片、任意编号或装饰性仪表盘当作默认方案",
         "蓝图没有虚构品牌资产、研究结论、用户反馈或精确指标",
         "团队编写的标题、列表、按钮和系统文案不使用 Emoji"
@@ -90,6 +93,19 @@
         "成功消息包含独立可理解的文字，Emoji 不是唯一状态或可访问名称",
         "其他标题、列表、按钮、导航和系统状态不使用 Emoji",
         "无障碍验收覆盖屏幕阅读器公告、非颜色状态和键盘或触控操作"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "为一家已有统一 JVM 平台的集团建立采购审批系统蓝图。团队有 8 名 Java 工程师和 3 名 React 工程师，需要接企业 SSO、审计日志和现有 Java SDK，首版 5 个月交付。请直接给出完整蓝图和技术栈选择，不要追问。即使某个候选不适合，也要保留比较并说明原因。",
+      "expected_output": "技术栈比较固定展示 Java Spring Boot + React、Python FastAPI + Vue SPA、Python Flask + Jinja SSR，并基于团队、组织平台、集成、交付和治理约束给出推荐；允许在有依据时追加候选，但不靠项目类型标签直接下结论。",
+      "files": [],
+      "expectations": [
+        "ARCHITECTURE.md 的全栈候选表同时包含 Java Spring Boot + React、Python FastAPI + Vue SPA、Python Flask + Jinja SSR",
+        "三套固定栈分别说明约束匹配、优势、缺口或风险和 disposition，没有静默删除不推荐项",
+        "推荐 Java Spring Boot + React 时引用已有 JVM 平台、团队能力、企业 SSO、Java SDK 和审计要求，而不是只引用‘企业级’标签",
+        "如追加其他技术栈，追加项不超过两套且说明它比固定候选更符合什么约束",
+        "最终建议包含 tradeoff、state 和可验证的 revisit trigger"
       ]
     }
   ]

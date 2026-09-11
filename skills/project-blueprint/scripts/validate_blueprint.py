@@ -33,8 +33,18 @@ SPEC_HEADING_RE = re.compile(
     r"^#{2,4}\s+(SPEC-[A-Z0-9]+(?:-[A-Z0-9]+)*-\d{3})\b.*$", re.MULTILINE
 )
 H2_RE = re.compile(r"^##\s+", re.MULTILINE)
+H2_TITLE_RE = re.compile(r"^##\s+(.+?)\s*$", re.MULTILINE)
 OPEN_HEADING_RE = re.compile(
     r"^##\s+(?:Open decisions|待决定事项|待决策事项)\s*$", re.MULTILINE | re.IGNORECASE
+)
+COLOR_VALUE_RE = re.compile(
+    r"(?:#[0-9a-fA-F]{3,8}\b|(?:rgb|rgba|hsl|hsla|oklch|oklab|lab|lch|color)\([^\n)]+\))",
+    re.IGNORECASE,
+)
+TYPE_SIZE_RE = re.compile(r"(?<![\w.-])(?:0|[1-9]\d*(?:\.\d+)?)(?:px|rem|em|pt)\b", re.IGNORECASE)
+GENERIC_FONT_RE = re.compile(
+    r"\b(?:system-ui|ui-sans-serif|ui-serif|sans-serif|serif|monospace)\b",
+    re.IGNORECASE,
 )
 EMOJI_RE = re.compile(
     "["
@@ -95,6 +105,86 @@ def section_after(text: str, heading_match: re.Match[str]) -> str:
     start = heading_match.end()
     next_heading = H2_RE.search(text, start)
     return text[start : next_heading.start() if next_heading else len(text)]
+
+
+def h2_section_matching(text: str, terms: tuple[str, ...]) -> str | None:
+    """Return an H2 section whose localized title contains one of the terms."""
+    for match in H2_TITLE_RE.finditer(text):
+        title = match.group(1).strip().lower()
+        if any(term in title for term in terms):
+            return section_after(text, match)
+    return None
+
+
+def validate_design_contract(text: str, findings: list[Finding]) -> None:
+    color = h2_section_matching(text, ("color", "palette", "配色", "色彩", "颜色", "色板"))
+    typography = h2_section_matching(text, ("typography", "type system", "字体", "排版", "字号"))
+    components = h2_section_matching(text, ("component", "组件"))
+
+    if color is None:
+        add(
+            findings,
+            "warning",
+            "DESIGN_COLOR_SYSTEM_MISSING",
+            "DESIGN.md",
+            "Add an overall color-system section with semantic tokens, theme values, interaction states, and contrast pairs",
+        )
+    elif not COLOR_VALUE_RE.search(color):
+        add(
+            findings,
+            "warning",
+            "DESIGN_COLOR_VALUES_UNRESOLVED",
+            "DESIGN.md",
+            "Color-system section has no concrete HEX/RGB/HSL/OKLCH/Lab values; provisional values are required when brand inputs are missing",
+        )
+
+    if typography is None:
+        add(
+            findings,
+            "warning",
+            "DESIGN_TYPOGRAPHY_MISSING",
+            "DESIGN.md",
+            "Add a typography-system section with font stacks and component-relevant size, line-height, weight, and responsive rules",
+        )
+    else:
+        unresolved: list[str] = []
+        if not GENERIC_FONT_RE.search(typography):
+            unresolved.append("a concrete font stack with a generic fallback")
+        if not TYPE_SIZE_RE.search(typography):
+            unresolved.append("type sizes in implementation units")
+        if unresolved:
+            add(
+                findings,
+                "warning",
+                "DESIGN_TYPOGRAPHY_UNRESOLVED",
+                "DESIGN.md",
+                "Typography-system section is missing " + " and ".join(unresolved),
+            )
+
+    if components is None:
+        add(
+            findings,
+            "warning",
+            "DESIGN_COMPONENT_SPECS_MISSING",
+            "DESIGN.md",
+            "Add component specifications mapping used components to typography, dimensions, visual tokens, and states",
+        )
+    else:
+        unresolved = []
+        if not GENERIC_FONT_RE.search(components):
+            unresolved.append("a resolved font stack with a generic fallback")
+        if not TYPE_SIZE_RE.search(components):
+            unresolved.append("a resolved font size")
+        if unresolved:
+            add(
+                findings,
+                "warning",
+                "DESIGN_COMPONENT_TYPE_UNRESOLVED",
+                "DESIGN.md",
+                "Component specifications are missing "
+                + " and ".join(unresolved)
+                + "; do not rely on an undocumented typography-token chain",
+            )
 
 
 def registered_tbd_ids(text: str) -> set[str]:
@@ -207,6 +297,10 @@ def validate(project_root: Path) -> list[Finding]:
     for gate in ("design-ready", "implementation-ready", "production-ready"):
         if gate not in index_text:
             add(findings, "error", "MISSING_GATE", "SPEC.md", f"Readiness ledger is missing {gate}")
+
+    design_text = texts.get(root / "DESIGN.md")
+    if design_text is not None:
+        validate_design_contract(design_text, findings)
 
     all_tbd: set[str] = set()
     registered_tbd: set[str] = set()

@@ -143,6 +143,60 @@ class ValidateBlueprintTests(unittest.TestCase):
             codes = {item.code for item in MODULE.validate(root)}
             self.assertNotIn("EMOJI_USAGE", codes)
 
+    def test_missing_design_system_constraints_are_reported(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            build_valid_blueprint(root)
+            root.joinpath("DESIGN.md").write_text(
+                document("design", "# Design\n\nUse brand colors and system fonts.\n"),
+                encoding="utf-8",
+            )
+            codes = {item.code for item in MODULE.validate(root)}
+            self.assertIn("DESIGN_COLOR_SYSTEM_MISSING", codes)
+            self.assertIn("DESIGN_TYPOGRAPHY_MISSING", codes)
+            self.assertIn("DESIGN_COMPONENT_SPECS_MISSING", codes)
+
+    def test_unresolved_design_values_are_reported(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            build_valid_blueprint(root)
+            root.joinpath("DESIGN.md").write_text(
+                document(
+                    "design",
+                    "# Design\n\n"
+                    "## Color system\n\nUse semantic brand colors.\n\n"
+                    "## Typography system\n\nUse the chosen brand font.\n\n"
+                    "## Component specifications\n\nButtons use the action token.\n",
+                ),
+                encoding="utf-8",
+            )
+            codes = {item.code for item in MODULE.validate(root)}
+            self.assertIn("DESIGN_COLOR_VALUES_UNRESOLVED", codes)
+            self.assertIn("DESIGN_TYPOGRAPHY_UNRESOLVED", codes)
+            self.assertIn("DESIGN_COMPONENT_TYPE_UNRESOLVED", codes)
+
+    def test_concrete_design_system_satisfies_visual_contract(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            build_valid_blueprint(root)
+            root.joinpath("DESIGN.md").write_text(
+                document(
+                    "design",
+                    "# Design\n\n"
+                    "## Color system\n\n"
+                    "Canvas `#FFFFFF`; primary text `#17202A`; focus `#1457D9`.\n\n"
+                    "## Typography system\n\n"
+                    "Font stack: Inter, 'Noto Sans SC', system-ui, sans-serif. Body is 1rem/24px.\n\n"
+                    "## Component specifications\n\n"
+                    "Button labels use Inter, system-ui, sans-serif at 0.875rem/20px, weight 600, in every state.\n",
+                ),
+                encoding="utf-8",
+            )
+            design_codes = {
+                item.code for item in MODULE.validate(root) if item.code.startswith("DESIGN_")
+            }
+            self.assertEqual(set(), design_codes)
+
 
 if __name__ == "__main__":
     unittest.main()
