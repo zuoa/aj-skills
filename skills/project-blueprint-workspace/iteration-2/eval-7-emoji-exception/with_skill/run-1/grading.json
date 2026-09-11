@@ -1,0 +1,66 @@
+{
+  "expectations": [
+    {
+      "text": "DESIGN.md 将树叶 Emoji 限定在完成线下行动后的成功消息",
+      "passed": true,
+      "evidence": "DESIGN.md 将唯一例外限定为服务端确认‘提交完成记录’成功后的消息末尾一个树叶 Emoji，并明确排除标题、列表、按钮、导航、加载、错误、待核验、审核及其他成功状态。"
+    },
+    {
+      "text": "例外记录品牌依据、使用位置、文本或图标替代和确认状态",
+      "passed": true,
+      "evidence": "Emoji 例外表记录了请求方提供的现有品牌规范、精确消息位置、可见文字与标准 success 图标替代、confirmed 状态；具名批准人缺失被诚实登记为 TBD-DESIGN-002。"
+    },
+    {
+      "text": "成功消息包含独立可理解的文字，Emoji 不是唯一状态或可访问名称",
+      "passed": true,
+      "evidence": "可见文字和屏幕阅读器公告均为‘行动已记录，感谢你的参与。’，树叶标记 aria-hidden=true，状态还由标准 success 语义和带文字确认图标表达。"
+    },
+    {
+      "text": "其他标题、列表、按钮、导航和系统状态不使用 Emoji",
+      "passed": true,
+      "evidence": "DESIGN.md 明确禁止其他位置使用 Emoji；全量蓝图扫描仅发现 DESIGN.md 中用于登记例外的一个树叶字符，没有发现其他 Emoji。"
+    },
+    {
+      "text": "无障碍验收覆盖屏幕阅读器公告、非颜色状态和键盘或触控操作",
+      "passed": true,
+      "evidence": "DESIGN.md 要求礼貌级实时区域公告独立文字、状态同时使用文字和程序化语义、核心流程仅键盘可完成并验证触控目标；验收矩阵还列出 VoiceOver/Safari、TalkBack/Chrome、桌面键盘和触控测试。"
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  },
+  "execution_metrics": {
+    "total_tool_calls": 0,
+    "total_steps": 0,
+    "errors_encountered": 0,
+    "output_chars": 25547,
+    "transcript_chars": 0
+  },
+  "timing": {
+    "total_duration_seconds": 220.0
+  },
+  "claims": [
+    {
+      "claim": "完整蓝图通过当前校验器且仅产生已登记品牌例外的 Emoji warning",
+      "type": "process",
+      "verified": true,
+      "evidence": "validator 返回 0 error、1 warning；warning 指向 DESIGN.md 中登记的树叶 Emoji 例外。"
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [
+      "隔离运行的模型 token 数不可恢复；耗时根据输出文件生成窗口近似计算。"
+    ],
+    "needs_review": [
+      "校验器会有意报告已登记的 Emoji 例外，仍需人工确认该 warning 与品牌规范一致。"
+    ],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [],
+    "overall": "五条断言均检查了范围严格的品牌例外及其无障碍替代，新版全部满足。"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "expectations": [
+    {"text": "输出包含完整的模块化蓝图文件集", "passed": true, "evidence": "输出含 PRD、SPEC、3 个领域 specs、DESIGN、ARCHITECTURE、SECURITY、DEPLOY、ENGINEERING、CLAUDE 与 AGENTS，共 12 份蓝图文档。"},
+    {"text": "PRD 与 SPEC 使用稳定 ID 并建立追踪", "passed": true, "evidence": "PRD 使用 PRD-SCHED/BOOK/COACH/ACCESS IDs；SPEC.md 逐项映射到 SPEC IDs、设计、架构和测试状态。"},
+    {"text": "领域规格包含 Given/When/Then 和验收方法", "passed": true, "evidence": "scheduling.md、booking.md、coach-workspace.md 均包含 GIVEN/WHEN/THEN 场景和 Acceptance method。"},
+    {"text": "未知项被登记并阻断相应就绪度", "passed": true, "evidence": "TBD-* 记录 owner、decision-by 与 blocked gate；SPEC.md 的三个 readiness gate 均为 blocked。"},
+    {"text": "未无依据采用复杂架构或中间件", "passed": true, "evidence": "ARCHITECTURE.md 采用 provisional 模块化单体与关系库，明确无证据时不引入 Redis、队列、搜索、微服务或 Kubernetes。"}
+  ],
+  "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0},
+  "execution_metrics": {"total_tool_calls": 0, "total_steps": 0, "errors_encountered": 0, "output_chars": 56905, "transcript_chars": 0},
+  "claims": [{"claim": "Blueprint validator reports zero findings", "type": "quality", "verified": true, "evidence": "validation.txt: Blueprint validation: 0 error(s), 0 warning(s)"}],
+  "user_notes_summary": {"uncertainties": [], "needs_review": ["All three readiness gates remain blocked pending product decisions."], "workarounds": []},
+  "eval_feedback": {"suggestions": [], "overall": "The assertions distinguish structural traceability and decision honesty from general planning prose."}
+}

@@ -1,0 +1,262 @@
+#!/usr/bin/env python3
+"""Read-only structural validation for project-blueprint artifacts."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import sys
+from dataclasses import asdict, dataclass
+from pathlib import Path
+from typing import Iterable
+
+
+REQUIRED_KINDS = {
+    "PRD.md": "prd",
+    "SPEC.md": "spec-index",
+    "DESIGN.md": "design",
+    "ARCHITECTURE.md": "architecture",
+    "SECURITY.md": "security",
+    "DEPLOY.md": "deploy",
+    "ENGINEERING.md": "engineering",
+}
+REQUIRED_ADAPTERS = ("CLAUDE.md", "AGENTS.md")
+ID_RE = {
+    "prd": re.compile(r"\bPRD-[A-Z0-9]+(?:-[A-Z0-9]+)*-\d{3}\b"),
+    "spec": re.compile(r"\bSPEC-[A-Z0-9]+(?:-[A-Z0-9]+)*-\d{3}\b"),
+    "tbd": re.compile(r"\bTBD-[A-Z0-9]+(?:-[A-Z0-9]+)*-\d{3}\b"),
+}
+MARKDOWN_LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
+FRONTMATTER_RE = re.compile(r"\A---\s*\n(.*?)\n---\s*(?:\n|\Z)", re.DOTALL)
+SPEC_HEADING_RE = re.compile(
+    r"^#{2,4}\s+(SPEC-[A-Z0-9]+(?:-[A-Z0-9]+)*-\d{3})\b.*$", re.MULTILINE
+)
+H2_RE = re.compile(r"^##\s+", re.MULTILINE)
+OPEN_HEADING_RE = re.compile(
+    r"^##\s+(?:Open decisions|待决定事项|待决策事项)\s*$", re.MULTILINE | re.IGNORECASE
+)
+
+
+@dataclass(frozen=True)
+class Finding:
+    severity: str
+    code: str
+    path: str
+    message: str
+
+
+def read_text(path: Path) -> str:
+    return path.read_text(encoding="utf-8")
+
+
+def parse_frontmatter(text: str) -> dict[str, str]:
+    match = FRONTMATTER_RE.search(text)
+    if not match:
+        return {}
+    result: dict[str, str] = {}
+    for raw_line in match.group(1).splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or ":" not in line:
+            continue
+        key, value = line.split(":", 1)
+        result[key.strip()] = value.strip().strip('"\'')
+    return result
+
+
+def rel(path: Path, root: Path) -> str:
+    try:
+        return path.relative_to(root).as_posix()
+    except ValueError:
+        return path.as_posix()
+
+
+def add(
+    findings: list[Finding], severity: str, code: str, path: str, message: str
+) -> None:
+    findings.append(Finding(severity, code, path, message))
+
+
+def adr_files(root: Path) -> list[Path]:
+    """Return only ADR Markdown; unrelated repository docs are out of scope."""
+    adr_dir = root / "docs" / "adr"
+    return sorted(adr_dir.glob("*.md")) if adr_dir.is_dir() else []
+
+
+def section_after(text: str, heading_match: re.Match[str]) -> str:
+    start = heading_match.end()
+    next_heading = H2_RE.search(text, start)
+    return text[start : next_heading.start() if next_heading else len(text)]
+
+
+def registered_tbd_ids(text: str) -> set[str]:
+    registered: set[str] = set()
+    for match in OPEN_HEADING_RE.finditer(text):
+        registered.update(ID_RE["tbd"].findall(section_after(text, match)))
+    return registered
+
+
+def spec_blocks(text: str) -> Iterable[tuple[str, str]]:
+    matches = list(SPEC_HEADING_RE.finditer(text))
+    for index, match in enumerate(matches):
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
+        yield match.group(1), text[match.end() : end]
+
+
+def has_scenario_terms(block: str) -> bool:
+    upper = block.upper()
+    given = "GIVEN" in upper or "给定" in block or "假设" in block
+    when = "WHEN" in upper or "当" in block
+    then = "THEN" in upper or "那么" in block or "则" in block
+    return given and when and then
+
+
+def validate(project_root: Path) -> list[Finding]:
+    root = project_root.resolve()
+    findings: list[Finding] = []
+    texts: dict[Path, str] = {}
+
+    if not root.is_dir():
+        return [Finding("error", "ROOT_NOT_FOUND", root.as_posix(), "Project root is not a directory")]
+
+    for filename, expected_kind in REQUIRED_KINDS.items():
+        path = root / filename
+        if not path.is_file():
+            add(findings, "error", "MISSING_ARTIFACT", filename, f"Required artifact is missing: {filename}")
+            continue
+        text = read_text(path)
+        texts[path] = text
+        actual_kind = parse_frontmatter(text).get("blueprint_kind")
+        if actual_kind != expected_kind:
+            add(
+                findings,
+                "error",
+                "INVALID_KIND",
+                filename,
+                f"Expected blueprint_kind '{expected_kind}', found '{actual_kind or 'missing'}'",
+            )
+
+    for filename in REQUIRED_ADAPTERS:
+        path = root / filename
+        if not path.is_file():
+            add(findings, "warning", "MISSING_ADAPTER", filename, f"Agent adapter is missing: {filename}")
+        else:
+            texts[path] = read_text(path)
+
+    specs_dir = root / "specs"
+    domain_files = sorted(specs_dir.glob("*.md")) if specs_dir.is_dir() else []
+    domain_files = [path for path in domain_files if path.name.lower() != "readme.md"]
+    if not domain_files:
+        add(findings, "error", "MISSING_DOMAIN_SPEC", "specs/", "At least one domain spec is required")
+    for path in domain_files:
+        text = read_text(path)
+        texts[path] = text
+        actual_kind = parse_frontmatter(text).get("blueprint_kind")
+        if actual_kind != "domain-spec":
+            add(
+                findings,
+                "error",
+                "INVALID_KIND",
+                rel(path, root),
+                f"Expected blueprint_kind 'domain-spec', found '{actual_kind or 'missing'}'",
+            )
+
+    # Include ADRs, but do not audit unrelated repository Markdown.
+    for path in adr_files(root):
+        texts.setdefault(path, read_text(path))
+
+    prd_text = texts.get(root / "PRD.md", "")
+    index_text = texts.get(root / "SPEC.md", "")
+    defined_prd = set(
+        re.findall(r"^#{2,4}\s+(PRD-[A-Z0-9]+(?:-[A-Z0-9]+)*-\d{3})\b", prd_text, re.MULTILINE)
+    )
+    defined_specs: set[str] = set()
+
+    for path in domain_files:
+        text = texts[path]
+        blocks = list(spec_blocks(text))
+        if not blocks:
+            add(findings, "error", "NO_SPEC_REQUIREMENT", rel(path, root), "Domain spec has no SPEC-* requirement heading")
+        for spec_id, block in blocks:
+            defined_specs.add(spec_id)
+            sources = set(ID_RE["prd"].findall(block))
+            if not sources:
+                add(findings, "error", "SPEC_WITHOUT_SOURCE", rel(path, root), f"{spec_id} has no source PRD ID")
+            for source in sorted(sources - defined_prd):
+                add(findings, "error", "UNKNOWN_PRD_SOURCE", rel(path, root), f"{spec_id} references undefined {source}")
+            if not has_scenario_terms(block):
+                add(findings, "error", "MISSING_SCENARIO", rel(path, root), f"{spec_id} needs Given/When/Then behavior")
+            if "acceptance" not in block.lower() and "验收" not in block:
+                add(findings, "warning", "MISSING_ACCEPTANCE", rel(path, root), f"{spec_id} has no explicit acceptance method")
+
+    for prd_id in sorted(defined_prd):
+        if prd_id not in index_text:
+            add(findings, "error", "UNTRACED_PRD", "SPEC.md", f"{prd_id} is not present in the traceability index")
+    for spec_id in sorted(defined_specs):
+        if spec_id not in index_text:
+            add(findings, "error", "UNTRACED_SPEC", "SPEC.md", f"{spec_id} is not present in the traceability index")
+
+    for gate in ("design-ready", "implementation-ready", "production-ready"):
+        if gate not in index_text:
+            add(findings, "error", "MISSING_GATE", "SPEC.md", f"Readiness ledger is missing {gate}")
+
+    all_tbd: set[str] = set()
+    registered_tbd: set[str] = set()
+    for text in texts.values():
+        all_tbd.update(ID_RE["tbd"].findall(text))
+        registered_tbd.update(registered_tbd_ids(text))
+    for tbd_id in sorted(all_tbd - registered_tbd):
+        add(findings, "error", "UNREGISTERED_TBD", ".", f"{tbd_id} is referenced but absent from an Open decisions table")
+
+    for path, text in texts.items():
+        for target in MARKDOWN_LINK_RE.findall(text):
+            clean_target = target.strip().strip("<>").split("#", 1)[0]
+            if not clean_target or clean_target.startswith(("http://", "https://", "mailto:")):
+                continue
+            if clean_target.startswith("/"):
+                target_path = Path(clean_target)
+            else:
+                target_path = path.parent / clean_target
+            if not target_path.exists():
+                add(
+                    findings,
+                    "error",
+                    "BROKEN_LINK",
+                    rel(path, root),
+                    f"Local link target does not exist: {target}",
+                )
+
+    if not defined_prd:
+        add(findings, "warning", "NO_PRD_REQUIREMENT", "PRD.md", "No PRD-* requirement heading was found")
+
+    return sorted(findings, key=lambda item: ({"error": 0, "warning": 1, "info": 2}.get(item.severity, 3), item.path, item.code))
+
+
+def summary(findings: list[Finding]) -> dict[str, int]:
+    counts = {"errors": 0, "warnings": 0, "info": 0}
+    for finding in findings:
+        key = {"error": "errors", "warning": "warnings", "info": "info"}.get(finding.severity)
+        if key:
+            counts[key] += 1
+    return counts
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("project_root", type=Path, help="Root containing blueprint documents")
+    parser.add_argument("--json", action="store_true", help="Emit machine-readable JSON")
+    args = parser.parse_args(argv)
+
+    findings = validate(args.project_root)
+    counts = summary(findings)
+    if args.json:
+        print(json.dumps({"summary": counts, "findings": [asdict(item) for item in findings]}, ensure_ascii=False, indent=2))
+    else:
+        for item in findings:
+            print(f"{item.severity.upper():7} {item.code:24} {item.path}: {item.message}")
+        print(f"Blueprint validation: {counts['errors']} error(s), {counts['warnings']} warning(s)")
+    return 1 if counts["errors"] else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

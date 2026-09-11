@@ -1,0 +1,66 @@
+{
+  "expectations": [
+    {
+      "text": "DESIGN.md 将树叶 Emoji 限定在完成线下行动后的成功消息",
+      "passed": true,
+      "evidence": "DESIGN.md 把品牌例外限定为服务端确认完成记录保存成功后的消息末尾一个树叶 Emoji，并明确排除标题、列表、按钮、导航、错误、加载、待核验及其他系统状态。"
+    },
+    {
+      "text": "例外记录品牌依据、使用位置、文本或图标替代和确认状态",
+      "passed": false,
+      "evidence": "旧版正文记录了现有品牌规范、使用位置和独立可理解的文字，但没有把该例外的批准人或 confirmed/pending 状态作为可审计字段记录，也没有为该缺口建立单独待决定项。"
+    },
+    {
+      "text": "成功消息包含独立可理解的文字，Emoji 不是唯一状态或可访问名称",
+      "passed": true,
+      "evidence": "成功消息文字独立表达结果，屏幕阅读器只公告文字，树叶不作为状态或可访问名称；界面状态另有文字与程序化语义。"
+    },
+    {
+      "text": "其他标题、列表、按钮、导航和系统状态不使用 Emoji",
+      "passed": true,
+      "evidence": "旧版 DESIGN.md 明确限制其他系统位置，现有输出扫描除例外登记中的树叶外没有发现其他 Emoji。"
+    },
+    {
+      "text": "无障碍验收覆盖屏幕阅读器公告、非颜色状态和键盘或触控操作",
+      "passed": true,
+      "evidence": "无障碍章节覆盖实时区域屏幕阅读器公告、文字与程序化语义的非颜色状态、仅键盘流程和触控目标，并列出 VoiceOver、TalkBack、键盘及触控验收。"
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 1,
+    "total": 5,
+    "pass_rate": 0.8
+  },
+  "execution_metrics": {
+    "total_tool_calls": 0,
+    "total_steps": 0,
+    "errors_encountered": 1,
+    "output_chars": 11484,
+    "transcript_chars": 0
+  },
+  "timing": {
+    "total_duration_seconds": 206.0
+  },
+  "claims": [
+    {
+      "claim": "旧版运行在生成完整 canonical blueprint 前中断",
+      "type": "process",
+      "verified": true,
+      "evidence": "输出仅包含 PRD.md、SPEC.md、DESIGN.md 和三个领域规格；旧版校验器报告 8 errors、2 warnings。"
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [
+      "隔离运行的模型 token 数不可恢复；耗时根据相邻运行与输出文件时间近似计算。"
+    ],
+    "needs_review": [],
+    "workarounds": [
+      "按中断时保留下来的实际输出评分，没有补写缺失产物。"
+    ]
+  },
+  "eval_feedback": {
+    "suggestions": [],
+    "overall": "旧版已能遵循明确的 Emoji 要求，但没有把例外批准状态结构化记录；运行完整性也不足。"
+  }
+}

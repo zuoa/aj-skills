@@ -1,0 +1,12 @@
+{
+  "eval_id": 1,
+  "eval_name": "vague-coach-saas",
+  "prompt": "我只有一个比较模糊的想法：做一个给独立教练使用的课程预约 SaaS，有网页管理端，学员用手机网页预约。请在写代码前建立项目蓝图。这个评测中不要向我追问；信息不足的地方请形成诚实草案和待决定事项，不要擅自补数字或上复杂技术栈。把产物保存到指定输出目录。",
+  "assertions": [
+    "输出包含 PRD.md、SPEC.md、至少一个 specs/*.md、DESIGN.md、ARCHITECTURE.md、SECURITY.md、DEPLOY.md、ENGINEERING.md、CLAUDE.md 和 AGENTS.md",
+    "PRD 需求与领域 SPEC 使用稳定 ID，并在 SPEC.md 中建立追踪关系",
+    "每条领域 SPEC 包含可观察的 Given/When/Then 场景和验收方法",
+    "未知规模、预算或责任人以 pending/TBD 登记，并阻断相应 readiness gate",
+    "架构保持简单，未无依据引入微服务、Kafka、Elasticsearch 或 Kubernetes"
+  ]
+}

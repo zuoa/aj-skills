@@ -1,0 +1,439 @@
+{
+  "metadata": {
+    "skill_name": "project-blueprint",
+    "skill_path": "/Users/yujian/Code/py/aj-skills/skills/project-blueprint",
+    "executor_model": "unavailable (historical isolated runs)",
+    "analyzer_model": "GPT-5 Codex",
+    "timestamp": "2026-09-11T01:41:30Z",
+    "evals_run": [
+      1,
+      5,
+      6,
+      7
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 600.0,
+        "tokens": 11174,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "输出包含 PRD.md、SPEC.md、至少一个 specs/*.md、DESIGN.md、ARCHITECTURE.md、SECURITY.md、DEPLOY.md、ENGINEERING.md、CLAUDE.md 和 AGENTS.md",
+          "passed": true,
+          "evidence": "所有九个根级产物与 specs/booking.md 均存在；当前校验器无缺失产物。"
+        },
+        {
+          "text": "PRD 需求与领域 SPEC 使用稳定 ID，并在 SPEC.md 中建立追踪关系",
+          "passed": true,
+          "evidence": "PRD 定义四个 PRD-* ID，领域规格定义对应 SPEC-* ID，SPEC.md 追踪表逐项映射。"
+        },
+        {
+          "text": "每条领域 SPEC 包含可观察的 Given/When/Then 场景和验收方法",
+          "passed": true,
+          "evidence": "specs/booking.md 的四条规格均含 Acceptance method、正常与失败/权限场景；校验器未报告 MISSING_SCENARIO 或 MISSING_ACCEPTANCE。"
+        },
+        {
+          "text": "未知规模、预算或责任人以 pending/TBD 登记，并阻断相应 readiness gate",
+          "passed": true,
+          "evidence": "PRD/ARCHITECTURE/DEPLOY 将规模、预算和各责任人登记为 TBD；SPEC.md 分别阻断 implementation-ready 与 production-ready。"
+        },
+        {
+          "text": "架构保持简单，未无依据引入微服务、Kafka、Elasticsearch 或 Kubernetes",
+          "passed": true,
+          "evidence": "ARCHITECTURE.md 选择模块化单体与关系数据库，并明确不引入缓存、Kafka、Elasticsearch、微服务和 Kubernetes。"
+        }
+      ],
+      "notes": [],
+      "eval_name": "vague-coach-saas"
+    },
+    {
+      "eval_id": 1,
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 90.0,
+        "tokens": 11003,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "输出包含 PRD.md、SPEC.md、至少一个 specs/*.md、DESIGN.md、ARCHITECTURE.md、SECURITY.md、DEPLOY.md、ENGINEERING.md、CLAUDE.md 和 AGENTS.md",
+          "passed": true,
+          "evidence": "所有要求的根级产物与 specs/booking.md 均存在；旧版校验器无缺失产物。"
+        },
+        {
+          "text": "PRD 需求与领域 SPEC 使用稳定 ID，并在 SPEC.md 中建立追踪关系",
+          "passed": true,
+          "evidence": "稳定 PRD/SPEC ID 及逐项追踪表完整。"
+        },
+        {
+          "text": "每条领域 SPEC 包含可观察的 Given/When/Then 场景和验收方法",
+          "passed": true,
+          "evidence": "四条领域规格均含验收方法和 Given/When/Then 正常及边界场景。"
+        },
+        {
+          "text": "未知规模、预算或责任人以 pending/TBD 登记，并阻断相应 readiness gate",
+          "passed": true,
+          "evidence": "未知规模、预算、技术/安全/部署责任均进入稳定 TBD，readiness ledger 明确阻断。"
+        },
+        {
+          "text": "架构保持简单，未无依据引入微服务、Kafka、Elasticsearch 或 Kubernetes",
+          "passed": true,
+          "evidence": "架构采用模块化单体和关系数据库，明确排除无证据的复杂中间件与编排。"
+        }
+      ],
+      "notes": [],
+      "eval_name": "vague-coach-saas"
+    },
+    {
+      "eval_id": 5,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 900.0,
+        "tokens": 16514,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "DESIGN.md 明确目标用户、使用场景和每个关键界面的主要任务",
+          "passed": true,
+          "evidence": "DESIGN.md 的目标用户、场景与主要任务表逐项覆盖店员库存、店员预订、顾客搜索、单册详情与预订确认。"
+        },
+        {
+          "text": "视觉方向说明参考依据、任务理由和最多一个识别性元素；信息不足处标记 provisional 或 pending",
+          "passed": true,
+          "evidence": "DESIGN.md 将视觉主张关联单册辨认/扫读任务，说明图书馆目录和价签依据，只定义一个暂定的馆藏标签带，并对品牌、色值、字体和组件等缺口使用 provisional/pending。"
+        },
+        {
+          "text": "没有把渐变、玻璃卡片、巨大圆角卡片、任意编号或装饰性仪表盘当作默认方案",
+          "passed": true,
+          "evidence": "DESIGN.md 明确排除这些缺少旧书检索或预订任务依据的套路，输出中未将其指定为默认方案。"
+        },
+        {
+          "text": "蓝图没有虚构品牌资产、研究结论、用户反馈或精确指标",
+          "passed": true,
+          "evidence": "PRD、DESIGN、ARCHITECTURE 与 DEPLOY 均直接声明信息不足；品牌/研究/指标/规模使用 provisional 或稳定 TBD 登记。"
+        },
+        {
+          "text": "团队编写的标题、列表、按钮和系统文案不使用 Emoji",
+          "passed": true,
+          "evidence": "对应当前版本校验器完成全产物扫描，EMOJI_USAGE 为 0；DESIGN.md 还记录 none-by-default 策略。"
+        }
+      ],
+      "notes": [],
+      "eval_name": "bookstore-design"
+    },
+    {
+      "eval_id": 5,
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.8,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "time_seconds": 180.0,
+        "tokens": 14945,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "DESIGN.md 明确目标用户、使用场景和每个关键界面的主要任务",
+          "passed": true,
+          "evidence": "DESIGN.md 分别说明店员桌面端与顾客手机端场景，并为库存、预订、搜索、详情和表单陈述主要任务。"
+        },
+        {
+          "text": "视觉方向说明参考依据、任务理由和最多一个识别性元素；信息不足处标记 provisional 或 pending",
+          "passed": false,
+          "evidence": "缺口使用 provisional/pending，但视觉方向只给出通用的编辑式书店风格，没有明确参考来源的借用/避用理由，也没有声明最多一个产品识别性元素。"
+        },
+        {
+          "text": "没有把渐变、玻璃卡片、巨大圆角卡片、任意编号或装饰性仪表盘当作默认方案",
+          "passed": true,
+          "evidence": "输出未采用这些方案；DESIGN.md 也排除了无关强烈渐变和数据图表。"
+        },
+        {
+          "text": "蓝图没有虚构品牌资产、研究结论、用户反馈或精确指标",
+          "passed": true,
+          "evidence": "蓝图明确声明无品牌/研究输入，未知指标和运行目标均以 pending/TBD 处理。"
+        },
+        {
+          "text": "团队编写的标题、列表、按钮和系统文案不使用 Emoji",
+          "passed": true,
+          "evidence": "对应旧版校验器返回 0 warning；人工文本扫描也未发现 Emoji。"
+        }
+      ],
+      "notes": [],
+      "eval_name": "bookstore-design"
+    },
+    {
+      "eval_id": 6,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 781.67,
+        "tokens": 30262,
+        "tool_calls": 7,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "DESIGN.md 把告警状态可见、用户控制、错误预防和恢复路径落实到界面或验收方法",
+          "passed": true,
+          "evidence": "DESIGN.md 的体验原则要求时间与来源可见、风险与权限不隐身、人掌握最终控制；UI 状态矩阵区分来源失败、陈旧、未发起、已受理、状态未知，并为重试、申请权限、取消和恢复提供具体路径。"
+        },
+        {
+          "text": "只保留一个有运维语境依据的视觉识别点，其余视觉系统保持克制",
+          "passed": true,
+          "evidence": "DESIGN.md 明确写出“唯一的标志性装置是证据轨道”，节点仅代表告警信号、受影响对象、当前发布和候选回滚；视觉方向再次限定“仅使用证据轨道”，其余依靠窄分隔线、系统字体、4px 半径和无大面积阴影。"
+        },
+        {
+          "text": "没有默认使用紫蓝渐变、玻璃拟态、闪光符号、机器人形象或无意义连续动画",
+          "passed": true,
+          "evidence": "DESIGN.md 的明确避免项逐项排除玻璃拟态、渐变光晕、机器人/大脑图像、星光粒子；动效仅允许新证据进入轨道时一次 180–240ms 提示，并支持 reduced motion。全量文件无 Emoji，validator 为 0 warning。"
+        },
+        {
+          "text": "按钮、错误和空状态使用具体可行动文案，不使用宣传语或 AI 正在思考等拟人表达",
+          "passed": true,
+          "evidence": "回滚按钮固定为“发起回滚”；空状态使用“当前筛选无告警”并提供清除筛选；错误必须说明失败来源、旧数据时间、动作未发起/已受理/状态未知及下一步。内容规范要求短、直接、说明结果，未发现宣传或拟人化 AI 文案。"
+        },
+        {
+          "text": "Emoji 不作为标题、状态、图标、导航或操作入口",
+          "passed": true,
+          "evidence": "DESIGN.md 独立规定团队编写的 UI、状态、导航和系统文案不使用 Emoji，例外为 not-applicable；当前校验器扫描全量产物后报告 0 warning。"
+        }
+      ],
+      "notes": [
+        "执行器在 781.67 秒后被中止，SECURITY、DEPLOY、ENGINEERING、代理路由与 ADR 由评测执行者按同版契约直接补齐。",
+        "超时后保留已生成核心产物并补齐缺失 canonical artifacts。"
+      ],
+      "eval_name": "ai-ops-design"
+    },
+    {
+      "eval_id": 6,
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.8,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "time_seconds": 780.49,
+        "tokens": 34590,
+        "tool_calls": 25,
+        "errors": 1
+      },
+      "expectations": [
+        {
+          "text": "DESIGN.md 把告警状态可见、用户控制、错误预防和恢复路径落实到界面或验收方法",
+          "passed": true,
+          "evidence": "DESIGN.md 要求状态永远诚实、危险动作放慢一步；回滚预览、独立确认、执行状态和 UI 状态矩阵覆盖来源失败、权限、未知终态、停止与升级联系等恢复动作。"
+        },
+        {
+          "text": "只保留一个有运维语境依据的视觉识别点，其余视觉系统保持克制",
+          "passed": false,
+          "evidence": "旧版把高信息密度、强时间感、证据关系、状态动效、“证据清单 + 简化依赖带 + 时间线”和 AI 证据归纳同时作为方向，但没有选定并限制为一个明确的视觉识别点；其克制性较好，但未满足断言的单一性。"
+        },
+        {
+          "text": "没有默认使用紫蓝渐变、玻璃拟态、闪光符号、机器人形象或无意义连续动画",
+          "passed": true,
+          "evidence": "DESIGN.md 明确避免紫蓝霓虹渐变、玻璃拟态、机器人头像、sparkles 和装饰性波形；动效只在数据变化时短暂提示，禁止常驻脉冲、扫描线、粒子和背景漂移。"
+        },
+        {
+          "text": "按钮、错误和空状态使用具体可行动文案，不使用宣传语或 AI 正在思考等拟人表达",
+          "passed": true,
+          "evidence": "按钮写“检查回滚资格”“提交回滚”；失败/未知状态提供重试查询、打开发布系统、停止或升级联系；空状态区分无告警、无匹配、未发现证据和无可回滚目标。内容规则禁止“AI 已为你解决”等过度承诺。"
+        },
+        {
+          "text": "Emoji 不作为标题、状态、图标、导航或操作入口",
+          "passed": true,
+          "evidence": "DESIGN.md 的组件规则明确“不用 emoji 表示严重度”，团队标题、导航、状态与操作文案未发现 Emoji；旧版校验器报告 0 warning（该旧校验器本身不扫描 Emoji，因此结论还基于文本检查）。"
+        }
+      ],
+      "notes": [
+        "执行器在 780.49 秒后被中止，SECURITY、DEPLOY、ENGINEERING、代理路由与 ADR 由评测执行者按旧版契约直接补齐。",
+        "超时后保留已生成核心产物并补齐缺失 canonical artifacts。"
+      ],
+      "eval_name": "ai-ops-design"
+    },
+    {
+      "eval_id": 7,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 220.0,
+        "tokens": 25547,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "DESIGN.md 将树叶 Emoji 限定在完成线下行动后的成功消息",
+          "passed": true,
+          "evidence": "DESIGN.md 将唯一例外限定为服务端确认‘提交完成记录’成功后的消息末尾一个树叶 Emoji，并明确排除标题、列表、按钮、导航、加载、错误、待核验、审核及其他成功状态。"
+        },
+        {
+          "text": "例外记录品牌依据、使用位置、文本或图标替代和确认状态",
+          "passed": true,
+          "evidence": "Emoji 例外表记录了请求方提供的现有品牌规范、精确消息位置、可见文字与标准 success 图标替代、confirmed 状态；具名批准人缺失被诚实登记为 TBD-DESIGN-002。"
+        },
+        {
+          "text": "成功消息包含独立可理解的文字，Emoji 不是唯一状态或可访问名称",
+          "passed": true,
+          "evidence": "可见文字和屏幕阅读器公告均为‘行动已记录，感谢你的参与。’，树叶标记 aria-hidden=true，状态还由标准 success 语义和带文字确认图标表达。"
+        },
+        {
+          "text": "其他标题、列表、按钮、导航和系统状态不使用 Emoji",
+          "passed": true,
+          "evidence": "DESIGN.md 明确禁止其他位置使用 Emoji；全量蓝图扫描仅发现 DESIGN.md 中用于登记例外的一个树叶字符，没有发现其他 Emoji。"
+        },
+        {
+          "text": "无障碍验收覆盖屏幕阅读器公告、非颜色状态和键盘或触控操作",
+          "passed": true,
+          "evidence": "DESIGN.md 要求礼貌级实时区域公告独立文字、状态同时使用文字和程序化语义、核心流程仅键盘可完成并验证触控目标；验收矩阵还列出 VoiceOver/Safari、TalkBack/Chrome、桌面键盘和触控测试。"
+        }
+      ],
+      "notes": [
+        "隔离运行的模型 token 数不可恢复；耗时根据输出文件生成窗口近似计算。",
+        "校验器会有意报告已登记的 Emoji 例外，仍需人工确认该 warning 与品牌规范一致。"
+      ],
+      "eval_name": "emoji-exception"
+    },
+    {
+      "eval_id": 7,
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.8,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "time_seconds": 206.0,
+        "tokens": 11484,
+        "tool_calls": 0,
+        "errors": 1
+      },
+      "expectations": [
+        {
+          "text": "DESIGN.md 将树叶 Emoji 限定在完成线下行动后的成功消息",
+          "passed": true,
+          "evidence": "DESIGN.md 把品牌例外限定为服务端确认完成记录保存成功后的消息末尾一个树叶 Emoji，并明确排除标题、列表、按钮、导航、错误、加载、待核验及其他系统状态。"
+        },
+        {
+          "text": "例外记录品牌依据、使用位置、文本或图标替代和确认状态",
+          "passed": false,
+          "evidence": "旧版正文记录了现有品牌规范、使用位置和独立可理解的文字，但没有把该例外的批准人或 confirmed/pending 状态作为可审计字段记录，也没有为该缺口建立单独待决定项。"
+        },
+        {
+          "text": "成功消息包含独立可理解的文字，Emoji 不是唯一状态或可访问名称",
+          "passed": true,
+          "evidence": "成功消息文字独立表达结果，屏幕阅读器只公告文字，树叶不作为状态或可访问名称；界面状态另有文字与程序化语义。"
+        },
+        {
+          "text": "其他标题、列表、按钮、导航和系统状态不使用 Emoji",
+          "passed": true,
+          "evidence": "旧版 DESIGN.md 明确限制其他系统位置，现有输出扫描除例外登记中的树叶外没有发现其他 Emoji。"
+        },
+        {
+          "text": "无障碍验收覆盖屏幕阅读器公告、非颜色状态和键盘或触控操作",
+          "passed": true,
+          "evidence": "无障碍章节覆盖实时区域屏幕阅读器公告、文字与程序化语义的非颜色状态、仅键盘流程和触控目标，并列出 VoiceOver、TalkBack、键盘及触控验收。"
+        }
+      ],
+      "notes": [
+        "隔离运行的模型 token 数不可恢复；耗时根据相邻运行与输出文件时间近似计算。",
+        "按中断时保留下来的实际输出评分，没有补写缺失产物。"
+      ],
+      "eval_name": "emoji-exception"
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 625.4175,
+        "stddev": 297.1082,
+        "min": 220.0,
+        "max": 900.0
+      },
+      "tokens": {
+        "mean": 20874.25,
+        "stddev": 8623.0519,
+        "min": 11174,
+        "max": 30262
+      }
+    },
+    "old_skill": {
+      "pass_rate": {
+        "mean": 0.85,
+        "stddev": 0.1,
+        "min": 0.8,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 314.1225,
+        "stddev": 314.8592,
+        "min": 90.0,
+        "max": 780.49
+      },
+      "tokens": {
+        "mean": 18005.5,
+        "stddev": 11194.8987,
+        "min": 11003,
+        "max": 34590
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.15",
+      "time_seconds": "+311.3",
+      "tokens": "+2869"
+    }
+  },
+  "notes": [
+    "Current skill passed all 20 expectations; the iteration-1 snapshot passed 17 of 20, a 15 percentage-point gain.",
+    "The discriminating gains are narrow and intentional: task-grounded visual references, one justified signature device, and an auditable Emoji-exception approval state.",
+    "The vague-project regression case passed 5/5 in both configurations, so the design-focused revision preserved the original blueprint contract.",
+    "Many design assertions remain non-discriminating: the snapshot already avoided generic decorative patterns, wrote actionable states, and handled accessibility well.",
+    "The eval-7 snapshot run stopped after PRD, SPEC, DESIGN, and domain specs. Its design assertions remain gradeable, but its incomplete artifact set makes total runtime and completeness comparisons unreliable.",
+    "Timing is approximate or includes timeout/recovery work in several runs; compare quality scores rather than treating the time delta as a performance result.",
+    "Model token counts were unavailable. The benchmark tokens field contains final-output character counts as a consistent review-cost proxy; current outputs averaged 20,874 characters versus 18,006 for the snapshot.",
+    "There is one run per configuration per eval. The displayed standard deviation is across different evals, not repeated-run variance."
+  ]
+}

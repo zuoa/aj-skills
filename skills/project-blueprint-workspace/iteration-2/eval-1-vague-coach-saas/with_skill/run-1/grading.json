@@ -1,0 +1,13 @@
+{
+  "expectations": [
+    {"text": "输出包含 PRD.md、SPEC.md、至少一个 specs/*.md、DESIGN.md、ARCHITECTURE.md、SECURITY.md、DEPLOY.md、ENGINEERING.md、CLAUDE.md 和 AGENTS.md", "passed": true, "evidence": "所有九个根级产物与 specs/booking.md 均存在；当前校验器无缺失产物。"},
+    {"text": "PRD 需求与领域 SPEC 使用稳定 ID，并在 SPEC.md 中建立追踪关系", "passed": true, "evidence": "PRD 定义四个 PRD-* ID，领域规格定义对应 SPEC-* ID，SPEC.md 追踪表逐项映射。"},
+    {"text": "每条领域 SPEC 包含可观察的 Given/When/Then 场景和验收方法", "passed": true, "evidence": "specs/booking.md 的四条规格均含 Acceptance method、正常与失败/权限场景；校验器未报告 MISSING_SCENARIO 或 MISSING_ACCEPTANCE。"},
+    {"text": "未知规模、预算或责任人以 pending/TBD 登记，并阻断相应 readiness gate", "passed": true, "evidence": "PRD/ARCHITECTURE/DEPLOY 将规模、预算和各责任人登记为 TBD；SPEC.md 分别阻断 implementation-ready 与 production-ready。"},
+    {"text": "架构保持简单，未无依据引入微服务、Kafka、Elasticsearch 或 Kubernetes", "passed": true, "evidence": "ARCHITECTURE.md 选择模块化单体与关系数据库，并明确不引入缓存、Kafka、Elasticsearch、微服务和 Kubernetes。"}
+  ],
+  "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0},
+  "timing": {"total_duration_seconds": 600.0},
+  "execution_metrics": {"errors_encountered": 0, "output_chars": 11174},
+  "user_notes_summary": {"strengths": ["完整性、追踪与简单架构均保持", "新增设计规则未破坏原能力"], "weaknesses": []}
+}

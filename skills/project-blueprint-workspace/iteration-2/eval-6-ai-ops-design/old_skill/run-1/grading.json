@@ -1,0 +1,56 @@
+{
+  "expectations": [
+    {
+      "text": "DESIGN.md 把告警状态可见、用户控制、错误预防和恢复路径落实到界面或验收方法",
+      "passed": true,
+      "evidence": "DESIGN.md 要求状态永远诚实、危险动作放慢一步；回滚预览、独立确认、执行状态和 UI 状态矩阵覆盖来源失败、权限、未知终态、停止与升级联系等恢复动作。"
+    },
+    {
+      "text": "只保留一个有运维语境依据的视觉识别点，其余视觉系统保持克制",
+      "passed": false,
+      "evidence": "旧版把高信息密度、强时间感、证据关系、状态动效、“证据清单 + 简化依赖带 + 时间线”和 AI 证据归纳同时作为方向，但没有选定并限制为一个明确的视觉识别点；其克制性较好，但未满足断言的单一性。"
+    },
+    {
+      "text": "没有默认使用紫蓝渐变、玻璃拟态、闪光符号、机器人形象或无意义连续动画",
+      "passed": true,
+      "evidence": "DESIGN.md 明确避免紫蓝霓虹渐变、玻璃拟态、机器人头像、sparkles 和装饰性波形；动效只在数据变化时短暂提示，禁止常驻脉冲、扫描线、粒子和背景漂移。"
+    },
+    {
+      "text": "按钮、错误和空状态使用具体可行动文案，不使用宣传语或 AI 正在思考等拟人表达",
+      "passed": true,
+      "evidence": "按钮写“检查回滚资格”“提交回滚”；失败/未知状态提供重试查询、打开发布系统、停止或升级联系；空状态区分无告警、无匹配、未发现证据和无可回滚目标。内容规则禁止“AI 已为你解决”等过度承诺。"
+    },
+    {
+      "text": "Emoji 不作为标题、状态、图标、导航或操作入口",
+      "passed": true,
+      "evidence": "DESIGN.md 的组件规则明确“不用 emoji 表示严重度”，团队标题、导航、状态与操作文案未发现 Emoji；旧版校验器报告 0 warning（该旧校验器本身不扫描 Emoji，因此结论还基于文本检查）。"
+    }
+  ],
+  "summary": {"passed": 4, "failed": 1, "total": 5, "pass_rate": 0.8},
+  "execution_metrics": {
+    "tool_calls": {"Bash": 22, "Write": 3},
+    "total_tool_calls": 25,
+    "total_steps": 29,
+    "errors_encountered": 1,
+    "output_chars": 34590,
+    "transcript_chars": 78038
+  },
+  "timing": {"executor_duration_seconds": 780.49, "total_duration_seconds": 780.49},
+  "claims": [
+    {
+      "claim": "完整蓝图在补齐超时运行的缺失产物后通过旧版校验器",
+      "type": "process",
+      "verified": true,
+      "evidence": "run-1/validation.txt 为 Blueprint validation: 0 error(s), 0 warning(s)。"
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": ["执行器在 780.49 秒后被中止，SECURITY、DEPLOY、ENGINEERING、代理路由与 ADR 由评测执行者按旧版契约直接补齐。"],
+    "needs_review": [],
+    "workarounds": ["超时后保留已生成核心产物并补齐缺失 canonical artifacts。"]
+  },
+  "eval_feedback": {
+    "suggestions": [],
+    "overall": "断言能揭示旧版在反套路方面已经较强，但缺少单一视觉识别点的明确约束。"
+  }
+}

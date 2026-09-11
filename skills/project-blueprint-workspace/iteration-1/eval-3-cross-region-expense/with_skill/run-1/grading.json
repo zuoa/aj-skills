@@ -1,0 +1,14 @@
+{
+  "expectations": [
+    {"text": "SPEC 覆盖租户、权限、上传和支付异常", "passed": true, "evidence": "Domain specs cover tenant SSO/isolation, approval authorization, invoice upload rejection/failure, payment failure, unknown result and duplicate webhook behavior."},
+    {"text": "安全文档覆盖敏感数据、多租户、SSO 和支付", "passed": true, "evidence": "SECURITY.md inventories identity, invoice and bank data and maps tenant, SSO, file and payment threats to controls and verification."},
+    {"text": "合规事项标记官方核源与负责人而非认证结论", "passed": true, "evidence": "Regional/legal items use stable TBDs with legal/security owners and explicitly state that the blueprint is not a legal conclusion or certification."},
+    {"text": "区域数据边界与 RPO/RTO 有验证方案", "passed": true, "evidence": "ARCHITECTURE, DEPLOY and ADR 0001 keep EU data/backup/telemetry/recovery in EU and require measured recovery evidence for RPO 15m/RTO 2h."},
+    {"text": "未决高风险事项阻断生产就绪度", "passed": true, "evidence": "SPEC.md readiness ledger keeps production-ready blocked by legal, security, payment, region and recovery TBDs."}
+  ],
+  "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0},
+  "execution_metrics": {"total_tool_calls": 0, "total_steps": 0, "errors_encountered": 0, "output_chars": 69448, "transcript_chars": 0},
+  "claims": [{"claim": "Blueprint validator reports zero findings", "type": "quality", "verified": true, "evidence": "validation.txt reports 0 errors and 0 warnings."}],
+  "user_notes_summary": {"uncertainties": [], "needs_review": ["Legal, payment and security owners must resolve the recorded production blockers."], "workarounds": []},
+  "eval_feedback": {"suggestions": [], "overall": "The assertions distinguish engineering proposals from verified legal and production readiness."}
+}

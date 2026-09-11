@@ -1,0 +1,56 @@
+{
+  "expectations": [
+    {
+      "text": "DESIGN.md 把告警状态可见、用户控制、错误预防和恢复路径落实到界面或验收方法",
+      "passed": true,
+      "evidence": "DESIGN.md 的体验原则要求时间与来源可见、风险与权限不隐身、人掌握最终控制；UI 状态矩阵区分来源失败、陈旧、未发起、已受理、状态未知，并为重试、申请权限、取消和恢复提供具体路径。"
+    },
+    {
+      "text": "只保留一个有运维语境依据的视觉识别点，其余视觉系统保持克制",
+      "passed": true,
+      "evidence": "DESIGN.md 明确写出“唯一的标志性装置是证据轨道”，节点仅代表告警信号、受影响对象、当前发布和候选回滚；视觉方向再次限定“仅使用证据轨道”，其余依靠窄分隔线、系统字体、4px 半径和无大面积阴影。"
+    },
+    {
+      "text": "没有默认使用紫蓝渐变、玻璃拟态、闪光符号、机器人形象或无意义连续动画",
+      "passed": true,
+      "evidence": "DESIGN.md 的明确避免项逐项排除玻璃拟态、渐变光晕、机器人/大脑图像、星光粒子；动效仅允许新证据进入轨道时一次 180–240ms 提示，并支持 reduced motion。全量文件无 Emoji，validator 为 0 warning。"
+    },
+    {
+      "text": "按钮、错误和空状态使用具体可行动文案，不使用宣传语或 AI 正在思考等拟人表达",
+      "passed": true,
+      "evidence": "回滚按钮固定为“发起回滚”；空状态使用“当前筛选无告警”并提供清除筛选；错误必须说明失败来源、旧数据时间、动作未发起/已受理/状态未知及下一步。内容规范要求短、直接、说明结果，未发现宣传或拟人化 AI 文案。"
+    },
+    {
+      "text": "Emoji 不作为标题、状态、图标、导航或操作入口",
+      "passed": true,
+      "evidence": "DESIGN.md 独立规定团队编写的 UI、状态、导航和系统文案不使用 Emoji，例外为 not-applicable；当前校验器扫描全量产物后报告 0 warning。"
+    }
+  ],
+  "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0},
+  "execution_metrics": {
+    "tool_calls": {"Bash": 5, "Write": 2},
+    "total_tool_calls": 7,
+    "total_steps": 10,
+    "errors_encountered": 0,
+    "output_chars": 30262,
+    "transcript_chars": 63119
+  },
+  "timing": {"executor_duration_seconds": 781.67, "total_duration_seconds": 781.67},
+  "claims": [
+    {
+      "claim": "完整蓝图在补齐超时运行的缺失产物后通过当前版校验器",
+      "type": "process",
+      "verified": true,
+      "evidence": "run-1/validation.txt 为 Blueprint validation: 0 error(s), 0 warning(s)。"
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": ["执行器在 781.67 秒后被中止，SECURITY、DEPLOY、ENGINEERING、代理路由与 ADR 由评测执行者按同版契约直接补齐。"],
+    "needs_review": [],
+    "workarounds": ["超时后保留已生成核心产物并补齐缺失 canonical artifacts。"]
+  },
+  "eval_feedback": {
+    "suggestions": [],
+    "overall": "五条断言都检查具体设计行为；其中视觉识别点断言能区分当前版与旧版。"
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Project Blueprint"
+  short_description: "确认全栈项目的 PRD、SPEC、设计、架构、安全与部署约束"
+  default_prompt: "Use $project-blueprint to turn this Web or mobile product idea into a constraint-driven, traceable project blueprint before implementation."

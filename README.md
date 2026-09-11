@@ -18,6 +18,7 @@ Skill 名称以各目录 `SKILL.md` 中的 `name` 字段为准，可使用 `--sk
 
 | Skill 名称 | 功能 | 安装命令 |
 | --- | --- | --- |
+| `project-blueprint` | 在开发 Web、SaaS、API 或移动应用前，通过访谈或审计已有材料确认 PRD、行为 SPEC、设计、架构、安全、技术选型和部署约束，输出可追溯的模块化项目蓝图与就绪度结论。 | `npx skills add https://github.com/zuoa/aj-skills --skill project-blueprint` |
 | `aj-patent-disclosure-cn` | 生成、审校和优化中国发明专利技术交底书，支持专利点挖掘、技术方案补全、现有技术检索、充分公开检查、附图规划和 Word 文档交付。 | `npx skills add https://github.com/zuoa/aj-skills --skill aj-patent-disclosure-cn` |
 | `aj-copyright-writer` | 生成和补正中国计算机软件著作权登记材料，在操作手册与软件设计说明书中选择更能表达软件特点的文档；支持自洽技术栈、软件原型、源程序文档、申请表信息及内部独创性审计。 | `npx skills add https://github.com/zuoa/aj-skills --skill aj-copyright-writer` |
 | `contract-review` | 审核 NDA、采购、服务、SaaS、合作、许可及劳动顾问等合同，输出风险分级、条款比对、红线建议、签署意见和审查报告。 | `npx skills add https://github.com/zuoa/aj-skills --skill contract-review` |

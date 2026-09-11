@@ -1,0 +1,14 @@
+{
+  "expectations": [
+    {"text": "输出包含完整的模块化蓝图文件集", "passed": false, "evidence": "输出只有 README、产品简报、流程、领域规则、交付计划和待决策；没有约定的 PRD/SPEC/DESIGN/ARCHITECTURE/SECURITY/DEPLOY/ENGINEERING/代理适配文件。"},
+    {"text": "PRD 与 SPEC 使用稳定 ID 并建立追踪", "passed": false, "evidence": "没有 PRD/SPEC 稳定 ID 或 PRD→SPEC→设计/架构→测试追踪矩阵。"},
+    {"text": "领域规格包含 Given/When/Then 和验收方法", "passed": false, "evidence": "流程与业务规则有实质内容，但没有领域 SPEC 或规范化 Given/When/Then 行为契约。"},
+    {"text": "未知项被登记并阻断相应就绪度", "passed": false, "evidence": "05-open-decisions.md 有 26 项待确认决定，但未使用稳定 TBD、blocked gate 和三层 readiness ledger。"},
+    {"text": "未无依据采用复杂架构或中间件", "passed": true, "evidence": "内容保持产品与流程层面的最小闭环，没有无依据采用微服务、Kafka、Elasticsearch 或 Kubernetes。"}
+  ],
+  "summary": {"passed": 1, "failed": 4, "total": 5, "pass_rate": 0.2},
+  "execution_metrics": {"total_tool_calls": 0, "total_steps": 0, "errors_encountered": 0, "output_chars": 25670, "transcript_chars": 0},
+  "claims": [],
+  "user_notes_summary": {"uncertainties": [], "needs_review": [], "workarounds": []},
+  "eval_feedback": {"suggestions": [], "overall": "The baseline is thoughtful, but lacks the stable contract and gate structure being evaluated."}
+}

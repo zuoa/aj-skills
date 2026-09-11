@@ -1,0 +1,9 @@
+{
+  "validator": "skills/project-blueprint-workspace/iteration-2/skill-snapshot/scripts/validate_blueprint.py",
+  "summary": {
+    "errors": 0,
+    "warnings": 0,
+    "info": 0
+  },
+  "findings": []
+}

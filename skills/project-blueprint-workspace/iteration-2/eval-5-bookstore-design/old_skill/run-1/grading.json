@@ -1,0 +1,13 @@
+{
+  "expectations": [
+    {"text": "DESIGN.md 明确目标用户、使用场景和每个关键界面的主要任务", "passed": true, "evidence": "DESIGN.md 分别说明店员桌面端与顾客手机端场景，并为库存、预订、搜索、详情和表单陈述主要任务。"},
+    {"text": "视觉方向说明参考依据、任务理由和最多一个识别性元素；信息不足处标记 provisional 或 pending", "passed": false, "evidence": "缺口使用 provisional/pending，但视觉方向只给出通用的编辑式书店风格，没有明确参考来源的借用/避用理由，也没有声明最多一个产品识别性元素。"},
+    {"text": "没有把渐变、玻璃卡片、巨大圆角卡片、任意编号或装饰性仪表盘当作默认方案", "passed": true, "evidence": "输出未采用这些方案；DESIGN.md 也排除了无关强烈渐变和数据图表。"},
+    {"text": "蓝图没有虚构品牌资产、研究结论、用户反馈或精确指标", "passed": true, "evidence": "蓝图明确声明无品牌/研究输入，未知指标和运行目标均以 pending/TBD 处理。"},
+    {"text": "团队编写的标题、列表、按钮和系统文案不使用 Emoji", "passed": true, "evidence": "对应旧版校验器返回 0 warning；人工文本扫描也未发现 Emoji。"}
+  ],
+  "summary": {"passed": 4, "failed": 1, "total": 5, "pass_rate": 0.8},
+  "timing": {"total_duration_seconds": 180.0},
+  "execution_metrics": {"errors_encountered": 0, "output_chars": 14945},
+  "user_notes_summary": {"strengths": ["结构完整且未虚构事实"], "weaknesses": ["视觉依据和识别性元素约束不足"]}
+}

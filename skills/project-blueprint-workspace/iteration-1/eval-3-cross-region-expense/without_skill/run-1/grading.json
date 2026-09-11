@@ -1,0 +1,14 @@
+{
+  "expectations": [
+    {"text": "SPEC 覆盖租户、权限、上传和支付异常", "passed": true, "evidence": "Architecture and delivery documents substantively cover tenant isolation, approval authorization, failed/malicious uploads, payment timeout, duplicate and out-of-order callbacks."},
+    {"text": "安全文档覆盖敏感数据、多租户、SSO 和支付", "passed": true, "evidence": "02-security-privacy includes identity, invoice and bank data, tenant isolation, SSO, payment, uploads and audit controls."},
+    {"text": "合规事项标记官方核源与负责人而非认证结论", "passed": true, "evidence": "Open items are tagged [LEGAL]/[SECURITY]/[BUSINESS], and the review definition explicitly denies legal review or compliance certification."},
+    {"text": "区域数据边界与 RPO/RTO 有验证方案", "passed": true, "evidence": "Documents specify CN/EU/US data planes, EU-only recovery, and measured regional restore evidence for ≤15m RPO and ≤2h RTO."},
+    {"text": "未决高风险事项阻断生产就绪度", "passed": false, "evidence": "The documents list blocking review items and exit conditions, but do not maintain a production-ready status or explicitly mark that gate blocked."}
+  ],
+  "summary": {"passed": 4, "failed": 1, "total": 5, "pass_rate": 0.8},
+  "execution_metrics": {"total_tool_calls": 0, "total_steps": 0, "errors_encountered": 0, "output_chars": 23201, "transcript_chars": 0},
+  "claims": [],
+  "user_notes_summary": {"uncertainties": [], "needs_review": [], "workarounds": []},
+  "eval_feedback": {"suggestions": [], "overall": "Strong baseline content; the skill mainly adds explicit stage-gate semantics and traceability."}
+}

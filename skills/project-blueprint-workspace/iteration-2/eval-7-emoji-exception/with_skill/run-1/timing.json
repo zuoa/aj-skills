@@ -1,0 +1,6 @@
+{
+  "total_tokens": null,
+  "duration_ms": 220000,
+  "total_duration_seconds": 220.0,
+  "measurement": "approximate output-file generation window; isolated token count unavailable"
+}

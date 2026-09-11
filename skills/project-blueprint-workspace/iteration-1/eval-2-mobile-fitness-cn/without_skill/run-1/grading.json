@@ -1,0 +1,14 @@
+{
+  "expectations": [
+    {"text": "PRD 完整记录用户、范围、团队、规模和预算", "passed": true, "evidence": "README and 01-product-scope record the platforms, fixed MVP, three Flutter developers, TypeScript familiarity, six months, 20k DAU and ¥8,000 budget."},
+    {"text": "SPEC 覆盖关键成功及失败行为", "passed": true, "evidence": "01-product-scope and 03-data-api substantively cover OTP lifecycle/frequency, plans, check-in, upload, reminders and coach authorization including errors and idempotency."},
+    {"text": "DESIGN 覆盖移动端状态与无障碍", "passed": true, "evidence": "Product/architecture documents require loading/empty/error/retry states, offline check-in drafts, dynamic type, screen-reader labels, keyboard support and contrast."},
+    {"text": "架构推荐与小团队和预算约束一致", "passed": true, "evidence": "02-architecture and 07-decisions-assumptions choose Flutter plus TypeScript modular monolith and record explicit revisit triggers."},
+    {"text": "安全部署覆盖中国大陆与移动发布约束", "passed": true, "evidence": "04-security-compliance and 06-operations-cost cover mainland filings, personal information/photos, SMS/push, app stores, backup, rollback and monitoring."}
+  ],
+  "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0},
+  "execution_metrics": {"total_tool_calls": 0, "total_steps": 0, "errors_encountered": 0, "output_chars": 58516, "transcript_chars": 0},
+  "claims": [],
+  "user_notes_summary": {"uncertainties": ["Several detailed numeric defaults are agent-proposed rather than user-confirmed."], "needs_review": [], "workarounds": []},
+  "eval_feedback": {"suggestions": [{"reason": "This eval does not test stable cross-document traceability or readiness gates, so an excellent unstructured baseline can pass all expectations."}], "overall": "The baseline meets the scenario content bar; add a traceability assertion in a future iteration if structure is part of the desired value."}
+}

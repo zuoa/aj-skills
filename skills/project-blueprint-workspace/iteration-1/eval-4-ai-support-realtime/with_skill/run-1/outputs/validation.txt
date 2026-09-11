@@ -1,0 +1,2 @@
+Command: python3 /Users/yujian/Code/py/aj-skills/skills/project-blueprint/scripts/validate_blueprint.py /Users/yujian/Code/py/aj-skills/skills/project-blueprint-workspace/iteration-1/ai-support-realtime/with_skill/outputs
+Blueprint validation: 0 error(s), 0 warning(s)

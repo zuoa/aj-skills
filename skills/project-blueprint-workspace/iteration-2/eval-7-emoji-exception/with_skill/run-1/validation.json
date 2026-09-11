@@ -1,0 +1,16 @@
+{
+  "validator": "skills/project-blueprint/scripts/validate_blueprint.py",
+  "summary": {
+    "errors": 0,
+    "warnings": 1,
+    "info": 0
+  },
+  "findings": [
+    {
+      "severity": "warning",
+      "code": "EMOJI_USAGE",
+      "path": "DESIGN.md:58",
+      "message": "Emoji usage needs removal or a documented DESIGN.md exception with an accessible alternative"
+    }
+  ]
+}

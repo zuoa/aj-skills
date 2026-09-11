@@ -1,0 +1,70 @@
+{
+  "validator": "skills/project-blueprint-workspace/iteration-2/skill-snapshot/scripts/validate_blueprint.py",
+  "summary": {
+    "errors": 8,
+    "warnings": 2,
+    "info": 0
+  },
+  "findings": [
+    {
+      "severity": "error",
+      "code": "UNREGISTERED_TBD",
+      "path": ".",
+      "message": "TBD-ARCH-001 is referenced but absent from an Open decisions table"
+    },
+    {
+      "severity": "error",
+      "code": "UNREGISTERED_TBD",
+      "path": ".",
+      "message": "TBD-DEPLOY-001 is referenced but absent from an Open decisions table"
+    },
+    {
+      "severity": "error",
+      "code": "UNREGISTERED_TBD",
+      "path": ".",
+      "message": "TBD-ENGINEERING-001 is referenced but absent from an Open decisions table"
+    },
+    {
+      "severity": "error",
+      "code": "UNREGISTERED_TBD",
+      "path": ".",
+      "message": "TBD-SECURITY-001 is referenced but absent from an Open decisions table"
+    },
+    {
+      "severity": "error",
+      "code": "MISSING_ARTIFACT",
+      "path": "ARCHITECTURE.md",
+      "message": "Required artifact is missing: ARCHITECTURE.md"
+    },
+    {
+      "severity": "error",
+      "code": "MISSING_ARTIFACT",
+      "path": "DEPLOY.md",
+      "message": "Required artifact is missing: DEPLOY.md"
+    },
+    {
+      "severity": "error",
+      "code": "MISSING_ARTIFACT",
+      "path": "ENGINEERING.md",
+      "message": "Required artifact is missing: ENGINEERING.md"
+    },
+    {
+      "severity": "error",
+      "code": "MISSING_ARTIFACT",
+      "path": "SECURITY.md",
+      "message": "Required artifact is missing: SECURITY.md"
+    },
+    {
+      "severity": "warning",
+      "code": "MISSING_ADAPTER",
+      "path": "AGENTS.md",
+      "message": "Agent adapter is missing: AGENTS.md"
+    },
+    {
+      "severity": "warning",
+      "code": "MISSING_ADAPTER",
+      "path": "CLAUDE.md",
+      "message": "Agent adapter is missing: CLAUDE.md"
+    }
+  ]
+}

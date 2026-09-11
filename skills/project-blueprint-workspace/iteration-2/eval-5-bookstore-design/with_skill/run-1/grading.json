@@ -1,0 +1,13 @@
+{
+  "expectations": [
+    {"text": "DESIGN.md 明确目标用户、使用场景和每个关键界面的主要任务", "passed": true, "evidence": "DESIGN.md 的目标用户、场景与主要任务表逐项覆盖店员库存、店员预订、顾客搜索、单册详情与预订确认。"},
+    {"text": "视觉方向说明参考依据、任务理由和最多一个识别性元素；信息不足处标记 provisional 或 pending", "passed": true, "evidence": "DESIGN.md 将视觉主张关联单册辨认/扫读任务，说明图书馆目录和价签依据，只定义一个暂定的馆藏标签带，并对品牌、色值、字体和组件等缺口使用 provisional/pending。"},
+    {"text": "没有把渐变、玻璃卡片、巨大圆角卡片、任意编号或装饰性仪表盘当作默认方案", "passed": true, "evidence": "DESIGN.md 明确排除这些缺少旧书检索或预订任务依据的套路，输出中未将其指定为默认方案。"},
+    {"text": "蓝图没有虚构品牌资产、研究结论、用户反馈或精确指标", "passed": true, "evidence": "PRD、DESIGN、ARCHITECTURE 与 DEPLOY 均直接声明信息不足；品牌/研究/指标/规模使用 provisional 或稳定 TBD 登记。"},
+    {"text": "团队编写的标题、列表、按钮和系统文案不使用 Emoji", "passed": true, "evidence": "对应当前版本校验器完成全产物扫描，EMOJI_USAGE 为 0；DESIGN.md 还记录 none-by-default 策略。"}
+  ],
+  "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0},
+  "timing": {"total_duration_seconds": 900.0},
+  "execution_metrics": {"errors_encountered": 0, "output_chars": 16514},
+  "user_notes_summary": {"strengths": ["设计依据与任务绑定明确", "信息不足处理诚实"], "weaknesses": []}
+}
