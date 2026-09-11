@@ -40,6 +40,7 @@ description: 为新建或早期 Web、SaaS、API 与移动应用建立可执行�
 
 - 需要技术选型或中间件判断时，读取 [references/selection-rubric.md](references/selection-rubric.md)。
 - 需要 UI、移动端或系统设计时，读取 [references/design-and-architecture.md](references/design-and-architecture.md)；需要推荐、比较或落地视觉主题时，同时读取 [references/theme-catalog.md](references/theme-catalog.md)。
+- 项目包含 Web 前端、交互式客户端或已有界面审计时，读取 [references/frontend-companion-skills.md](references/frontend-companion-skills.md)，按阶段使用已安装的伴随 Skills；React/Next.js 专属规则只能在确认技术栈后启用。
 - 需要安全、部署、上线或运维约束时，读取 [references/security-and-deployment.md](references/security-and-deployment.md)。
 - 目标市场涉及中国大陆、跨境/全球，或项目包含 AI/LLM 时，读取 [references/regional-and-ai.md](references/regional-and-ai.md)。
 - 需要说明方法依据或核对稳定原则时，读取 [references/sources.md](references/sources.md)。
@@ -97,6 +98,7 @@ description: 为新建或早期 Web、SaaS、API 与移动应用建立可执行�
 - React、Vue 等交互型客户端在开始实现前必须选定一个一致的 UI 组件基础，并在 `DESIGN.md` 记录候选、选择理由、版本/兼容性核验来源、主题入口、图标体系、组件覆盖和更新责任。产品型界面可优先评估开放代码或 headless 体系（如 React 的 shadcn/ui 及其当前官方 primitive、Vue 的 shadcn-vue + Reka UI）；数据密集或企业后台可评估完整 styled suite（如 React 的 MUI/Ant Design、Vue 的 PrimeVue/Element Plus）。这些只是候选族，不是按框架名自动套用的固定答案；生成蓝图时须从官方文档核对当前维护状态和兼容性。
 - 评估 UI 框架的主题适配时，必须说明它暴露的 primitive/semantic/component token 或等价层级、模式与密度切换方式、局部主题能力、SSR 首屏主题处理、允许的覆盖入口和源码所有权。若实现候选主题需要全局后代选择器、反复 `!important`、依赖内部类名或大量逐实例覆盖，应降低适配评分，改选更接近的主题、较低层组件基础，或显式预算维护 fork。
 - UI 组件基础提供行为、无障碍和视觉实现的起点，不代替产品自己的视觉主张与 token。不得把浏览器未主题化的原生控件、零散自写组件或多个互不一致的组件库当作成品方案；语义化原生元素应保留，但要由选定体系或统一主题承载视觉与交互。若项目极小、已有组织级设计系统或受体积/运行环境约束而不引入库，必须记录理由、复杂组件的无障碍实现来源和重新评估条件。
+- 伴随 Skills 采用阶段路由，不机械叠加：`ui-ux-pro-max` 用于设计系统候选与 UX 规则检索，`frontend-design` 用于视觉方向和反模板化评议，`web-design-guidelines` 用于已有 Web 界面或实现后的审查，`vercel-react-best-practices` 只用于已确认的 React/Next.js 实现约束。伴随 Skill 的建议若与用户已确认要求或本蓝图的事实/状态规则冲突，以用户要求和已确认蓝图为准并记录冲突。
 - 品牌信息不足时仍给出满足无障碍的 provisional 基线值，并登记验证方式和重评条件；只有确实无法安全推断的品牌身份决定保持 pending。实现所需的 token 不能用空白占位符代替。
 
 有参考图或品牌资产时先检查它们；没有时通过方向性选择收敛，不用“现代、简洁、高级”一类不可验证的形容词代替决定。视觉主张必须说明它服务哪个用户任务；常见风格也可以采用，但不能因为它流行或容易生成就默认采用。

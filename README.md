@@ -31,3 +31,21 @@ Skill 名称以各目录 `SKILL.md` 中的 `name` 字段为准，可使用 `--sk
 | `activity-push` | 从微信公众号文章源提取和判定活动，生成结构化数据、审核材料及推送文本，并可通过企业微信 Webhook 推送。 | `npx skills add https://github.com/zuoa/aj-skills --skill activity-push` |
 | `aj-stock-analysis` | 基于 Tushare 开展 A 股价值投资分析，支持股票筛选、个股深度分析、行业对比和估值研究。 | `npx skills add https://github.com/zuoa/aj-skills --skill aj-stock-analysis` |
 | `stock-sector-monitoring` | 基于 Tushare 监测 A 股概念板块和龙虎榜，支持剔除 ST、板块排行及结构化 Markdown 报告生成。 | `npx skills add https://github.com/zuoa/aj-skills --skill stock-sector-monitoring` |
+
+### `project-blueprint` 的前端能力组合
+
+`project-blueprint` 负责规划和约束，不替代视觉设计、实现规范与代码审查。项目包含 Web 前端时，建议同时安装以下伴随 Skills：
+
+```bash
+npx skills add https://github.com/anthropics/skills --skill frontend-design
+npx skills add https://github.com/vercel-labs/agent-skills --skill web-design-guidelines
+npx skills add https://github.com/nextlevelbuilder/ui-ux-pro-max-skill --skill ui-ux-pro-max
+```
+
+采用 React 或 Next.js 时，再安装：
+
+```bash
+npx skills add https://github.com/vercel-labs/agent-skills --skill vercel-react-best-practices
+```
+
+它们属于按项目安装的基础能力组合，不是 `project-blueprint` 的自动硬依赖：当前 `npx skills` 尚不能从一个 Skill 自动解析并安装跨仓库 Skill 依赖。未安装伴随 Skill 不会阻止生成蓝图；代理应按任务阶段使用已安装项，并明确说明缺失项带来的审查或实现能力降级。React 规则不得用于 Vue、Svelte、原生移动端或纯后端项目。
