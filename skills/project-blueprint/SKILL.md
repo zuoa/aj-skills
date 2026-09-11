@@ -39,7 +39,7 @@ description: 为新建或早期 Web、SaaS、API 与移动应用建立可执行�
 按任务读取：
 
 - 需要技术选型或中间件判断时，读取 [references/selection-rubric.md](references/selection-rubric.md)。
-- 需要 UI、移动端或系统设计时，读取 [references/design-and-architecture.md](references/design-and-architecture.md)；需要推荐、比较或落地视觉主题时，同时读取 [references/theme-catalog.md](references/theme-catalog.md)。
+- 需要 UI、移动端或系统设计时，读取 [references/design-and-architecture.md](references/design-and-architecture.md)；需要推荐、比较或确认应用骨架、导航和工作区布局时，同时读取 [references/layout-catalog.md](references/layout-catalog.md)；需要推荐、比较或落地视觉主题时，同时读取 [references/theme-catalog.md](references/theme-catalog.md)。
 - 项目包含 Web 前端、交互式客户端或已有界面审计时，读取 [references/frontend-companion-skills.md](references/frontend-companion-skills.md)，按阶段使用已安装的伴随 Skills；React/Next.js 专属规则只能在确认技术栈后启用。
 - 需要安全、部署、上线或运维约束时，读取 [references/security-and-deployment.md](references/security-and-deployment.md)。
 - 目标市场涉及中国大陆、跨境/全球，或项目包含 AI/LLM 时，读取 [references/regional-and-ai.md](references/regional-and-ai.md)。
@@ -91,6 +91,7 @@ description: 为新建或早期 Web、SaaS、API 与移动应用建立可执行�
 
 视觉系统必须能直接约束实现，不能只写“使用品牌色”“使用系统字体”或把全部视觉决定合并成一个 TBD：
 
+- 布局推荐先把 `layout family`（持久区域和空间骨架）、`navigation model`（层级与移动方式）、`work-surface model`（单画布、列表-详情、主区-辅助区、仪表盘或步骤流）和 `platform chrome`（登录、租户/工作区切换、全局搜索、通知、帮助、身份区）分开。根据核心任务、信息架构深度、切换频率、内容关系、设备/输入、风险与交付约束列出 2–3 个可信候选，明确一项主推荐、最接近的落选项、桌面/紧凑窗口转换和可推翻结论的任务测试；不得因为“企业级”、需要 SSO 或流行后台模板就自动采用左侧菜单。统一登录和 SSO 是平台与安全能力，不是布局类型，但其入口、当前身份/租户和异常状态必须在布局确认中有明确位置与行为。
 - 主题推荐先把 `theme family`（产品气质）、`appearance`（light/dark/system/high-contrast）和 `density`（comfortable/compact）分开，再根据产品方向、具体受众、核心任务、信息形态、使用环境、风险与品牌证据列出 2–3 个可信候选并明确一项主推荐。不得把目录中的全部主题平铺给用户，也不得仅凭行业标签或流行度选中主题；记录最接近的落选项、框架适配成本和可推翻推荐的验证条件。
 - 配色表写出背景、表面、主/次文字、边框、主操作、焦点、禁用和 success/warning/error/info 的 token、具体色值、语义用途、交互态、主题差异与目标对比关系。
 - 字体表写出各语种字体栈与回退、来源/授权/加载策略，并给出标题、正文、标签、按钮、输入、辅助/错误文本、导航、表格或列表、代码/数字等实际出现角色的字号、行高、字重和必要的字距；同时标明桌面端与移动端差异。

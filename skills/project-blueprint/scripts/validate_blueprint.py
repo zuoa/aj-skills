@@ -50,6 +50,7 @@ UI_FOUNDATION_STATE_RE = re.compile(
     r"\b(?:confirmed|provisional|not-applicable)\b|已确认|暂定|不适用",
     re.IGNORECASE,
 )
+LAYOUT_STATE_RE = UI_FOUNDATION_STATE_RE
 EMOJI_RE = re.compile(
     "["
     "\\u2600-\\u26FF"
@@ -127,6 +128,10 @@ def h2_section_matching(
 
 
 def validate_design_contract(text: str, findings: list[Finding]) -> None:
+    layout = h2_section_matching(
+        text,
+        ("application shell", "layout recommendation", "应用骨架", "布局推荐", "布局与导航"),
+    )
     color = h2_section_matching(text, ("color", "palette", "配色", "色彩", "颜色", "色板"))
     typography = h2_section_matching(text, ("typography", "type system", "字体", "排版", "字号"))
     ui_foundation = h2_section_matching(
@@ -156,6 +161,23 @@ def validate_design_contract(text: str, findings: list[Finding]) -> None:
             "组件库",
         ),
     )
+
+    if layout is None:
+        add(
+            findings,
+            "warning",
+            "DESIGN_LAYOUT_MISSING",
+            "DESIGN.md",
+            "Add an application-shell section that selects a layout/navigation/work-surface composition and separates platform chrome such as SSO or tenant switching",
+        )
+    elif not LAYOUT_STATE_RE.search(layout):
+        add(
+            findings,
+            "warning",
+            "DESIGN_LAYOUT_UNRESOLVED",
+            "DESIGN.md",
+            "Layout recommendation must be confirmed, provisional, or explicitly not-applicable; record its compact-window transformation and platform chrome",
+        )
 
     if color is None:
         add(

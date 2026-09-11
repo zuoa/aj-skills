@@ -10,6 +10,7 @@ TEMPLATE = SKILL_ROOT / "assets" / "templates" / "DESIGN.md"
 SKILL = SKILL_ROOT / "SKILL.md"
 GUIDANCE = SKILL_ROOT / "references" / "design-and-architecture.md"
 THEME_CATALOG = SKILL_ROOT / "references" / "theme-catalog.md"
+LAYOUT_CATALOG = SKILL_ROOT / "references" / "layout-catalog.md"
 EVALS = SKILL_ROOT / "evals" / "evals.json"
 
 
@@ -20,6 +21,37 @@ class DesignContractTests(unittest.TestCase):
         cls.skill = SKILL.read_text(encoding="utf-8")
         cls.guidance = GUIDANCE.read_text(encoding="utf-8")
         cls.theme_catalog = THEME_CATALOG.read_text(encoding="utf-8")
+        cls.layout_catalog = LAYOUT_CATALOG.read_text(encoding="utf-8")
+
+    def test_layout_recommendation_separates_shell_navigation_surface_and_chrome(self) -> None:
+        self.assertIn("## Application shell and layout", self.template)
+        self.assertIn("### Layout shortlist and recommendation", self.template)
+        for term in ("layout family", "navigation model", "work-surface model", "platform chrome"):
+            with self.subTest(term=term):
+                self.assertIn(term, self.skill.lower())
+                self.assertIn(term, self.guidance.lower())
+                self.assertIn(term, self.layout_catalog.lower())
+        self.assertIn("Closest rejected alternative", self.template)
+        self.assertIn("Compact/mobile transformation", self.template)
+
+    def test_layout_catalog_covers_recommendable_families_and_unified_identity(self) -> None:
+        for layout_id in (
+            "enterprise-workspace",
+            "compact-product-shell",
+            "focused-workbench",
+            "operations-console",
+            "catalog-hub",
+            "guided-flow",
+            "public-service-portal",
+            "adaptive-mobile-app",
+        ):
+            with self.subTest(layout_id=layout_id):
+                self.assertIn(layout_id, self.layout_catalog)
+        for capability in ("Authentication", "SSO", "Tenant/workspace switcher", "Global search", "Notifications"):
+            with self.subTest(capability=capability):
+                self.assertIn(capability, self.layout_catalog)
+        self.assertIn("SSO or unified login", self.template)
+        self.assertIn("does not by itself justify a left sidebar", self.layout_catalog)
 
     def test_template_requires_complete_semantic_palette(self) -> None:
         required_tokens = (

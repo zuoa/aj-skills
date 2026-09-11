@@ -153,6 +153,7 @@ class ValidateBlueprintTests(unittest.TestCase):
             )
             codes = {item.code for item in MODULE.validate(root)}
             self.assertIn("DESIGN_COLOR_SYSTEM_MISSING", codes)
+            self.assertIn("DESIGN_LAYOUT_MISSING", codes)
             self.assertIn("DESIGN_TYPOGRAPHY_MISSING", codes)
             self.assertIn("DESIGN_UI_FOUNDATION_MISSING", codes)
             self.assertIn("DESIGN_COMPONENT_SPECS_MISSING", codes)
@@ -165,6 +166,7 @@ class ValidateBlueprintTests(unittest.TestCase):
                 document(
                     "design",
                     "# Design\n\n"
+                    "## Application shell and layout\n\nCandidates: sidebar or header.\n\n"
                     "## Color system\n\nUse semantic brand colors.\n\n"
                     "## Typography system\n\nUse the chosen brand font.\n\n"
                     "## UI foundation and component sourcing\n\nUse PrimeVue.\n\n"
@@ -174,6 +176,7 @@ class ValidateBlueprintTests(unittest.TestCase):
             )
             codes = {item.code for item in MODULE.validate(root)}
             self.assertIn("DESIGN_COLOR_VALUES_UNRESOLVED", codes)
+            self.assertIn("DESIGN_LAYOUT_UNRESOLVED", codes)
             self.assertIn("DESIGN_TYPOGRAPHY_UNRESOLVED", codes)
             self.assertIn("DESIGN_COMPONENT_TYPE_UNRESOLVED", codes)
 
@@ -185,6 +188,8 @@ class ValidateBlueprintTests(unittest.TestCase):
                 document(
                     "design",
                     "# Design\n\n"
+                    "## Application shell and layout\n\n"
+                    "State: provisional. Recommend enterprise-workspace with side navigation and a list-detail approval surface; compact windows use a drawer and dedicated detail screen. SSO remains platform chrome.\n\n"
                     "## Color system\n\n"
                     "Canvas `#FFFFFF`; primary text `#17202A`; focus `#1457D9`.\n\n"
                     "## Typography system\n\n"

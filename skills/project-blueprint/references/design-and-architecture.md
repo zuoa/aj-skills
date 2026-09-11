@@ -7,6 +7,7 @@ Design constraints should make later visual and interaction work decidable. Reco
 - The concrete audience, context, and primary job for each important surface.
 - Experience principles tied to user tasks, not generic adjectives.
 - Information architecture, navigation, key journeys, and screen inventory.
+- A layout shortlist grounded in the primary task, navigation depth, content relationships, work continuity, device/input environment, risk, and platform capabilities; one selected composition of layout family, navigation model, work-surface model, and platform chrome.
 - Reference products/assets and what to borrow or avoid from each.
 - A visual thesis and at most one signature device that expresses something true about the product.
 - A theme shortlist grounded in product direction, audience, task, content, environment, risk, brand evidence, and UI-foundation adaptation cost; one selected composition of family, appearance, and density.
@@ -46,6 +47,14 @@ Before choosing colors, type, layout, or motion, state:
 4. What to borrow and avoid from each reference, with a reason.
 
 Use typography and layout to express hierarchy before adding decoration. Let one justified signature device carry the distinctive character; keep surrounding elements quiet and consistent. Minimal directions require precise spacing and type, while expressive directions require a coherent system rather than more effects.
+
+When a layout recommendation is needed, use `layout-catalog.md`. Keep layout
+family, navigation model, work-surface model, and platform chrome as separate
+decisions. Shortlist two or three credible directions, score them against the
+actual work, select one recommendation, and record the closest rejected
+alternative plus a representative-task test that could overturn the decision.
+Authentication, SSO, workspace switching, and notifications may occupy the
+shell, but they do not determine the layout family.
 
 When a theme recommendation is needed, use `theme-catalog.md`. Keep theme
 family, appearance, and density as separate decisions. Shortlist two or three

@@ -22,6 +22,41 @@ last_reviewed: YYYY-MM-DD
 | Area/screen | User goal | Entry/exit | Related SPEC | State |
 |---|---|---|---|---|
 
+## Application shell and layout
+
+Keep layout family, navigation model, work-surface model, and platform chrome as separate decisions. SSO or unified login may affect persistent identity/context controls, but does not by itself justify a left sidebar.
+
+### Layout shortlist and recommendation
+
+Score two or three credible candidates against project evidence; state whether a candidate is the product shell or a nested task mode.
+
+| Candidate family/composition | Shell or nested mode | Audience/task/content evidence | Task fit (30%) | IA/navigation (20%) | Frequency/expertise (15%) | Device/input (15%) | Risk/accessibility (15%) | Delivery/evolution (5%) | Weighted result / disposition |
+|---|---|---|---:|---:|---:|---:|---:|---:|---|
+| `[layout family] + [navigation model] + [work-surface model] + [platform chrome]` | | | | | | | | | |
+
+- Recommended composition and rationale:
+- Closest rejected alternative and why it lost:
+- Expanded/desktop anatomy, persistent regions, and scroll ownership:
+- Compact/mobile transformation and state continuity:
+- Prototype/task/accessibility result that would overturn the recommendation:
+
+### Platform chrome and unified identity
+
+| Capability | Placement/scope | Required behavior and states | Security/architecture handoff | State |
+|---|---|---|---|---|
+| Authentication / SSO entry | | [IdP/tenant discovery, return URL, loading/error/recovery, signed-in destination] | [session/MFA/re-auth/logout authority] | |
+| Current identity and session | | [profile, session expiry, sign out/all devices] | [revocation/audit/personal data] | |
+| Tenant/workspace switcher | | [current context, authorized choices, state reset/preservation, wrong-tenant link] | [server-side authorization and isolation] | |
+| Product/app switcher | | [current product, destination and entitlement behavior] | [cross-product session/ownership] | |
+| Global search/command | | [scope, permission filtering, shortcuts, empty/error] | [index authorization/audit/confirmation] | |
+| Notifications/inbox | | [freshness, severity, acknowledgement, deep links] | [delivery/retention/sensitive preview] | |
+| Help/support | | [contextual help and escalation] | [support data/impersonation controls] | |
+
+### Navigation and layout contract
+
+| Context/surface | Global navigation | Local navigation/actions | Work-surface relationship | Location/context cues | Focus/overflow/scroll owner | State |
+|---|---|---|---|---|---|---|
+
 ## Visual direction
 
 - Visual thesis and task rationale:
