@@ -31,6 +31,19 @@ last_reviewed: YYYY-MM-DD
 - Spacing/grid/density/radius/elevation:
 - Motion and imagery:
 
+### Theme shortlist and recommendation
+
+Keep theme family, appearance, and density as separate axes. Score two or three credible candidates against project evidence; do not paste an undifferentiated preset catalog.
+
+| Candidate composition | Audience/task evidence | Primary-task fit (30%) | Trust/comprehension (20%) | Content/environment (15%) | Accessibility (15%) | Framework adaptation (10%) | Distinctiveness (10%) | Weighted result / disposition |
+|---|---|---:|---:|---:|---:|---:|---:|---|
+| `[family] + [light/dark/system/high-contrast] + [comfortable/compact]` | | | | | | | | |
+
+- Recommended composition and rationale:
+- Closest rejected alternative and why it lost:
+- Existing brand/design-system constraints:
+- Prototype or usability/accessibility result that would overturn the recommendation:
+
 ## Color system
 
 - Palette rationale and relationship to the primary job:
@@ -82,13 +95,14 @@ If brand inputs are missing, choose an accessible provisional palette with exact
 
 For a React or Vue client, select one coherent UI foundation before implementation. Do not treat unthemed browser-default controls or a list of undecided libraries as the finished component strategy. If a library is genuinely unnecessary, mark it `not-applicable` and document how complex interaction and accessibility behavior will be supplied and tested.
 
-| Client/stack | Candidate foundations | Selected foundation and mode | Constraint-based rationale / rejected alternative | Official compatibility evidence and access date | State |
-|---|---|---|---|---|---|
-| [React / Vue / other] | [at least two credible options, or existing organizational system] | [named system; styled / open-code / headless / organizational] | [fit, cost, and why the alternative lost] | [official source; YYYY-MM-DD] | [state] |
+| Client/stack | Candidate foundations | Selected foundation and mode | Theme customization model and fit | Constraint-based rationale / rejected alternative | Official compatibility evidence and access date | State |
+|---|---|---|---|---|---|---|
+| [React / Vue / other] | [at least two credible options, or existing organizational system] | [named system; styled / open-code / headless / organizational] | [primitive/semantic/component token equivalents; appearance/density/scoping; permitted overrides; adaptation cost] | [fit, cost, and why the alternative lost] | [official source; YYYY-MM-DD] | [state] |
 
 | Concern | Decision | Verification / ownership | State |
 |---|---|---|---|
 | Theme and token entry point | [preset/config/CSS variables and override boundary] | [representative screen + owner] | [state] |
+| Appearance, density, and scoping | [system/manual mode, persistence, SSR/no-flash, compact scope, nested-theme policy] | [first render + mode/density matrix] | [state] |
 | Component coverage | [map required Select/Combobox, Menu, Tabs, Dialog/Drawer, Toast/Alert, Table/Pagination, form behavior] | [keyboard/focus/visual regression tests] | [state] |
 | Icon system | [one SVG icon set; sizing and accessible-name rule] | [lint/review owner] | [state] |
 | Runtime and delivery | [bundle/import, SSR/hydration, localization, portal/z-index implications] | [build/profile/test evidence] | [state] |

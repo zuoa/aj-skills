@@ -9,6 +9,7 @@ SKILL_ROOT = Path(__file__).parents[1]
 TEMPLATE = SKILL_ROOT / "assets" / "templates" / "DESIGN.md"
 SKILL = SKILL_ROOT / "SKILL.md"
 GUIDANCE = SKILL_ROOT / "references" / "design-and-architecture.md"
+THEME_CATALOG = SKILL_ROOT / "references" / "theme-catalog.md"
 EVALS = SKILL_ROOT / "evals" / "evals.json"
 
 
@@ -18,6 +19,7 @@ class DesignContractTests(unittest.TestCase):
         cls.template = TEMPLATE.read_text(encoding="utf-8")
         cls.skill = SKILL.read_text(encoding="utf-8")
         cls.guidance = GUIDANCE.read_text(encoding="utf-8")
+        cls.theme_catalog = THEME_CATALOG.read_text(encoding="utf-8")
 
     def test_template_requires_complete_semantic_palette(self) -> None:
         required_tokens = (
@@ -86,6 +88,45 @@ class DesignContractTests(unittest.TestCase):
         self.assertIn("Component coverage", self.template)
         self.assertIn("Icon system", self.template)
 
+    def test_theme_recommendation_separates_family_appearance_and_density(self) -> None:
+        self.assertIn("### Theme shortlist and recommendation", self.template)
+        for term in ("theme family", "appearance", "density"):
+            with self.subTest(term=term):
+                self.assertIn(term, self.skill.lower())
+                self.assertIn(term, self.theme_catalog.lower())
+        self.assertIn("Framework adaptation", self.template)
+        self.assertIn("Closest rejected alternative", self.template)
+
+    def test_theme_catalog_covers_audience_directions_and_framework_adaptation(self) -> None:
+        for theme_id in (
+            "precision-neutral",
+            "editorial-paper",
+            "institutional-trust",
+            "operations-dense",
+            "calm-guidance",
+            "expressive-studio",
+        ):
+            with self.subTest(theme_id=theme_id):
+                self.assertIn(theme_id, self.theme_catalog)
+        for foundation in (
+            "shadcn/ui",
+            "React Aria",
+            "Chakra UI",
+            "MUI",
+            "Ant Design",
+            "daisyUI",
+            "PrimeVue",
+            "Element Plus",
+            "Flutter Material",
+            "Jetpack Compose Material 3",
+            "React Native Paper",
+            "SwiftUI",
+        ):
+            with self.subTest(foundation=foundation):
+                self.assertIn(foundation, self.theme_catalog)
+        self.assertIn("primitive/semantic/component", self.theme_catalog)
+        self.assertIn("SSR/no-flash", self.theme_catalog)
+
     def test_skill_and_guidance_prevent_browser_default_ui_regression(self) -> None:
         self.assertIn("React、Vue 等交互型客户端", self.skill)
         self.assertIn("浏览器未主题化的原生控件", self.skill)
@@ -105,6 +146,28 @@ class DesignContractTests(unittest.TestCase):
             ]
         )
         for term in ("Vue 3 + Vite", "UI 基础", "Select/Combobox", "Toast", "浏览器未主题化"):
+            with self.subTest(term=term):
+                self.assertIn(term, combined)
+
+    def test_theme_and_framework_adaptation_eval_exists(self) -> None:
+        data = json.loads(EVALS.read_text(encoding="utf-8"))
+        regression_eval = next(item for item in data["evals"] if item["id"] == 10)
+        combined = "\n".join(
+            [
+                regression_eval["prompt"],
+                regression_eval["expected_output"],
+                *regression_eval["expectations"],
+            ]
+        )
+        for term in (
+            "theme family",
+            "appearance",
+            "density",
+            "shadcn/ui",
+            "MUI",
+            "SSR",
+            "框架适配成本",
+        ):
             with self.subTest(term=term):
                 self.assertIn(term, combined)
 

@@ -39,7 +39,7 @@ description: 为新建或早期 Web、SaaS、API 与移动应用建立可执行�
 按任务读取：
 
 - 需要技术选型或中间件判断时，读取 [references/selection-rubric.md](references/selection-rubric.md)。
-- 需要 UI、移动端或系统设计时，读取 [references/design-and-architecture.md](references/design-and-architecture.md)。
+- 需要 UI、移动端或系统设计时，读取 [references/design-and-architecture.md](references/design-and-architecture.md)；需要推荐、比较或落地视觉主题时，同时读取 [references/theme-catalog.md](references/theme-catalog.md)。
 - 需要安全、部署、上线或运维约束时，读取 [references/security-and-deployment.md](references/security-and-deployment.md)。
 - 目标市场涉及中国大陆、跨境/全球，或项目包含 AI/LLM 时，读取 [references/regional-and-ai.md](references/regional-and-ai.md)。
 - 需要说明方法依据或核对稳定原则时，读取 [references/sources.md](references/sources.md)。
@@ -90,10 +90,12 @@ description: 为新建或早期 Web、SaaS、API 与移动应用建立可执行�
 
 视觉系统必须能直接约束实现，不能只写“使用品牌色”“使用系统字体”或把全部视觉决定合并成一个 TBD：
 
+- 主题推荐先把 `theme family`（产品气质）、`appearance`（light/dark/system/high-contrast）和 `density`（comfortable/compact）分开，再根据产品方向、具体受众、核心任务、信息形态、使用环境、风险与品牌证据列出 2–3 个可信候选并明确一项主推荐。不得把目录中的全部主题平铺给用户，也不得仅凭行业标签或流行度选中主题；记录最接近的落选项、框架适配成本和可推翻推荐的验证条件。
 - 配色表写出背景、表面、主/次文字、边框、主操作、焦点、禁用和 success/warning/error/info 的 token、具体色值、语义用途、交互态、主题差异与目标对比关系。
 - 字体表写出各语种字体栈与回退、来源/授权/加载策略，并给出标题、正文、标签、按钮、输入、辅助/错误文本、导航、表格或列表、代码/数字等实际出现角色的字号、行高、字重和必要的字距；同时标明桌面端与移动端差异。
 - 组件表把 Button、Input/Select、Navigation/Tabs、Table/List、Card、Dialog/Drawer、Toast/Alert 等项目实际采用的组件映射到排版 token、间距、圆角、边框/阴影及完整状态；不用的组件标 `not-applicable`，项目特有组件另行补充。
 - React、Vue 等交互型客户端在开始实现前必须选定一个一致的 UI 组件基础，并在 `DESIGN.md` 记录候选、选择理由、版本/兼容性核验来源、主题入口、图标体系、组件覆盖和更新责任。产品型界面可优先评估开放代码或 headless 体系（如 React 的 shadcn/ui 及其当前官方 primitive、Vue 的 shadcn-vue + Reka UI）；数据密集或企业后台可评估完整 styled suite（如 React 的 MUI/Ant Design、Vue 的 PrimeVue/Element Plus）。这些只是候选族，不是按框架名自动套用的固定答案；生成蓝图时须从官方文档核对当前维护状态和兼容性。
+- 评估 UI 框架的主题适配时，必须说明它暴露的 primitive/semantic/component token 或等价层级、模式与密度切换方式、局部主题能力、SSR 首屏主题处理、允许的覆盖入口和源码所有权。若实现候选主题需要全局后代选择器、反复 `!important`、依赖内部类名或大量逐实例覆盖，应降低适配评分，改选更接近的主题、较低层组件基础，或显式预算维护 fork。
 - UI 组件基础提供行为、无障碍和视觉实现的起点，不代替产品自己的视觉主张与 token。不得把浏览器未主题化的原生控件、零散自写组件或多个互不一致的组件库当作成品方案；语义化原生元素应保留，但要由选定体系或统一主题承载视觉与交互。若项目极小、已有组织级设计系统或受体积/运行环境约束而不引入库，必须记录理由、复杂组件的无障碍实现来源和重新评估条件。
 - 品牌信息不足时仍给出满足无障碍的 provisional 基线值，并登记验证方式和重评条件；只有确实无法安全推断的品牌身份决定保持 pending。实现所需的 token 不能用空白占位符代替。
 

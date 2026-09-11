@@ -9,6 +9,7 @@ Design constraints should make later visual and interaction work decidable. Reco
 - Information architecture, navigation, key journeys, and screen inventory.
 - Reference products/assets and what to borrow or avoid from each.
 - A visual thesis and at most one signature device that expresses something true about the product.
+- A theme shortlist grounded in product direction, audience, task, content, environment, risk, brand evidence, and UI-foundation adaptation cost; one selected composition of family, appearance, and density.
 - A concrete overall palette: canvas/surface/text/border/action/focus/disabled/status tokens, exact values per supported theme, semantic use, interaction states, and required contrast pairs.
 - A concrete typography system: font stacks and language fallbacks, source/license/loading, an exact size/line-height/weight/letter-spacing scale, responsive changes, and tabular-number or monospace rules where relevant.
 - Component-level typography and geometry for every component used by the screen inventory. At minimum resolve Button, Input/Select, Navigation/Tabs, Table/List, Card, Dialog/Drawer, and Toast/Alert as applicable; include font token and resolved font/size, height/padding/gap, radius/border/elevation, states, source, and override policy.
@@ -46,6 +47,13 @@ Before choosing colors, type, layout, or motion, state:
 
 Use typography and layout to express hierarchy before adding decoration. Let one justified signature device carry the distinctive character; keep surrounding elements quiet and consistent. Minimal directions require precise spacing and type, while expressive directions require a coherent system rather than more effects.
 
+When a theme recommendation is needed, use `theme-catalog.md`. Keep theme
+family, appearance, and density as separate decisions. Shortlist two or three
+credible directions, score them against the actual audience and task, select
+one recommendation, and record the closest rejected alternative plus a test
+that could overturn the decision. A UI library preset is implementation input,
+not the product's visual thesis.
+
 ### Minimum implementable visual system
 
 `DESIGN.md` is an implementation contract, not a mood board. A developer should be able to style a representative screen without inventing colors, font sizes, or component hierarchy.
@@ -66,6 +74,12 @@ Treat gradients, glass effects, oversized rounded cards, repeated pill container
 
 For a React or Vue client with more than trivial interaction, select a coherent UI component foundation before implementation. A component foundation may be a styled suite, an open-code distribution system, a headless primitive layer plus project styling, or an existing organizational design system. It is not enough to write “custom CSS” or list several libraries without choosing one.
 
+For Flutter, React Native, Jetpack Compose, or SwiftUI, make the same decision at
+the platform level: identify the framework theme source, semantic role mapping,
+component-style/override boundary, system appearance and accessibility inputs,
+and which geometry remains platform-native. Shared brand tokens do not require
+identical component anatomy across Web, Android, and Apple platforms.
+
 Use the product and delivery constraints to choose the mode:
 
 | Need | Candidate family to evaluate | Typical tradeoff |
@@ -82,6 +96,9 @@ The decision in `DESIGN.md` must name:
 - the selected foundation and whether it is styled, open-code, headless, or organizational;
 - at least one credible alternative and why it lost under the actual constraints;
 - the theme/token entry point, one SVG icon set, ownership and update policy;
+- the available primitive/semantic/component token layers or equivalents,
+  appearance and density mechanism, scoped-theme behavior, SSR/no-flash path,
+  and permitted override boundary;
 - coverage for every complex primitive used by the screen inventory, including Select/Combobox, Menu, Tabs, Dialog/Drawer, Popover/Tooltip, Toast/Alert, form validation, and Table/Pagination when applicable;
 - bundle/import, SSR/hydration, localization, keyboard/focus, and test implications that materially affect the project.
 
