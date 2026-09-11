@@ -62,6 +62,33 @@ Before marking `implementation-ready`, verify representative desktop and mobile 
 
 Treat gradients, glass effects, oversized rounded cards, repeated pill containers, decorative dashboards, arbitrary `01/02/03` labels, ambient animation, sparkles, robot mascots, and generic AI imagery as review signals. They are not forbidden, but each needs a product-specific reason. Remove any choice that would survive unchanged if the product name and industry were swapped.
 
+### Frontend UI foundation
+
+For a React or Vue client with more than trivial interaction, select a coherent UI component foundation before implementation. A component foundation may be a styled suite, an open-code distribution system, a headless primitive layer plus project styling, or an existing organizational design system. It is not enough to write “custom CSS” or list several libraries without choosing one.
+
+Use the product and delivery constraints to choose the mode:
+
+| Need | Candidate family to evaluate | Typical tradeoff |
+|---|---|---|
+| Product-facing UI with a distinctive visual identity | React: shadcn/ui with its current official primitive foundation; Vue: shadcn-vue with Reka UI | More visual control and source ownership; the team owns theme quality, component updates, and composition discipline |
+| Data-dense or enterprise workflow needing broad coverage quickly | React: MUI or Ant Design; Vue: PrimeVue or Element Plus | More complete components and conventions; stronger risk of a generic vendor look unless tokens and component variants are deliberately themed |
+| Existing organization-wide design system | The existing supported system | Consistency and lower adoption cost; confirm it covers the current framework, accessibility target, and required components |
+| Tiny or constrained surface | Themed semantic HTML plus a small CSS system | Lowest dependency cost; unsuitable when the team would need to rebuild complex focus, keyboard, overlay, or selection behavior |
+
+These names are starting candidates, not timeless defaults. Check current official documentation during the blueprint run for framework compatibility, maintenance status, SSR/hydration constraints, accessibility claims, licensing, theming API, import strategy, and required peer dependencies. Record the access date when the decision depends on changeable facts.
+
+The decision in `DESIGN.md` must name:
+
+- the selected foundation and whether it is styled, open-code, headless, or organizational;
+- at least one credible alternative and why it lost under the actual constraints;
+- the theme/token entry point, one SVG icon set, ownership and update policy;
+- coverage for every complex primitive used by the screen inventory, including Select/Combobox, Menu, Tabs, Dialog/Drawer, Popover/Tooltip, Toast/Alert, form validation, and Table/Pagination when applicable;
+- bundle/import, SSR/hydration, localization, keyboard/focus, and test implications that materially affect the project.
+
+Do not confuse semantic native HTML with unstyled browser UI. Keep native semantics where appropriate, but do not ship browser-default controls as the visual system. Complex primitives must come from an accessibility-capable foundation or have an explicit, testable implementation and maintenance plan. Do not mix component suites casually: if an exception is necessary, document visual normalization, focus behavior, z-index/portal ownership, and who maintains the integration.
+
+The component foundation is an implementation substrate, not the visual thesis. Theme its tokens and variants to the product-specific direction, then verify a representative desktop and mobile screen. A library's default demo appearance is not sufficient evidence that the result is coherent or modern.
+
 ### Content, icons, and motion
 
 - Write from the user's side of the screen. Use active, specific action labels and keep terminology stable through the flow.

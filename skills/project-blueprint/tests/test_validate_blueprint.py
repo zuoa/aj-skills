@@ -154,6 +154,7 @@ class ValidateBlueprintTests(unittest.TestCase):
             codes = {item.code for item in MODULE.validate(root)}
             self.assertIn("DESIGN_COLOR_SYSTEM_MISSING", codes)
             self.assertIn("DESIGN_TYPOGRAPHY_MISSING", codes)
+            self.assertIn("DESIGN_UI_FOUNDATION_MISSING", codes)
             self.assertIn("DESIGN_COMPONENT_SPECS_MISSING", codes)
 
     def test_unresolved_design_values_are_reported(self) -> None:
@@ -166,6 +167,7 @@ class ValidateBlueprintTests(unittest.TestCase):
                     "# Design\n\n"
                     "## Color system\n\nUse semantic brand colors.\n\n"
                     "## Typography system\n\nUse the chosen brand font.\n\n"
+                    "## UI foundation and component sourcing\n\nUse PrimeVue.\n\n"
                     "## Component specifications\n\nButtons use the action token.\n",
                 ),
                 encoding="utf-8",
@@ -187,6 +189,8 @@ class ValidateBlueprintTests(unittest.TestCase):
                     "Canvas `#FFFFFF`; primary text `#17202A`; focus `#1457D9`.\n\n"
                     "## Typography system\n\n"
                     "Font stack: Inter, 'Noto Sans SC', system-ui, sans-serif. Body is 1rem/24px.\n\n"
+                    "## UI foundation and component sourcing\n\n"
+                    "State: provisional. Vue client uses PrimeVue styled mode; shadcn-vue was rejected because the small team needs broader ready-made coverage.\n\n"
                     "## Component specifications\n\n"
                     "Button labels use Inter, system-ui, sans-serif at 0.875rem/20px, weight 600, in every state.\n",
                 ),
@@ -196,6 +200,38 @@ class ValidateBlueprintTests(unittest.TestCase):
                 item.code for item in MODULE.validate(root) if item.code.startswith("DESIGN_")
             }
             self.assertEqual(set(), design_codes)
+
+    def test_missing_ui_foundation_is_reported_independently(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            build_valid_blueprint(root)
+            root.joinpath("DESIGN.md").write_text(
+                document(
+                    "design",
+                    "# Design\n\n"
+                    "## Color system\n\nCanvas `#FFFFFF`; text `#17202A`.\n\n"
+                    "## Typography system\n\nFont stack: Inter, system-ui, sans-serif; body 1rem/24px.\n\n"
+                    "## Component specifications\n\nButton: Inter, system-ui, sans-serif at 0.875rem/20px.\n",
+                ),
+                encoding="utf-8",
+            )
+            codes = {item.code for item in MODULE.validate(root)}
+            self.assertIn("DESIGN_UI_FOUNDATION_MISSING", codes)
+
+    def test_undecided_ui_library_list_is_reported(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            build_valid_blueprint(root)
+            root.joinpath("DESIGN.md").write_text(
+                document(
+                    "design",
+                    "# Design\n\n"
+                    "## UI foundation and component sourcing\n\nCandidates: PrimeVue or shadcn-vue.\n",
+                ),
+                encoding="utf-8",
+            )
+            codes = {item.code for item in MODULE.validate(root)}
+            self.assertIn("DESIGN_UI_FOUNDATION_UNRESOLVED", codes)
 
 
 if __name__ == "__main__":

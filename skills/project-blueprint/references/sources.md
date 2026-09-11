@@ -27,6 +27,12 @@ Use these as reference models, not as a requirement to apply every practice.
 - [Vercel Web Interface Guidelines](https://github.com/vercel-labs/web-interface-guidelines): implementation-oriented checks for semantics, focus, forms, motion, content handling, navigation, touch, locale and performance; adapt copy conventions to the product language.
 - [Apple Human Interface Guidelines: Icons](https://developer.apple.com/design/human-interface-guidelines/icons): keep interface icons simple, recognizable, visually consistent and accessible across supported Apple platforms.
 - [GOV.UK Design System accessibility strategy](https://design-system.service.gov.uk/accessibility/accessibility-strategy/): accessible components, simple and intuitive use, and testing with assistive technologies.
+- [shadcn/ui documentation](https://ui.shadcn.com/docs): React open-code component distribution, theming, supported primitive foundations and framework setup; verify the current foundation instead of assuming an older Radix-only architecture.
+- [Radix Primitives accessibility](https://www.radix-ui.com/primitives/docs/overview/accessibility): WAI-ARIA patterns, keyboard navigation and focus management for React headless primitives.
+- [shadcn-vue introduction](https://www.shadcn-vue.com/docs/introduction): Vue open-code component distribution and customization model.
+- [PrimeVue styled mode](https://primevue.org/theming/styled/): Vue styled-suite theme architecture and design-token configuration.
+- [Material UI overview](https://mui.com/material-ui/getting-started/): React styled-suite scope, production component coverage and customization model.
+- [Element Plus guide](https://element-plus.org/en-US/guide/quickstart): Vue 3 component-suite setup and import strategies.
 - [NIST SSDF SP 800-218](https://csrc.nist.gov/pubs/sp/800/218/final): secure development practices integrated across the lifecycle.
 - [OWASP ASVS](https://owasp.org/www-project-application-security-verification-standard/): application security requirements and verification guidance.
 - [The Twelve-Factor App](https://12factor.net/): portable SaaS configuration and operational principles; apply selectively because modern deployment contexts vary.

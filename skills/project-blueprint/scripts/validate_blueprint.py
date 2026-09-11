@@ -46,6 +46,10 @@ GENERIC_FONT_RE = re.compile(
     r"\b(?:system-ui|ui-sans-serif|ui-serif|sans-serif|serif|monospace)\b",
     re.IGNORECASE,
 )
+UI_FOUNDATION_STATE_RE = re.compile(
+    r"\b(?:confirmed|provisional|not-applicable)\b|已确认|暂定|不适用",
+    re.IGNORECASE,
+)
 EMOJI_RE = re.compile(
     "["
     "\\u2600-\\u26FF"
@@ -107,10 +111,16 @@ def section_after(text: str, heading_match: re.Match[str]) -> str:
     return text[start : next_heading.start() if next_heading else len(text)]
 
 
-def h2_section_matching(text: str, terms: tuple[str, ...]) -> str | None:
+def h2_section_matching(
+    text: str,
+    terms: tuple[str, ...],
+    exclude_terms: tuple[str, ...] = (),
+) -> str | None:
     """Return an H2 section whose localized title contains one of the terms."""
     for match in H2_TITLE_RE.finditer(text):
         title = match.group(1).strip().lower()
+        if any(term in title for term in exclude_terms):
+            continue
         if any(term in title for term in terms):
             return section_after(text, match)
     return None
@@ -119,7 +129,33 @@ def h2_section_matching(text: str, terms: tuple[str, ...]) -> str | None:
 def validate_design_contract(text: str, findings: list[Finding]) -> None:
     color = h2_section_matching(text, ("color", "palette", "配色", "色彩", "颜色", "色板"))
     typography = h2_section_matching(text, ("typography", "type system", "字体", "排版", "字号"))
-    components = h2_section_matching(text, ("component", "组件"))
+    ui_foundation = h2_section_matching(
+        text,
+        (
+            "ui foundation",
+            "ui component system",
+            "component sourcing",
+            "ui 基础",
+            "ui框架",
+            "ui 框架",
+            "组件基础",
+            "组件库",
+        ),
+    )
+    components = h2_section_matching(
+        text,
+        ("component", "组件"),
+        (
+            "ui foundation",
+            "ui component system",
+            "component sourcing",
+            "ui 基础",
+            "ui框架",
+            "ui 框架",
+            "组件基础",
+            "组件库",
+        ),
+    )
 
     if color is None:
         add(
@@ -160,6 +196,23 @@ def validate_design_contract(text: str, findings: list[Finding]) -> None:
                 "DESIGN.md",
                 "Typography-system section is missing " + " and ".join(unresolved),
             )
+
+    if ui_foundation is None:
+        add(
+            findings,
+            "warning",
+            "DESIGN_UI_FOUNDATION_MISSING",
+            "DESIGN.md",
+            "Add a UI-foundation section naming the selected component system, alternatives, theming/ownership, compatibility evidence, and component coverage",
+        )
+    elif not UI_FOUNDATION_STATE_RE.search(ui_foundation):
+        add(
+            findings,
+            "warning",
+            "DESIGN_UI_FOUNDATION_UNRESOLVED",
+            "DESIGN.md",
+            "UI-foundation choice must be confirmed, provisional, or explicitly not-applicable; an undecided library list is not implementation-ready",
+        )
 
     if components is None:
         add(

@@ -78,6 +78,22 @@ If brand inputs are missing, choose an accessible provisional palette with exact
 | `type-helper` | [font stack/token] | [rem + px reference] | [rem + px reference] | [number] | [value] | Help, validation, error text | [state] |
 | `type-data` | [font stack/token] | [rem + px reference] | [rem + px reference] | [number] | [value] | Tables, timestamps, amounts, IDs | [state] |
 
+## UI foundation and component sourcing
+
+For a React or Vue client, select one coherent UI foundation before implementation. Do not treat unthemed browser-default controls or a list of undecided libraries as the finished component strategy. If a library is genuinely unnecessary, mark it `not-applicable` and document how complex interaction and accessibility behavior will be supplied and tested.
+
+| Client/stack | Candidate foundations | Selected foundation and mode | Constraint-based rationale / rejected alternative | Official compatibility evidence and access date | State |
+|---|---|---|---|---|---|
+| [React / Vue / other] | [at least two credible options, or existing organizational system] | [named system; styled / open-code / headless / organizational] | [fit, cost, and why the alternative lost] | [official source; YYYY-MM-DD] | [state] |
+
+| Concern | Decision | Verification / ownership | State |
+|---|---|---|---|
+| Theme and token entry point | [preset/config/CSS variables and override boundary] | [representative screen + owner] | [state] |
+| Component coverage | [map required Select/Combobox, Menu, Tabs, Dialog/Drawer, Toast/Alert, Table/Pagination, form behavior] | [keyboard/focus/visual regression tests] | [state] |
+| Icon system | [one SVG icon set; sizing and accessible-name rule] | [lint/review owner] | [state] |
+| Runtime and delivery | [bundle/import, SSR/hydration, localization, portal/z-index implications] | [build/profile/test evidence] | [state] |
+| Dependency maintenance | [version/range, update cadence, exception policy] | [owner and revisit trigger] | [state] |
+
 ## Component specifications
 
 Include every component used by the defined screens. The rows below are the minimum review set; mark genuinely unused rows `not-applicable` and add product-specific components.
