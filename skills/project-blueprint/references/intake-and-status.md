@@ -13,6 +13,18 @@ Use the repository and supplied documents before asking questions. Ask in small 
 
 Ask only questions that change a decision or gate. Give 2–3 meaningful options when the user may not know the design space. Put the recommended option first and explain its consequence in one sentence.
 
+### Selection checkpoints
+
+Product scope, technical architecture, and UI direction are separate decisions. Before concluding intake, check for a current user choice or explicit delegation for each applicable selection. Without one, present candidates in the conversation and ask the user to choose or delegate. A comparison buried in generated files does not complete this interaction. There is no fixed number of interview rounds after which selection can be skipped.
+
+- Architecture: present the three reference stacks required by `selection-rubric.md`, any useful derived alternatives, and a recommended package covering architecture shape, database and deployment. Let the user accept the package or amend it; local implementation details do not need a questionnaire.
+- UI: present two or three recognizable directions describing composition/navigation, appearance, color and typography character, with a recommendation. A product's audience or entertainment category does not establish its owner's visual preference. Direction selection and later prototype visual acceptance are distinct checkpoints.
+- Reuse an explicit prior choice or approved design system when its source and scope apply. Memory and old generated documents are leads to verify, not evidence that the user approved a new baseline. An installed framework establishes a repository fact, not user approval of every associated design decision.
+- Wait for the answer before finalizing the dependent decision or marking dependent tasks ready. Independent product/spec work can continue. A generic “continue” only authorizes the next action actually presented; it does not retroactively approve choices never offered.
+- If the user requests no questions or a direct draft, comply with provisional recommendations and named pending decisions. If the user explicitly delegates selection, decide within that scope and record an agent decision under delegation. Do not invent a user review or require redundant permission.
+
+Store the source and actual date alongside each consequential selection in its authoritative document: the user's choice, an applicable approved source, or the explicit delegation and agent rationale. Keep UI direction and architecture separately traceable even when answered in one message. Do not write “confirmed in interview” based only on product answers.
+
 ## Minimum intake
 
 ### Product
@@ -56,6 +68,8 @@ Unknown numeric targets become a named pending decision. Never invent “99.99%�
 | provisional | Working default is acceptable for now | rationale and revisit trigger |
 | pending | A decision is still required | `TBD-*` ID, owner, decision-by, blocked gate |
 | not-applicable | The topic was examined and does not apply | short reason |
+
+An official technical source can establish compatibility or availability; it cannot approve a project's preferences. A delegated decision may be confirmed within the user's authorization, with that provenance stated. An unanswered recommendation remains provisional with a pending selection; it does not unblock work that requires a confirmed architecture or design direction.
 
 Use the localized labels in prose if needed, but preserve the English machine value in tables or frontmatter.
 

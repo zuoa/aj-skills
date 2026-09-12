@@ -10,6 +10,7 @@ last_reviewed: YYYY-MM-DD
 - Status: proposed
 - Date: YYYY-MM-DD
 - Decision owner: [role/name]
+- Decision source: [actual user choice, applicable approved source, or explicit delegation and agent decision; pending if absent]
 - Related requirements: [PRD/SPEC IDs]
 
 ## Context and decision drivers

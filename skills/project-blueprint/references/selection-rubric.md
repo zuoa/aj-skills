@@ -8,6 +8,7 @@
 4. Establish the simplest viable baseline.
 5. Add up to two analysis-derived candidates when the mandatory set misses a material requirement.
 6. Recommend one candidate from the complete set, name its cost, and record a revisit trigger.
+7. Present the comparison and recommended architecture/database/deployment package in the conversation. Apply the selection checkpoints in `intake-and-status.md`: obtain a choice or explicit delegation before treating the package as confirmed. A written recommendation or confirmed product constraints alone are insufficient.
 
 ## Mandatory reference stacks
 
@@ -36,6 +37,8 @@ Use this decision table:
 
 | Decision | Hard constraints | Candidates | Recommendation | Tradeoff | State | Revisit trigger |
 |---|---|---|---|---|---|---|
+
+For confirmed selections, record the decision source, actual date and scope alongside this table. If the agent chose under explicit delegation, say so. Unanswered selections need a pending decision and must not make dependent implementation tasks ready, even when independent backend work is otherwise allowed by the visual-stage rules.
 
 Popularity and novelty are not constraints. A named service is not a decision until its role and exit implications are clear.
 

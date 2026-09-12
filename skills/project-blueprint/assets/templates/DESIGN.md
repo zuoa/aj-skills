@@ -47,6 +47,8 @@ Describe spatial relationships first. Keep layout family, navigation model, work
 
 When the user specifies a direction, refine it directly. Otherwise compare two or three plausible options in plain language and recommend one. No mandatory theme IDs, weighted scores or complete token tables. Known brand values may be recorded; exploratory values remain provisional.
 
+Present unresolved direction options in the conversation and obtain a choice or explicit delegation before calling the direction settled. Record the decision source, actual date and scope here; for a no-questions draft retain the provisional recommendation and pending selection. Direction selection is separate from the later visual review.
+
 ## Prototype handoff
 
 Include when preparing the frontend design task; this skill supplies the brief and receives evidence, not page/image generation.

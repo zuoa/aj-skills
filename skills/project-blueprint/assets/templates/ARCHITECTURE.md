@@ -52,6 +52,8 @@ Keep the three mandatory reference stacks in every full-stack selection. Add up 
 
 ### Decisions
 
+Present the candidate comparison to the user before finalizing selection, unless an applicable choice or explicit delegation already exists. Record decision source, actual date and scope alongside confirmed decisions; product intake answers alone do not confirm this stack.
+
 | Decision | Hard constraints | Candidates | Recommendation | Tradeoff | State | Revisit trigger |
 |---|---|---|---|---|---|---|
 
