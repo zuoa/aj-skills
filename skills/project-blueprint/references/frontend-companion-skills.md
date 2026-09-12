@@ -34,6 +34,14 @@ When recommendations conflict, apply this priority:
 
 Record unresolved material conflicts as a stable TBD instead of silently choosing one skill's preference.
 
+## Direction, handoff, and evidence return
+
+At direction stage, use `frontend-design` to refine recognizable references, composition, visual hierarchy and key customization; use `ui-ux-pro-max` only for unresolved candidate or UX questions. Companion suggestions for exact palettes or dimensions remain exploratory until reviewed. Do not let a companion's preferred aesthetic or planning template override the selected direction.
+
+At prototype stage, project-blueprint writes the representative-page brief. A separate frontend task makes the page or image, then returns screenshot/prototype links, revision/context, observations and review state. Project-blueprint may inspect those results and update the design record; it does not silently generate business code or static prototypes. Use `web-design-guidelines` on available UI for task/accessibility review, alongside visual critique, rather than treating compliance as proof of visual quality.
+
+At specification stage, derive tokens and component differences from accepted results or reuse approved design-system sources. Missing tools or companions leave an explicit evidence gap and a usable handoff; never fabricate a passing review or require installation to continue documenting the direction.
+
 ## Installation handoff
 
 If the user wants a reusable frontend setup, point them to the installation commands in the repository root `README.md`. Describe the three general Web skills as the frontend baseline and the React skill as conditional. Do not claim that installing `project-blueprint` installs them automatically.

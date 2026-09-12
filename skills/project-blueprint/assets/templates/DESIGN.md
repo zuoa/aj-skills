@@ -1,206 +1,85 @@
 ---
 blueprint_kind: design
 blueprint_status: draft
+design_stage: direction
 owner: TBD-DESIGN-001
 last_reviewed: YYYY-MM-DD
 ---
 
-# Product Design Constraints
+# Product Design Direction
+
+Use only the sections needed at the current stage. `direction` establishes intent; `prototype` adds handoff and review; `specification` adds implementation definitions after acceptance. For a project without user-facing UI, use `not-applicable`, replace visual sections with an Applicability section explaining why, and keep behavior in SPEC. Delete these instructions from the output.
 
 ## Audience, context, and primary jobs
 
 | Surface | Audience/context | Primary job | Evidence | State |
 |---|---|---|---|---|
 
-## Experience principles
+## Constraints and exploration space
 
-| Principle | User consequence | Anti-pattern | State |
-|---|---|---|---|
+- Functional invariants and source requirements:
+- Confirmed brand requirements and provenance:
+- Visual suggestions open to exploration:
 
 ## Information architecture and journeys
 
-| Area/screen | User goal | Entry/exit | Related SPEC | State |
+| Area/screen | User goal and content priority | Entry/exit | Related SPEC | State |
 |---|---|---|---|---|
 
 ## Application shell and layout
 
-Keep layout family, navigation model, work-surface model, and platform chrome as separate decisions. SSO or unified login may affect persistent identity/context controls, but does not by itself justify a left sidebar.
+Describe spatial relationships first. Keep layout family, navigation model, work-surface model, and platform chrome separate. SSO or unified login does not itself choose a sidebar. If unresolved, consult the layout catalog for plausible alternatives; if already chosen, record the decision without reopening selection.
 
-### Layout shortlist and recommendation
-
-Score two or three credible candidates against project evidence; state whether a candidate is the product shell or a nested task mode.
-
-| Candidate family/composition | Shell or nested mode | Audience/task/content evidence | Task fit (30%) | IA/navigation (20%) | Frequency/expertise (15%) | Device/input (15%) | Risk/accessibility (15%) | Delivery/evolution (5%) | Weighted result / disposition |
-|---|---|---|---:|---:|---:|---:|---:|---:|---|
-| `[layout family] + [navigation model] + [work-surface model] + [platform chrome]` | | | | | | | | | |
-
-- Recommended composition and rationale:
-- Closest rejected alternative and why it lost:
-- Expanded/desktop anatomy, persistent regions, and scroll ownership:
+- Composition and rationale; confirmed/provisional state:
+- Global/local navigation, identity/context controls and work-surface relationship:
+- Expanded/desktop anatomy and scroll ownership:
 - Compact/mobile transformation and state continuity:
-- Prototype/task/accessibility result that would overturn the recommendation:
-
-### Platform chrome and unified identity
-
-| Capability | Placement/scope | Required behavior and states | Security/architecture handoff | State |
-|---|---|---|---|---|
-| Authentication / SSO entry | | [IdP/tenant discovery, return URL, loading/error/recovery, signed-in destination] | [session/MFA/re-auth/logout authority] | |
-| Current identity and session | | [profile, session expiry, sign out/all devices] | [revocation/audit/personal data] | |
-| Tenant/workspace switcher | | [current context, authorized choices, state reset/preservation, wrong-tenant link] | [server-side authorization and isolation] | |
-| Product/app switcher | | [current product, destination and entitlement behavior] | [cross-product session/ownership] | |
-| Global search/command | | [scope, permission filtering, shortcuts, empty/error] | [index authorization/audit/confirmation] | |
-| Notifications/inbox | | [freshness, severity, acknowledgement, deep links] | [delivery/retention/sensitive preview] | |
-| Help/support | | [contextual help and escalation] | [support data/impersonation controls] | |
-
-### Navigation and layout contract
-
-| Context/surface | Global navigation | Local navigation/actions | Work-surface relationship | Location/context cues | Focus/overflow/scroll owner | State |
-|---|---|---|---|---|---|---|
+- Task result that would overturn the recommendation:
 
 ## Visual direction
 
-- Visual thesis and task rationale:
-- Signature device (one maximum):
-- References, what to borrow, and why:
-- Explicitly avoid and why:
-- Spacing/grid/density/radius/elevation:
-- Motion and imagery:
+- Selected reference-led direction and rationale; confirmed/provisional state:
+- References: what to borrow, what to adapt, and inspection status:
+- Appearance and density by surface:
+- Key customization: brand/accent direction, display/body relationship, composition and visual focus:
+- Optional signature treatment grounded in the product:
+- Decisions intentionally left for prototype exploration:
 
-### Theme shortlist and recommendation
+When the user specifies a direction, refine it directly. Otherwise compare two or three plausible options in plain language and recommend one. No mandatory theme IDs, weighted scores or complete token tables. Known brand values may be recorded; exploratory values remain provisional.
 
-Keep theme family, appearance, and density as separate axes. Score two or three credible candidates against project evidence; do not paste an undifferentiated preset catalog.
+## Prototype handoff
 
-| Candidate composition | Audience/task evidence | Primary-task fit (30%) | Trust/comprehension (20%) | Content/environment (15%) | Accessibility (15%) | Framework adaptation (10%) | Distinctiveness (10%) | Weighted result / disposition |
-|---|---|---:|---:|---:|---:|---:|---:|---|
-| `[family] + [light/dark/system/high-contrast] + [comfortable/compact]` | | | | | | | | |
+Include when preparing the frontend design task; this skill supplies the brief and receives evidence, not page/image generation.
 
-- Recommended composition and rationale:
-- Closest rejected alternative and why it lost:
-- Existing brand/design-system constraints:
-- Prototype or usability/accessibility result that would overturn the recommendation:
+- Representative page(s), primary task and acceptance owner:
+- Real content or clearly labeled representative content and important states:
+- Target devices: core desktop and narrow-screen views by default:
+- Visual questions: hierarchy, spacing rhythm, style fidelity, brand recognition:
+- Task, responsive and accessibility checks:
+- Expected return: screenshot/prototype references, reviewed revision, findings and proposed adjustments:
 
-## Color system
+## Visual review
 
-- Palette rationale and relationship to the primary job:
-- Theme strategy: [light / dark / system; default]
-- Color notation and gamut policy: [HEX / OKLCH / other]
+Include at prototype stage onward. For a pending review, omit unavailable evidence/reviewer/date rather than inventing them. A confirmed review requires all fields below. Reused approved design-system evidence must state applicability and any project-specific deltas.
 
-| Token | Light value | Dark value | Semantic role and allowed use | Interaction/contrast requirement | State |
-|---|---|---|---|---|---|
-| `color-canvas` | [exact value] | [exact value or N/A] | App/page background | With primary text: [target] | [state] |
-| `color-surface` | [exact value] | [exact value or N/A] | Default component surface | With body text: [target] | [state] |
-| `color-surface-raised` | [exact value] | [exact value or N/A] | Dialog/popover/raised surface | Distinguishable without relying on shadow alone | [state] |
-| `color-text-primary` | [exact value] | [exact value or N/A] | Primary text | Against canvas/surface: [target] | [state] |
-| `color-text-secondary` | [exact value] | [exact value or N/A] | Supporting text | Against canvas/surface: [target] | [state] |
-| `color-border` | [exact value] | [exact value or N/A] | Dividers and control boundaries | Boundary remains visible in required modes | [state] |
-| `color-action-primary` | [exact value] | [exact value or N/A] | Primary action and selected state only | Default state; text: [target] | [state] |
-| `color-action-primary-hover` | [exact value] | [exact value or N/A] | Primary action hover | Distinct from default without shifting layout | [state] |
-| `color-action-primary-pressed` | [exact value] | [exact value or N/A] | Primary action pressed | Distinct from hover and default | [state] |
-| `color-text-on-action` | [exact value] | [exact value or N/A] | Text/icon on primary action | Against all action states: [target] | [state] |
-| `color-focus-ring` | [exact value] | [exact value or N/A] | Keyboard focus | Visible against canvas and every component surface | [state] |
-| `color-disabled` | [exact value] | [exact value or N/A] | Disabled content/control | Never the only disabled cue | [state] |
-| `color-success` | [foreground + surface exact values] | [foreground + surface exact values or N/A] | Successful outcome | Text/icon on status surface: [target] | [state] |
-| `color-warning` | [foreground + surface exact values] | [foreground + surface exact values or N/A] | Recoverable risk | Text/icon on status surface: [target] | [state] |
-| `color-error` | [foreground + surface exact values] | [foreground + surface exact values or N/A] | Error/destructive outcome | Text/icon on status surface: [target] | [state] |
-| `color-info` | [foreground + surface exact values] | [foreground + surface exact values or N/A] | Neutral information | Text/icon on status surface: [target] | [state] |
+- Review status: pending
+- Evidence:
+- Reviewer:
+- Reviewed on:
+- Findings and adjustments:
 
-If brand inputs are missing, choose an accessible provisional palette with exact values and a revisit trigger. Do not replace the table with “use brand colors” or leave implementation tokens blank.
+## Responsive, states, and accessibility
 
-## Typography system
-
-- Base/root size and scaling policy:
-- UI/body font stack, language fallbacks, and rationale:
-- Display/brand font stack, if different:
-- Monospace or tabular-numeric policy:
-- Font source, license, loading/fallback, and layout-shift policy:
-
-| Type token | Font family/token | Desktop size / line height | Mobile size / line height | Weight | Letter spacing | Intended use | State |
-|---|---|---|---|---|---|---|---|
-| `type-display` | [font stack/token] | [rem + px reference] | [rem + px reference] | [number] | [value] | Marketing/hero only, or N/A | [state] |
-| `type-page-title` | [font stack/token] | [rem + px reference] | [rem + px reference] | [number] | [value] | One page-level heading | [state] |
-| `type-section-title` | [font stack/token] | [rem + px reference] | [rem + px reference] | [number] | [value] | Section headings | [state] |
-| `type-body` | [font stack/token] | [rem + px reference] | [rem + px reference] | [number] | [value] | Default reading/UI text | [state] |
-| `type-body-small` | [font stack/token] | [rem + px reference] | [rem + px reference] | [number] | [value] | Secondary content | [state] |
-| `type-label` | [font stack/token] | [rem + px reference] | [rem + px reference] | [number] | [value] | Form and field labels | [state] |
-| `type-action` | [font stack/token] | [rem + px reference] | [rem + px reference] | [number] | [value] | Buttons and action links | [state] |
-| `type-helper` | [font stack/token] | [rem + px reference] | [rem + px reference] | [number] | [value] | Help, validation, error text | [state] |
-| `type-data` | [font stack/token] | [rem + px reference] | [rem + px reference] | [number] | [value] | Tables, timestamps, amounts, IDs | [state] |
-
-## UI foundation and component sourcing
-
-For a React or Vue client, select one coherent UI foundation before implementation. Do not treat unthemed browser-default controls or a list of undecided libraries as the finished component strategy. If a library is genuinely unnecessary, mark it `not-applicable` and document how complex interaction and accessibility behavior will be supplied and tested.
-
-| Client/stack | Candidate foundations | Selected foundation and mode | Theme customization model and fit | Constraint-based rationale / rejected alternative | Official compatibility evidence and access date | State |
-|---|---|---|---|---|---|---|
-| [React / Vue / other] | [at least two credible options, or existing organizational system] | [named system; styled / open-code / headless / organizational] | [primitive/semantic/component token equivalents; appearance/density/scoping; permitted overrides; adaptation cost] | [fit, cost, and why the alternative lost] | [official source; YYYY-MM-DD] | [state] |
-
-| Concern | Decision | Verification / ownership | State |
-|---|---|---|---|
-| Theme and token entry point | [preset/config/CSS variables and override boundary] | [representative screen + owner] | [state] |
-| Appearance, density, and scoping | [system/manual mode, persistence, SSR/no-flash, compact scope, nested-theme policy] | [first render + mode/density matrix] | [state] |
-| Component coverage | [map required Select/Combobox, Menu, Tabs, Dialog/Drawer, Toast/Alert, Table/Pagination, form behavior] | [keyboard/focus/visual regression tests] | [state] |
-| Icon system | [one SVG icon set; sizing and accessible-name rule] | [lint/review owner] | [state] |
-| Runtime and delivery | [bundle/import, SSR/hydration, localization, portal/z-index implications] | [build/profile/test evidence] | [state] |
-| Dependency maintenance | [version/range, update cadence, exception policy] | [owner and revisit trigger] | [state] |
-
-## Component specifications
-
-Include every component used by the defined screens. The rows below are the minimum review set; mark genuinely unused rows `not-applicable` and add product-specific components.
-
-| Component / part | Type token | Resolved font family | Size / line height / weight | Height/padding/gap | Radius/border/elevation | Required states and behavior | Source/override | State |
-|---|---|---|---|---|---|---|---|---|
-| Button: label | [`type-action`] | [full resolved stack] | [exact values] | [exact values] | [tokens/values] | default, hover, focus, pressed, disabled, loading | [source/rule] | [state] |
-| Input/Select: label, value, helper/error | [tokens per part] | [full resolved stack] | [exact values per part] | [exact values] | [tokens/values] | empty, filled, hover, focus, invalid, disabled, read-only | [source/rule] | [state] |
-| Navigation/Tabs: item and badge | [tokens per part] | [full resolved stack] | [exact values per part] | [exact values] | [tokens/values] | default, hover, focus, current, overflow | [source/rule] | [state] |
-| Table/List: header, cell, metadata | [tokens per part] | [full resolved stack] | [exact values per part] | [row density values] | [tokens/values] | loading, empty, selected, sorted, truncated, responsive | [source/rule] | [state] |
-| Card: title, body, metadata | [tokens per part] | [full resolved stack] | [exact values per part] | [exact values] | [tokens/values] | default, interactive, selected, disabled | [source/rule] | [state] |
-| Dialog/Drawer: title, body, actions | [tokens per part] | [full resolved stack] | [exact values per part] | [exact values] | [tokens/values] | opened, initial focus, overflow, closing, destructive confirmation | [source/rule] | [state] |
-| Toast/Alert: title, body, action | [tokens per part] | [full resolved stack] | [exact values per part] | [exact values] | [tokens/values] | info, success, warning, error, timeout/persistent | [source/rule] | [state] |
+- Responsive behavior and content priority:
+- Loading/empty/error/permission/offline and destructive states relevant to the task:
+- Keyboard/focus/touch, contrast, zoom and motion requirements:
+- Content voice, labels, long text and localization:
 
 ## Icons, imagery, and Emoji
 
-- Icon source and labeling policy:
-- Imagery source, rights, and accessibility:
-- Emoji policy: none by default in team-authored UI and system copy.
-
-| Emoji exception/use location | User value | Text/icon alternative | Approver and state |
-|---|---|---|---|
-
-## Remaining design tokens
-
-| Topic | Source/decision | Override policy | State |
-|---|---|---|---|
-| Spacing and layout grid | | | |
-| Breakpoints and content widths | | | |
-| Radius | | | |
-| Border and elevation | | | |
-| Motion duration/easing | | | |
-
-## Responsive and platform behavior
-
-| Context | Layout/input/safe-area behavior | Related SPEC | State |
-|---|---|---|---|
-
-## UI state matrix
-
-| Flow/screen | Loading | Empty | Error | Offline | Permission | Destructive action |
-|---|---|---|---|---|---|---|
-
-## Accessibility and content
-
-- Accessibility target:
-- Keyboard/focus/touch targets:
-- Contrast and non-color cues:
-- Screen reader/semantic behavior:
-- Localization and text expansion:
-- Content voice and terminology:
-
-## Design self-critique
-
-- Product-specific choices that would not transfer unchanged to an unrelated product:
-- Structural elements and the information they encode:
-- Decoration or familiar AI-design patterns removed or explicitly justified:
-- Evidence and acceptance method for the riskiest design assumption:
+- Icon consistency and accessible labels:
+- Imagery purpose, sources, rights and alternatives:
+- Emoji policy: none by default in team-authored UI and system copy; document any approved exception with its scope, user value and accessible text/icon alternative.
 
 ## Open decisions
 

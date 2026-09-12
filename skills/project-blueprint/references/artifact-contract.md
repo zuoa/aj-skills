@@ -7,7 +7,7 @@
 | `PRD.md` | users, problem, scope, outcomes, product requirements | internal technology and deployment topology |
 | `SPEC.md` | global behavior rules, glossary, domain index, traceability, readiness | detailed domain behavior or implementation |
 | `specs/*.md` | externally observable requirements and scenarios | framework, database, internal modules |
-| `DESIGN.md` | information architecture, interaction, visual system, UI states | backend internals |
+| `DESIGN.md` | information architecture, interaction, visual direction, review evidence, implementation design source, UI states | backend internals |
 | `ARCHITECTURE.md` | system boundaries, components, data flow, interfaces, quality budgets | product justification or visual styling |
 | `SECURITY.md` | threats, data protection, identity controls, verification | generic legal conclusions |
 | `DEPLOY.md` | environments, release, operations, recovery, cost | product behavior |
@@ -70,3 +70,5 @@ Allowed `blueprint_kind` values are `prd`, `spec-index`, `domain-spec`, `design`
 ## Templates
 
 Copy the closest file from `assets/templates/` and adapt it. Keep its frontmatter keys and traceability fields. Delete instructional placeholders that do not apply; record meaningful omissions as `not-applicable` rather than leaving empty headings.
+
+DESIGN.md additionally uses `design_stage: direction / prototype / specification / not-applicable`. See `intake-and-status.md` for gates and `design-and-architecture.md` for evidence fields. `DESIGN_IMPLEMENTATION.md` is an optional template fragment merged into DESIGN.md after visual acceptance, not another required project document. Shared token definitions may remain in linked theme files or approved design-system references; DESIGN.md owns the choice and override policy.

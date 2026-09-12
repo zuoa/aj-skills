@@ -8,6 +8,7 @@ import json
 import re
 import sys
 from dataclasses import asdict, dataclass
+from datetime import date
 from pathlib import Path
 from typing import Iterable
 
@@ -127,7 +128,103 @@ def h2_section_matching(
     return None
 
 
-def validate_design_contract(text: str, findings: list[Finding]) -> None:
+def record_field(section: str, *labels: str) -> str:
+    """Read one explicit review field, not a status mentioned in surrounding prose."""
+    pattern = r"^[ \t]*-[ \t]*(?:" + "|".join(re.escape(label) for label in labels) + r")[ \t]*[:：][ \t]*([^\n]*)$"
+    match = re.search(pattern, section, re.MULTILINE | re.IGNORECASE)
+    return match.group(1).strip().strip("`") if match else ""
+
+
+def has_source_reference(section: str, document: str) -> bool:
+    """Recognize a source link; resolve same-document heading anchors locally."""
+    for target in MARKDOWN_LINK_RE.findall(section):
+        target = target.strip().strip("<>")
+        if not target:
+            continue
+        if not target.startswith("#"):
+            # Local file existence is checked by validate(); remote content is not fetched.
+            return True
+        anchor = target[1:]
+        for title in re.findall(r"^#{1,6}\s+(.+?)\s*$", document, re.MULTILINE):
+            slug = re.sub(r"[^\w\- ]", "", title.lower()).replace(" ", "-")
+            if anchor == slug:
+                return True
+    return False
+
+
+def validate_design_contract(text: str, findings: list[Finding], index_text: str = "") -> None:
+    metadata = parse_frontmatter(text)
+    stage = metadata.get("design_stage")
+    if stage is None:
+        add(findings, "info", "LEGACY_DESIGN_STAGE", "DESIGN.md",
+            "No design_stage: retaining legacy visual checks; migrate explicitly to the staged design workflow when revising this document")
+        validate_visual_details(text, findings)
+        return
+    if stage not in {"direction", "prototype", "specification", "not-applicable"}:
+        add(findings, "error", "DESIGN_STAGE_INVALID", "DESIGN.md",
+            "design_stage must be direction, prototype, specification, or not-applicable")
+        return
+
+    ready = bool(re.search(r"^\s*\|\s*`?implementation-ready`?\s*\|\s*`?ready`?\s*\|", index_text, re.MULTILINE | re.IGNORECASE))
+    start = len(findings)
+
+    def require_section(terms: tuple[str, ...], code: str, message: str) -> str:
+        section = h2_section_matching(text, terms)
+        if not section or not section.strip():
+            add(findings, "warning", code, "DESIGN.md", message)
+        return section or ""
+
+    if stage == "not-applicable":
+        require_section(("applicability", "适用性"), "DESIGN_APPLICABILITY_MISSING",
+                        "Explain why this project has no user-facing UI; retain observable behavior in SPEC")
+    else:
+        require_section(("visual direction", "视觉方向"), "DESIGN_DIRECTION_MISSING",
+                        "Record the selected direction, reference characteristics, key customization and exploration space")
+        if stage in {"prototype", "specification"}:
+            if stage == "prototype":
+                require_section(("prototype handoff", "样稿交接"), "DESIGN_HANDOFF_MISSING",
+                                "Name the representative page, content, task, devices and evidence expected from the frontend task")
+            review = require_section(("visual review", "视觉评审"), "DESIGN_REVIEW_MISSING",
+                                     "Record review status, evidence and findings; use pending when visual work has not been observed")
+            status = record_field(review, "Review status", "评审状态")
+            if status not in {"pending", "provisional", "confirmed"}:
+                add(findings, "warning", "DESIGN_REVIEW_STATUS_INVALID", "DESIGN.md",
+                    "Use an explicit Review status / 评审状态 field: pending, provisional or confirmed")
+            if stage == "specification" and status != "confirmed":
+                add(findings, "warning", "DESIGN_REVIEW_UNCONFIRMED", "DESIGN.md",
+                    "Specification requires a confirmed visual review or applicable approved design-system evidence")
+            if status == "confirmed":
+                missing = []
+                if not has_source_reference(record_field(review, "Evidence", "证据"), text):
+                    missing.append("linked evidence")
+                if not record_field(review, "Reviewer", "评审人"):
+                    missing.append("reviewer")
+                reviewed_on = record_field(review, "Reviewed on", "评审日期")
+                try:
+                    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", reviewed_on):
+                        raise ValueError
+                    date.fromisoformat(reviewed_on)
+                except ValueError:
+                    missing.append("review date (YYYY-MM-DD)")
+                if not record_field(review, "Findings and adjustments", "结论与调整"):
+                    missing.append("findings and adjustments")
+                if missing:
+                    add(findings, "warning", "DESIGN_REVIEW_EVIDENCE_INCOMPLETE", "DESIGN.md",
+                        "Confirmed review is missing " + ", ".join(missing))
+        if stage == "specification":
+            source = require_section(("token source", "token 来源", "token来源"), "DESIGN_TOKEN_SOURCE_MISSING",
+                                     "Link the authoritative theme/config/design system or an inline token section")
+            if source and not has_source_reference(source, text):
+                add(findings, "warning", "DESIGN_TOKEN_SOURCE_UNRESOLVED", "DESIGN.md",
+                    "Token source needs a source link or a valid inline heading anchor")
+            validate_visual_details(text, findings, allow_sources=True)
+
+    if ready and (stage in {"direction", "prototype"} or any(item.severity in {"warning", "error"} for item in findings[start:])):
+        add(findings, "error", "DESIGN_READINESS_CONFLICT", "SPEC.md",
+            "implementation-ready is ready but design is exploratory or has unresolved specification evidence; prototype exploration may continue while the overall gate is blocked")
+
+
+def validate_visual_details(text: str, findings: list[Finding], *, allow_sources: bool = False) -> None:
     layout = h2_section_matching(
         text,
         ("application shell", "layout recommendation", "应用骨架", "布局推荐", "布局与导航"),
@@ -187,13 +284,13 @@ def validate_design_contract(text: str, findings: list[Finding]) -> None:
             "DESIGN.md",
             "Add an overall color-system section with semantic tokens, theme values, interaction states, and contrast pairs",
         )
-    elif not COLOR_VALUE_RE.search(color):
+    elif not COLOR_VALUE_RE.search(color) and not (allow_sources and has_source_reference(color, text)):
         add(
             findings,
             "warning",
             "DESIGN_COLOR_VALUES_UNRESOLVED",
             "DESIGN.md",
-            "Color-system section has no concrete HEX/RGB/HSL/OKLCH/Lab values; provisional values are required when brand inputs are missing",
+            "Color-system section needs concrete values or, for staged specifications, a link to the maintained palette",
         )
 
     if typography is None:
@@ -204,7 +301,7 @@ def validate_design_contract(text: str, findings: list[Finding]) -> None:
             "DESIGN.md",
             "Add a typography-system section with font stacks and component-relevant size, line-height, weight, and responsive rules",
         )
-    else:
+    elif not (allow_sources and has_source_reference(typography, text)):
         unresolved: list[str] = []
         if not GENERIC_FONT_RE.search(typography):
             unresolved.append("a concrete font stack with a generic fallback")
@@ -244,6 +341,10 @@ def validate_design_contract(text: str, findings: list[Finding]) -> None:
             "DESIGN.md",
             "Add component specifications mapping used components to typography, dimensions, visual tokens, and states",
         )
+    elif allow_sources:
+        if not components.strip():
+            add(findings, "warning", "DESIGN_COMPONENT_SPECS_MISSING", "DESIGN.md",
+                "Map used components to documented tokens or foundation variants, with applicable deltas and states")
     else:
         unresolved = []
         if not GENERIC_FONT_RE.search(components):
@@ -375,7 +476,7 @@ def validate(project_root: Path) -> list[Finding]:
 
     design_text = texts.get(root / "DESIGN.md")
     if design_text is not None:
-        validate_design_contract(design_text, findings)
+        validate_design_contract(design_text, findings, index_text)
 
     all_tbd: set[str] = set()
     registered_tbd: set[str] = set()

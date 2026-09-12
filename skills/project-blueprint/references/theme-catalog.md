@@ -43,9 +43,9 @@ revisit trigger. Do not infer a theme from industry stereotypes alone.
 ## Theme families
 
 The values below are starter seeds for comparison, not a complete palette.
-The selected family must still be expanded into the semantic color, type,
-geometry, state, and component tables in `DESIGN.md`, with contrast verified in
-every supported appearance.
+Use them only as optional exploration seeds. After representative-page acceptance,
+derive semantic color, type, geometry and state definitions from the reviewed design
+or an approved design system. Do not require these tables during direction work.
 
 | ID and direction | Best fit and audience | Character and signature device | Starter light seeds: canvas / surface / text / accent | Density and appearance default | Framework fit and main risk |
 |---|---|---|---|---|---|
@@ -83,24 +83,26 @@ showcases of policy, research, legal, or planning outputs. This recommendation
 must be revisited if the surface becomes a consumer marketplace rather than a
 documentation/productivity site.
 
-## Score and present the shortlist
+## Present a recognizable direction
 
-Score two or three credible candidates, not the full catalog. Use a 1–5 scale
-and explain any score that changes the winner.
+A theme family is open vocabulary. A user can name Apple-site-like presentation,
+an enterprise dark workbench, a cultural magazine, or another concrete reference;
+do not translate it forcibly into one of the six families above. State which
+reference characteristics to borrow and how they serve this product. Verify a
+provided reference when accessible, and disclose when it has not been inspected.
 
-| Criterion | Weight | What a high score means |
-|---|---:|---|
-| Primary-task fit | 30% | Hierarchy, density, and interaction model make the main job easier. |
-| Audience trust and comprehension | 20% | The direction feels credible to this audience without relying on stereotype or novelty. |
-| Content and environment fit | 15% | Typography, contrast, data treatment, and appearance work for actual content and conditions. |
-| Accessibility resilience | 15% | Focus, zoom, status, contrast, motion, forced colors, and touch can be supported without fighting the aesthetic. |
-| Framework adaptation cost | 10% | The selected UI foundation exposes the needed tokens/parts without broad CSS overrides or fragile forks. |
-| Product distinctiveness | 10% | At least one grounded device is specific to this product and does not compromise repeated tasks. |
+If the user has selected a direction, refine its appearance, density, brand color,
+typography relationship, composition and focal treatment without requiring an
+alternative or scorecard. Otherwise show two or three credible options with a
+plain-language tradeoff and one recommendation. Weights and numerical ratings
+are not required. Consider task fit, audience, content, environment,
+accessibility, distinctiveness and adaptation cost without pretending they
+quantify visual taste.
 
-The recommendation in `DESIGN.md` must name the selected composition, for
-example `precision-neutral + system + comfortable`, explain why it wins, name
-the closest rejected alternative, and define a prototype/usability/accessibility
-check that could overturn the choice.
+Record key customization and what remains open for prototype exploration.
+Compact content does not require a compact title or brand region. A dark theme
+alone does not specify composition, and changing accent color alone does not
+establish a visual identity. Compare representative pages before freezing values.
 
 ## UI-framework customization fit
 
@@ -126,7 +128,7 @@ foundations change.
 
 ### Required adapter decision
 
-After selecting a family and UI foundation, map the visual system to the
+At specification stage, after accepting representative work, map the visual system to the
 framework's primitive/semantic/component layers (or their equivalents) instead
 of copying raw palette values through component code:
 
@@ -157,9 +159,9 @@ theme family, a lower-level foundation, or explicitly budget a maintained fork.
   user's palette and make only targeted fixes.
 - Test real Simplified Chinese copy, long Latin identifiers, tabular numbers,
   200% zoom, keyboard focus, reduced motion, and mobile touch targets.
-- Render a representative screen containing navigation, form controls, a data
-  or content surface, a dialog, and success/warning/error states. A theme that
-  only works on a hero or button gallery is not ready.
+- Review representative task screens, adding dialogs or status views where they
+  materially test the direction. Do not force every component onto one showcase.
+  A hero or button gallery alone cannot validate a workbench or content tool.
 
 ## Open-source references
 

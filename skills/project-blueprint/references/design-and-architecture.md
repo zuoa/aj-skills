@@ -1,24 +1,60 @@
 # Design and architecture guidance
 
-## DESIGN.md
+## DESIGN.md: progressive design contract
 
-Design constraints should make later visual and interaction work decidable. Record:
+Separate functional invariants, confirmed brand requirements, and visual suggestions open to exploration. Preserve known constraints, but do not manufacture pixel-level decisions to fill a template. Document restraint is an editing principle, not a requirement for neutral, sparse UI.
 
-- The concrete audience, context, and primary job for each important surface.
-- Experience principles tied to user tasks, not generic adjectives.
-- Information architecture, navigation, key journeys, and screen inventory.
-- A layout shortlist grounded in the primary task, navigation depth, content relationships, work continuity, device/input environment, risk, and platform capabilities; one selected composition of layout family, navigation model, work-surface model, and platform chrome.
-- Reference products/assets and what to borrow or avoid from each.
-- A visual thesis and at most one signature device that expresses something true about the product.
-- A theme shortlist grounded in product direction, audience, task, content, environment, risk, brand evidence, and UI-foundation adaptation cost; one selected composition of family, appearance, and density.
-- A concrete overall palette: canvas/surface/text/border/action/focus/disabled/status tokens, exact values per supported theme, semantic use, interaction states, and required contrast pairs.
-- A concrete typography system: font stacks and language fallbacks, source/license/loading, an exact size/line-height/weight/letter-spacing scale, responsive changes, and tabular-number or monospace rules where relevant.
-- Component-level typography and geometry for every component used by the screen inventory. At minimum resolve Button, Input/Select, Navigation/Tabs, Table/List, Card, Dialog/Drawer, and Toast/Alert as applicable; include font token and resolved font/size, height/padding/gap, radius/border/elevation, states, source, and override policy.
-- Spacing/grid, density, radius, elevation, motion, imagery, icon, and Emoji rules.
-- Responsive breakpoints based on content behavior; safe areas and input modes for mobile.
-- State matrix: loading, empty, error, partial, success, disabled, offline, permission denied, expired, and destructive confirmation.
-- Accessibility target, normally WCAG 2.2 AA for web unless another requirement governs.
-- Content voice, localization, text expansion, dates/numbers, RTL if applicable.
+Use `design_stage` independently from decision states:
+
+| Stage | Required output | Leave open |
+|---|---|---|
+| `direction` | Audience, primary jobs, journeys, shell relationships, visual direction, key customization, exploration boundaries | Exact typography, geometry, full palette, component styling |
+| `prototype` | Direction plus representative-page handoff and review record; provisional UI foundation for interactive prototypes | Values and treatments still being tested |
+| `specification` | Confirmed visual review plus an implementable shared token source and applicable component deltas | Only documented nonblocking refinements |
+| `not-applicable` | Applicability section explaining why the project has no user-facing UI | Visual-only sections omitted; externally observable behavior stays in SPEC |
+
+Start with `assets/templates/DESIGN.md`. Once the design is accepted, merge applicable sections from `assets/templates/DESIGN_IMPLEMENTATION.md` into DESIGN.md; do not copy it as another mandatory root artifact. Existing design systems may supply the implementation source and review evidence. Preserve the provenance and scope of their approval; do not invent new research or confirmation dates.
+
+### Direction and customization
+
+Use a reference-led direction the user can recognize, such as Apple-site-like product presentation or an enterprise dark workbench. Explain the characteristics to borrow: composition, type hierarchy, surface depth, content density, imagery, or motion. Adapt them to the actual task; a reference name and accent color alone are insufficient.
+
+When the user has chosen a direction, refine it instead of reopening selection. Otherwise offer two or three plausible directions and one recommendation. The theme catalog is optional vocabulary, not a closed taxonomy. No weighted scoring is required for visual taste. Keep theme family, appearance, and density distinct; density can differ by region, and a dense work surface can coexist with a more expressive brand/search area.
+
+Record only consequential customization: brand/accent direction, display/body relationship, hierarchy and spacing rhythm, and a focal treatment where useful. Use signature devices when they express the product; neither a forced novelty quota nor a universal ban on decorative techniques improves design. Exact values are optional exploratory seeds until reviewed. Do not impose blanket rules such as one colored element per page, tiny headings, no shadows, or no brand imagery without an actual requirement.
+
+Use `layout-catalog.md` when shell selection is unresolved. Keep layout family, navigation model, work-surface model, and platform chrome separate. Authentication/SSO/tenant controls need a place and behavior but do not determine the layout family. In direction work describe spatial relationships and compact transformation, not every pixel measurement.
+
+### Prototype handoff and review
+
+Project-blueprint writes the handoff and ingests results; another frontend task creates the static page, interactive prototype, or design image. Never silently generate application code under this skill. The handoff names the representative page, real or clearly labeled representative content, primary task, target devices, visual questions, and expected returned evidence. Start with a core desktop and narrow-screen view; add materially different surfaces instead of demanding every component or state on one demo page.
+
+Retain the project accessibility target (normally WCAG 2.2 AA for Web), platform requirements and relevant loading/empty/error/permission/offline/destructive states throughout all stages.
+
+Review the rendered page for hierarchy, composition, spacing rhythm, reference fidelity, brand recognition, and task usability. Check responsive behavior, keyboard/focus and relevant states separately. A screenshot supports visual review, not a claim of keyboard or interaction testing. Keep evidence attached to the tested revision. Record what changed and whether another review is needed.
+
+Use these localized or English fields in an H2 `Visual review` / `视觉评审` section (one current record; older history can be linked):
+
+- Review status / 评审状态: `pending`, `provisional`, or `confirmed`.
+- Evidence / 证据: Markdown links to the reviewed screenshot, prototype, or approved design-system reference; pending reviews may omit unavailable evidence.
+- Reviewer / 评审人: the actual reviewer or authorized source.
+- Reviewed on / 评审日期: actual review date (`YYYY-MM-DD`).
+- Findings and adjustments / 结论与调整: accepted treatment, open issues, and scope of evidence.
+
+`confirmed` requires evidence, reviewer, date, and a review conclusion. A bare status label is insufficient. Existing approved design-system evidence may be reused with its applicability and project-specific deltas stated; do not require redundant redesign. If evidence cannot be inspected, keep the review pending/provisional and deliver the handoff. No screenshot, filled parameter table, source-code inspection, or implementation backfill alone constitutes user/authoritative approval.
+
+The validator checks the record's structure and local link existence, not aesthetic quality, remote availability, approval authenticity, or image contents. Human/agent review remains required.
+
+### Specification from accepted work
+
+After visual acceptance, derive the system used by implementation:
+
+- A `Token source` / `Token 来源` section links to the authoritative theme/config/design-system source, or an inline token section via an anchor. Include appearance, ownership, and permitted override boundaries.
+- Color and typography sections contain the relevant semantic palette, contrast/state rules, font stacks, fallbacks/loading, and responsive type scale, or link directly to the maintained source. Do not duplicate external or shared definitions merely to satisfy tables.
+- Component specifications map used components to shared type/geometry tokens or named foundation variants and record only product-specific deltas and important states. Do not repeat resolved font families and numbers on every row. A token reference must resolve to a documented source.
+- Define supported appearances, spacing/grid, radius/elevation and motion as used by the accepted design. Verify actual text, long content, narrow layouts, zoom, status cues and focus against the source.
+
+Color, typography, UI foundation and component sections remain structural checks at specification stage. The source and values can live in maintained code or an approved system; a phrase such as “use brand colors” without a concrete definition or source is not a contract. No exhaustive tables are required during direction or prototype work.
 
 ### Durable interaction principles
 
@@ -35,53 +71,9 @@ Use established usability heuristics as questions, not as slogans:
 
 These principles do not choose a visual style. Connect each principle to a screen, behavior, or acceptance method.
 
-### Subject-grounded visual direction
-
-Do not manufacture a visual identity from “modern/minimal/premium.” Ask for concrete preferences such as editorial vs utilitarian, dense vs spacious, expressive vs restrained, and reference examples with reasons.
-
-Before choosing colors, type, layout, or motion, state:
-
-1. Who is using the surface and under what conditions.
-2. The single job the surface must make easiest.
-3. Which product or domain artifacts can supply visual language.
-4. What to borrow and avoid from each reference, with a reason.
-
-Use typography and layout to express hierarchy before adding decoration. Let one justified signature device carry the distinctive character; keep surrounding elements quiet and consistent. Minimal directions require precise spacing and type, while expressive directions require a coherent system rather than more effects.
-
-When a layout recommendation is needed, use `layout-catalog.md`. Keep layout
-family, navigation model, work-surface model, and platform chrome as separate
-decisions. Shortlist two or three credible directions, score them against the
-actual work, select one recommendation, and record the closest rejected
-alternative plus a representative-task test that could overturn the decision.
-Authentication, SSO, workspace switching, and notifications may occupy the
-shell, but they do not determine the layout family.
-
-When a theme recommendation is needed, use `theme-catalog.md`. Keep theme
-family, appearance, and density as separate decisions. Shortlist two or three
-credible directions, score them against the actual audience and task, select
-one recommendation, and record the closest rejected alternative plus a test
-that could overturn the decision. A UI library preset is implementation input,
-not the product's visual thesis.
-
-### Minimum implementable visual system
-
-`DESIGN.md` is an implementation contract, not a mood board. A developer should be able to style a representative screen without inventing colors, font sizes, or component hierarchy.
-
-- Give color tokens concrete values such as HEX, RGB, HSL, or OKLCH. Define both foreground and background for status colors, and specify hover/pressed/selected/focus behavior. Record unsupported themes as `not-applicable`; do not silently omit them.
-- Name the full font stack for each script the product supports. Record generic fallbacks, available weights, font delivery and license assumptions, and how the UI behaves while a web font loads.
-- Express type sizes and line heights with implementation units; include a pixel reference when using `rem`. Define page title, section title, body, small body, label, action, helper/error, and data text when those roles appear.
-- Map components to type tokens, then repeat the resolved family/size in the component table so reviewers can verify the result without following an undocumented token chain. Include long text, localization, zoom, truncation/wrapping, and numeric alignment where relevant.
-- Record a base spacing unit and exact component measurements or tokens. A library name alone is insufficient because defaults, theme overrides, and versions can differ.
-
-When brand inputs are missing, separate brand identity from implementation basics. Keep the brand identity pending, but choose an accessible provisional palette and system-font/type-scale baseline, state why it is safe enough for prototyping, and add an owner plus a measurable revisit trigger. Do not leave every visual token pending: that merely transfers the design decision to the implementer.
-
-Before marking `implementation-ready`, verify representative desktop and mobile screens against the tables: computed fonts/sizes match, text at 200% zoom remains usable, supported themes meet the stated contrast targets, keyboard focus is visible on every surface, and status is understandable without color.
-
-Treat gradients, glass effects, oversized rounded cards, repeated pill containers, decorative dashboards, arbitrary `01/02/03` labels, ambient animation, sparkles, robot mascots, and generic AI imagery as review signals. They are not forbidden, but each needs a product-specific reason. Remove any choice that would survive unchanged if the product name and industry were swapped.
-
 ### Frontend UI foundation
 
-For a React or Vue client with more than trivial interaction, select a coherent UI component foundation before implementation. A component foundation may be a styled suite, an open-code distribution system, a headless primitive layer plus project styling, or an existing organizational design system. It is not enough to write “custom CSS” or list several libraries without choosing one.
+For a React or Vue client with more than trivial interaction, select a coherent UI component foundation when preparing an interactive prototype and confirm it before implementation. A component foundation may be a styled suite, an open-code distribution system, a headless primitive layer plus project styling, or an existing organizational design system. It is not enough to write “custom CSS” or list several libraries without choosing one.
 
 For Flutter, React Native, Jetpack Compose, or SwiftUI, make the same decision at
 the platform level: identify the framework theme source, semantic role mapping,
@@ -100,7 +92,7 @@ Use the product and delivery constraints to choose the mode:
 
 These names are starting candidates, not timeless defaults. Check current official documentation during the blueprint run for framework compatibility, maintenance status, SSR/hydration constraints, accessibility claims, licensing, theming API, import strategy, and required peer dependencies. Record the access date when the decision depends on changeable facts.
 
-The decision in `DESIGN.md` must name:
+By specification stage, the decision in `DESIGN.md` must name:
 
 - the selected foundation and whether it is styled, open-code, headless, or organizational;
 - at least one credible alternative and why it lost under the actual constraints;
@@ -113,7 +105,7 @@ The decision in `DESIGN.md` must name:
 
 Do not confuse semantic native HTML with unstyled browser UI. Keep native semantics where appropriate, but do not ship browser-default controls as the visual system. Complex primitives must come from an accessibility-capable foundation or have an explicit, testable implementation and maintenance plan. Do not mix component suites casually: if an exception is necessary, document visual normalization, focus behavior, z-index/portal ownership, and who maintains the integration.
 
-The component foundation is an implementation substrate, not the visual thesis. Theme its tokens and variants to the product-specific direction, then verify a representative desktop and mobile screen. A library's default demo appearance is not sufficient evidence that the result is coherent or modern.
+The component foundation is an implementation substrate, not the visual thesis. Theme its tokens and variants to the product-specific direction, then verify a representative desktop and mobile screen. A library's default demo appearance is not sufficient evidence that the result meets the selected direction; review the representative composition.
 
 ### Content, icons, and motion
 
@@ -125,13 +117,11 @@ The component foundation is an implementation substrate, not the visual thesis. 
 
 ### Design self-critique
 
-Before finalizing `DESIGN.md`, test the direction against the actual brief:
-
-- Could the same palette, typography, cards, and hero be reused unchanged for an unrelated product? If yes, revise the generic choices.
-- Does every structural marker encode order, state, grouping, ownership, or another true relationship? Remove decorative structure.
-- Is the hierarchy still clear without color, imagery, and motion? Fix content order and typography first.
-- Is boldness concentrated in one useful place? Remove competing accents.
-- Are responsive, keyboard, focus, touch, long-text, loading, empty, error, offline, permission, and destructive states decidable and testable?
+- Does the rendered hierarchy and spacing express the selected direction, or only the component library defaults?
+- Are brand expression and content density appropriate in each region, rather than uniformly minimized?
+- Can people identify the main task and complete it without competing visual emphasis?
+- Are meaningful visual improvements being rejected only because exploratory numbers were written too early? Revisit those numbers before constraining the composition.
+- Is each acceptance claim supported by the right evidence, and are untested states clearly identified?
 
 ### Mobile branch
 

@@ -71,6 +71,14 @@ Maintain one table in the root `SPEC.md`:
 
 Do not collapse the three gates. A project can be ready for design but not implementation, or ready for implementation but not production.
 
+## Design stage and readiness
+
+`DESIGN.md` carries `design_stage: direction / prototype / specification / not-applicable`, independently of decision states. Direction work may omit full visual values; prototype work adds a concrete handoff and honest review status. Only specification work requires accepted visual evidence and traceable implementation definitions. `not-applicable` requires an explanation that the project has no user-facing UI.
+
+`design-ready` permits design and prototype exploration. For UI products, `implementation-ready: ready` means the applicable visual review is confirmed and its implementation source is recorded at specification stage, in addition to the existing product/architecture requirements. Direction/prototype work must not claim this gate is ready. This does not block independent backend work or isolated frontend exploration; state the allowed work in the handoff while the overall gate remains blocked. An approved design system may supply reusable evidence when its scope fits; record project-specific differences. Missing screenshots/tools mean unverified work, not automatic approval.
+
+The machine stage values remain English. The root SPEC readiness table continues to use `ready / blocked`. Legacy DESIGN files without a stage retain the previous structural checks, with an informational migration note; adding an unknown or empty stage is an error, not a bypass.
+
 ## Existing document conflict handling
 
 Before editing, report:
