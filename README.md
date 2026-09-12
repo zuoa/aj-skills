@@ -34,7 +34,7 @@ Skill 名称以各目录 `SKILL.md` 中的 `name` 字段为准，可使用 `--sk
 
 ### `project-blueprint` 的前端能力组合
 
-`project-blueprint` 负责规划和约束，不替代视觉设计、实现规范与代码审查。项目包含 Web 前端时，建议同时安装以下伴随 Skills：
+`project-blueprint` 负责规划和约束；UI 方向确认后，默认生成包含常用组件和代表性业务页面的 `design/preview.html`（也可复用项目预览入口），供人工确认后沉淀实现规范。它不生成业务实现或替代代码审查。项目包含 Web 前端时，建议同时安装以下伴随 Skills：
 
 ```bash
 npx skills add https://github.com/anthropics/skills --skill frontend-design

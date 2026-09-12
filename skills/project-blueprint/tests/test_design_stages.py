@@ -11,11 +11,18 @@ from test_validate_blueprint import MODULE, build_valid_blueprint, document
 
 
 DIRECTION = "## Visual direction\n\nReference-led community dictionary; expressive search area and compact results.\n"
-HANDOFF = "## Prototype handoff\n\nReview room search and copying with supplied real content on desktop and narrow screens. Return screenshots and task observations.\n"
+HANDOFF = "## Prototype handoff\n\nReview room search and copying with supplied real content on desktop and narrow screens. Return screenshots and task observations.\n- Deferred reason: User requested documentation only; frontend owner will deliver the preview before visual acceptance.\n"
+PREVIEW = (
+    "## Visual preview\n\n- Artifact: [Component and room search preview](design/preview.html)\n"
+    "- Preview revision and viewing/startup instructions: preview-v1; open the HTML directly.\n"
+    "- Components, variants and states demonstrated: buttons, filters, empty results and search page.\n"
+)
 PENDING = "## Visual review\n\n- Review status: pending\n"
 REVIEW = (
     "## Visual review\n\n- Review status: confirmed\n"
     "- Evidence: [Approved system](design-system.md)\n"
+    "- Reviewed revision: Atlas baseline approved on 2026-09-10\n"
+    "- Confirmed scope: Existing portal page patterns, components and responsive states; no deltas.\n"
     "- Reviewer: Design team\n- Reviewed on: 2026-09-10\n"
     "- Findings and adjustments: Approved page patterns apply; no project-specific deltas.\n"
 )
@@ -69,12 +76,50 @@ class DesignStageTests(unittest.TestCase):
         self.write_design("prototype", DIRECTION)
         self.assertTrue({"DESIGN_HANDOFF_MISSING", "DESIGN_REVIEW_MISSING"} <= self.codes())
 
+    def test_delivered_preview_can_await_human_review(self) -> None:
+        self.root.joinpath("design").mkdir()
+        self.root.joinpath("design/preview.html").write_text("<!doctype html><title>Room search preview</title>")
+        self.write_design("prototype", DIRECTION + PREVIEW + PENDING)
+        self.assertEqual(set(), self.codes())
+        self.set_ready()
+        self.assertIn("DESIGN_READINESS_CONFLICT", self.codes())
+
+    def test_preview_link_must_exist(self) -> None:
+        self.write_design("prototype", DIRECTION + PREVIEW + PENDING)
+        self.assertIn("BROKEN_LINK", self.codes())
+
+    def test_existing_preview_route_does_not_require_single_html(self) -> None:
+        preview = PREVIEW.replace("design/preview.html", "http://localhost:5173/design-preview")
+        self.write_design("prototype", DIRECTION + preview + PENDING)
+        self.assertEqual(set(), self.codes())
+
+    def test_brief_alone_must_explain_missing_preview(self) -> None:
+        handoff = HANDOFF.split("- Deferred reason:")[0]
+        for reason in ("", "TBD", "[explain later]"):
+            with self.subTest(reason=reason):
+                self.write_design("prototype", DIRECTION + handoff + f"- Deferred reason: {reason}\n" + PENDING)
+                self.assertIn("DESIGN_PREVIEW_DELIVERY_MISSING", self.codes())
+
+    def test_chinese_preview_fields_are_supported(self) -> None:
+        preview = "## 视觉预览\n\n- 暂缓原因: 用户本轮只要文档，设计负责人在下次评审前制作组件与业务页面预览。\n"
+        self.write_design("prototype", DIRECTION + preview + PENDING)
+        self.assertEqual(set(), self.codes())
+
     def test_confirmed_record_requires_evidence_reviewer_date_and_findings(self) -> None:
-        for field in ("Evidence", "Reviewer", "Reviewed on", "Findings and adjustments"):
+        for field in ("Evidence", "Reviewed revision", "Confirmed scope", "Reviewer", "Reviewed on", "Findings and adjustments"):
             with self.subTest(field=field):
                 lines = [line if not line.startswith(f"- {field}:") else f"- {field}:" for line in REVIEW.splitlines()]
                 self.write_design("specification", DIRECTION + "\n".join(lines) + "\n" + DETAILS)
                 self.assertIn("DESIGN_REVIEW_EVIDENCE_INCOMPLETE", self.codes())
+
+    def test_confirmation_without_baseline_or_scope_blocks_readiness(self) -> None:
+        self.set_ready()
+        for field in ("Reviewed revision", "Confirmed scope"):
+            for value in ("", "TBD", "[fill in]"):
+                with self.subTest(field=field, value=value):
+                    lines = [line if not line.startswith(f"- {field}:") else f"- {field}: {value}" for line in REVIEW.splitlines()]
+                    self.write_design("specification", DIRECTION + "\n".join(lines) + "\n" + DETAILS)
+                    self.assertTrue({"DESIGN_REVIEW_EVIDENCE_INCOMPLETE", "DESIGN_READINESS_CONFLICT"} <= self.codes())
 
     def test_review_date_must_be_a_real_calendar_date(self) -> None:
         self.write_design("specification", DIRECTION + REVIEW.replace("2026-09-10", "2026-02-30") + DETAILS)
@@ -91,7 +136,7 @@ class DesignStageTests(unittest.TestCase):
 
     def test_chinese_review_fields_are_supported(self) -> None:
         review = REVIEW
-        for english, chinese in (("Visual review", "视觉评审"), ("Review status", "评审状态"), ("Evidence", "证据"), ("Reviewer", "评审人"), ("Reviewed on", "评审日期"), ("Findings and adjustments", "结论与调整")):
+        for english, chinese in (("Visual review", "视觉评审"), ("Review status", "评审状态"), ("Evidence", "证据"), ("Reviewed revision", "评审版本"), ("Confirmed scope", "确认范围"), ("Reviewer", "评审人"), ("Reviewed on", "评审日期"), ("Findings and adjustments", "结论与调整")):
             review = review.replace(english, chinese)
         self.write_design("specification", DIRECTION + review + DETAILS)
         self.assertEqual(set(), self.codes())

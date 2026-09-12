@@ -182,8 +182,13 @@ def validate_design_contract(text: str, findings: list[Finding], index_text: str
                         "Record the selected direction, reference characteristics, key customization and exploration space")
         if stage in {"prototype", "specification"}:
             if stage == "prototype":
-                require_section(("prototype handoff", "样稿交接"), "DESIGN_HANDOFF_MISSING",
-                                "Name the representative page, content, task, devices and evidence expected from the frontend task")
+                preview = require_section(("visual preview", "视觉预览", "prototype handoff", "样稿交接"), "DESIGN_HANDOFF_MISSING",
+                                          "Describe the component/page preview, viewing instructions and review scope, or a concrete deferred handoff")
+                artifact = record_field(preview, "Artifact", "预览产物")
+                deferred = record_field(preview, "Deferred reason", "暂缓原因")
+                if not has_source_reference(artifact, text) and not meaningful(deferred):
+                    add(findings, "warning", "DESIGN_PREVIEW_DELIVERY_MISSING", "DESIGN.md",
+                        "Link the viewable preview in Artifact / 预览产物, or record an actual Deferred reason / 暂缓原因 and next step")
             review = require_section(("visual review", "视觉评审"), "DESIGN_REVIEW_MISSING",
                                      "Record review status, evidence and findings; use pending when visual work has not been observed")
             status = record_field(review, "Review status", "评审状态")
@@ -197,6 +202,10 @@ def validate_design_contract(text: str, findings: list[Finding], index_text: str
                 missing = []
                 if not has_source_reference(record_field(review, "Evidence", "证据"), text):
                     missing.append("linked evidence")
+                if not meaningful(record_field(review, "Reviewed revision", "评审版本")):
+                    missing.append("reviewed revision or approved baseline")
+                if not meaningful(record_field(review, "Confirmed scope", "确认范围")):
+                    missing.append("confirmed scope")
                 if not record_field(review, "Reviewer", "评审人"):
                     missing.append("reviewer")
                 reviewed_on = record_field(review, "Reviewed on", "评审日期")

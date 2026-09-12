@@ -11,6 +11,7 @@
 | `contracts/` | authoritative machine-readable interface definitions | duplicated Markdown field tables |
 | `specs/tasks/` | implementation handoff, dependencies, change boundary, test plan and completion criteria | copied functional AC or unsolicited detailed algorithms |
 | `DESIGN.md` | information architecture, interaction, visual direction, review evidence, implementation design source, UI states | backend internals |
+| `design/preview.html` or linked preview route/prototype | inspectable component and representative-page design evidence, with local demo interactions | production business logic or approval claims; DESIGN.md owns review status and scope |
 | `ARCHITECTURE.md` | system boundaries, components, data flow, interfaces, quality budgets | product justification or visual styling |
 | `SECURITY.md` | threats, data protection, identity controls, verification | generic legal conclusions |
 | `DEPLOY.md` | environments, release, operations, recovery, cost | product behavior |

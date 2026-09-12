@@ -8,7 +8,7 @@ last_reviewed: YYYY-MM-DD
 
 # Product Design Direction
 
-Use only the sections needed at the current stage. `direction` establishes intent; `prototype` adds handoff and review; `specification` adds implementation definitions after acceptance. For a project without user-facing UI, use `not-applicable`, replace visual sections with an Applicability section explaining why, and keep behavior in SPEC. Delete these instructions from the output.
+Use only the sections needed at the current stage. `direction` establishes intent; `prototype` adds a viewable preview and human review; `specification` adds implementation definitions after acceptance. For a project without user-facing UI, use `not-applicable`, replace visual sections with an Applicability section explaining why, and keep behavior in SPEC. Delete these instructions from the output.
 
 ## Audience, context, and primary jobs
 
@@ -49,23 +49,30 @@ When the user specifies a direction, refine it directly. Otherwise compare two o
 
 Present unresolved direction options in the conversation and obtain a choice or explicit delegation before calling the direction settled. Record the decision source, actual date and scope here; for a no-questions draft retain the provisional recommendation and pending selection. Direction selection is separate from the later visual review.
 
-## Prototype handoff
+## Visual preview
 
-Include when preparing the frontend design task; this skill supplies the brief and receives evidence, not page/image generation.
+At prototype stage, produce a lightweight preview after direction selection: default `design/preview.html`, or an existing project preview route/native prototype. Include project-relevant components and a representative business page. If delivery is deferred, omit Artifact and state the actual constraint plus owner and next step in Deferred reason. Remove unused fields; do not leave a link to a nonexistent artifact.
 
+- Artifact:
+- Preview revision and viewing/startup instructions:
+- Components, variants and states demonstrated:
 - Representative page(s), primary task and acceptance owner:
 - Real content or clearly labeled representative content and important states:
 - Target devices: core desktop and narrow-screen views by default:
 - Visual questions: hierarchy, spacing rhythm, style fidelity, brand recognition:
 - Task, responsive and accessibility checks:
-- Expected return: screenshot/prototype references, reviewed revision, findings and proposed adjustments:
+- Browser checks performed and unverified behavior:
+- Deferred reason:
+- Human review request: viewing link, revision, confirmation scope and unresolved questions:
 
 ## Visual review
 
-Include at prototype stage onward. For a pending review, omit unavailable evidence/reviewer/date rather than inventing them. A confirmed review requires all fields below. Reused approved design-system evidence must state applicability and any project-specific deltas.
+Include at prototype stage onward. For a pending review, omit unavailable fields rather than inventing them. A confirmed review requires all fields below. Reused approved design-system evidence must identify its version or approval baseline, applicability and any project-specific deltas. Preserve the approved revision; material changes reopen the affected scope for review.
 
 - Review status: pending
 - Evidence:
+- Reviewed revision:
+- Confirmed scope:
 - Reviewer:
 - Reviewed on:
 - Findings and adjustments:

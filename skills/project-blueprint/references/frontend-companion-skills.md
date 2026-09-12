@@ -13,7 +13,7 @@ If a relevant companion is installed, use it at the matching stage. If it is una
 | Companion skill | Apply when | Contribution | Do not use as |
 | --- | --- | --- | --- |
 | `ui-ux-pro-max` | A Web or interactive client needs a design-system direction, palette/type/layout candidates, interaction patterns, or stack-aware UX guidance | Structured candidate generation and searchable UI/UX knowledge before finalizing `DESIGN.md` | An automatic final answer or evidence that a candidate fits the product without checking the brief |
-| `frontend-design` | The work needs a distinctive visual thesis, hierarchy, typography, composition, or a critique of generic-looking UI | Subject-grounded visual direction and anti-template critique | A substitute for accessibility checks, behavioral specs, or confirmed brand constraints |
+| `frontend-design` | The work needs a distinctive visual thesis, hierarchy, typography, composition, preview creation, or visual critique | Subject-grounded visual direction, component/page previews and anti-template critique | A substitute for accessibility checks, behavioral specs, or human visual acceptance |
 | `web-design-guidelines` | Existing Web UI/code is being audited, or an implementation is ready for pre-delivery review | Web interaction, content, accessibility, responsive, and interface-quality review | A planning requirement for API-only, native-only, or not-yet-implemented work |
 | `vercel-react-best-practices` | `package.json` or a confirmed decision establishes React or Next.js and implementation/performance rules are needed | React/Next.js data-flow, rendering, bundle, and performance constraints for `ENGINEERING.md` and implementation review | Generic frontend advice for Vue, Svelte, native mobile, server-rendered non-React, or undecided stacks |
 
@@ -38,9 +38,9 @@ Record unresolved material conflicts as a stable TBD instead of silently choosin
 
 At direction stage, use `frontend-design` to refine recognizable references, composition, visual hierarchy and key customization; use `ui-ux-pro-max` only for unresolved candidate or UX questions. Companion suggestions for exact palettes or dimensions remain exploratory until reviewed. Do not let a companion's preferred aesthetic or planning template override the selected direction.
 
-At prototype stage, project-blueprint writes the representative-page brief. A separate frontend task makes the page or image, then returns screenshot/prototype links, revision/context, observations and review state. Project-blueprint may inspect those results and update the design record; it does not silently generate business code or static prototypes. Use `web-design-guidelines` on available UI for task/accessibility review, alongside visual critique, rather than treating compliance as proof of visual quality.
+At prototype stage, project-blueprint produces the lightweight component and representative-page preview, using `frontend-design` when available. Follow `design-and-architecture.md` for the default standalone HTML, project-route alternative, scope limits and human confirmation workflow. A larger prototype may be handed off to a frontend task, with links, revision/context and observations returned to the blueprint. Use `web-design-guidelines` on available UI for task/accessibility review, alongside visual critique. Agent checks inform human review; they do not confirm visual acceptance automatically.
 
-At specification stage, derive tokens and component differences from accepted results or reuse approved design-system sources. Missing tools or companions leave an explicit evidence gap and a usable handoff; never fabricate a passing review or require installation to continue documenting the direction.
+At specification stage, derive tokens and component differences from accepted results or reuse approved design-system sources. Missing companions do not prevent lightweight preview generation using available tools. Missing generation/rendering capabilities leave an explicit gap and a usable artifact or handoff; never fabricate a passing review or require installation to continue.
 
 ## Installation handoff
 

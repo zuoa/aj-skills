@@ -9,7 +9,7 @@ Use `design_stage` independently from decision states:
 | Stage | Required output | Leave open |
 |---|---|---|
 | `direction` | Audience, primary jobs, journeys, shell relationships, visual direction, key customization, exploration boundaries | Exact typography, geometry, full palette, component styling |
-| `prototype` | Direction plus representative-page handoff and review record; provisional UI foundation for interactive prototypes | Values and treatments still being tested |
+| `prototype` | Direction plus viewable component/page preview and human review record; explicit handoff if delivery is deferred | Values and treatments still being tested |
 | `specification` | Confirmed visual review plus an implementable shared token source and applicable component deltas | Only documented nonblocking refinements |
 | `not-applicable` | Applicability section explaining why the project has no user-facing UI | Visual-only sections omitted; externally observable behavior stays in SPEC |
 
@@ -27,9 +27,20 @@ Record only consequential customization: brand/accent direction, display/body re
 
 Use `layout-catalog.md` when shell selection is unresolved. Keep layout family, navigation model, work-surface model, and platform chrome separate. Authentication/SSO/tenant controls need a place and behavior but do not determine the layout family. In direction work describe spatial relationships and compact transformation, not every pixel measurement.
 
-### Prototype handoff and review
+### Visual preview and human review
 
-Project-blueprint writes the handoff and ingests results; another frontend task creates the static page, interactive prototype, or design image. Never silently generate application code under this skill. The handoff names the representative page, real or clearly labeled representative content, primary task, target devices, visual questions, and expected returned evidence. Start with a core desktop and narrow-screen view; add materially different surfaces instead of demanding every component or state on one demo page.
+After the direction is selected or selection is explicitly delegated, produce a lightweight design preview by default. This is an allowed blueprint artifact. Default to `design/preview.html` with inline CSS and minimal JavaScript, viewable by opening the file without a build step. Keep required assets local or embedded so the default preview does not depend on a CDN. Reuse an existing project's preview route when that better represents the selected components; provide its URL and exact startup instructions without scaffolding a new application. For native products, use an inspectable platform-appropriate prototype, or label an HTML approximation and leave native behavior unverified.
+
+The preview contains two complementary views, normally in one file:
+
+- Project-relevant components: semantic colors, type hierarchy, buttons, inputs, selection controls, cards, tags and applicable tables/dialogs/feedback. Show useful default, focus, disabled, loading and error states; omit unused components. Use the chosen direction instead of an unchanged library gallery.
+- At least one representative business page: navigation, content hierarchy, information density and component composition around a primary task. Use real or clearly labeled representative content. Start with desktop and narrow-screen views where applicable; add materially different surfaces only as needed.
+
+Provide simple local interactions where they affect judgment, such as tabs, filters, dialog open/close or form feedback. Use fixture data, with no real authentication, API writes or business services. A standalone visual approximation does not establish production component behavior or change the selected UI foundation; record differences for implementation. This exception does not authorize production business code, test implementations, running mock services or a complete scaffold.
+
+In an H2 `Visual preview` / `视觉预览` section, record the page/task, components and states, target viewports, viewing instructions and expected reviewer. Use `Artifact` / `预览产物` for the Markdown link to the file or route. When no preview is delivered, use `Deferred reason` / `暂缓原因` to state the actual constraint and concrete handoff (owner, required artifact and next step). The earlier `Prototype handoff` / `样稿交接` heading is also accepted. A user request for documentation only takes precedence. Missing companion skills alone do not justify deferral; use the available HTML/file tools. If the direction is still pending, preserve the conditional brief without silently selecting it. API-only products skip visual work; approved evidence that fits the current scope may be reused without a redundant preview.
+
+Open and inspect the rendered preview with available browser tools before requesting confirmation. Check desktop/narrow layouts and the interactions actually provided. Deliver the viewing link, current revision, scope and unresolved questions, then request human review from the user or designated design owner. Complete the preview before this request; permission to make a preview is already implied by blueprint work after direction selection. If rendering tools are unavailable, still deliver the viewable artifact where possible and mark browser checks unverified. If the user requested no questions, deliver the preview with review pending and a named follow-up instead of inventing acceptance.
 
 Retain the project accessibility target (normally WCAG 2.2 AA for Web), platform requirements and relevant loading/empty/error/permission/offline/destructive states throughout all stages.
 
@@ -39,11 +50,15 @@ Use these localized or English fields in an H2 `Visual review` / `视觉评审` 
 
 - Review status / 评审状态: `pending`, `provisional`, or `confirmed`.
 - Evidence / 证据: Markdown links to the reviewed screenshot, prototype, or approved design-system reference; pending reviews may omit unavailable evidence.
+- Reviewed revision / 评审版本: identifiable preview revision, commit, content hash, dated snapshot, or approved design-system version/baseline.
+- Confirmed scope / 确认范围: components, representative page(s), states, viewports and appearances actually accepted, including exclusions or project-specific deltas.
 - Reviewer / 评审人: the actual reviewer or authorized source.
 - Reviewed on / 评审日期: actual review date (`YYYY-MM-DD`).
 - Findings and adjustments / 结论与调整: accepted treatment, open issues, and scope of evidence.
 
-`confirmed` requires evidence, reviewer, date, and a review conclusion. A bare status label is insufficient. Existing approved design-system evidence may be reused with its applicability and project-specific deltas stated; do not require redundant redesign. If evidence cannot be inspected, keep the review pending/provisional and deliver the handoff. No screenshot, filled parameter table, source-code inspection, or implementation backfill alone constitutes user/authoritative approval.
+`confirmed` requires evidence, reviewed revision, confirmed scope, reviewer, date, and a review conclusion. A bare status label is insufficient. Existing approved design-system evidence may be reused with its actual version or approval baseline, applicability and project-specific deltas stated; do not require redundant redesign or invent a version. If evidence cannot be inspected, keep the review pending/provisional and deliver the artifact or handoff. No screenshot, filled parameter table, source-code inspection, or agent self-check alone constitutes human/authoritative approval. Explicit delegation of visual acceptance must be recorded as delegated review, not a user review; delegation of direction selection alone does not cover it.
+
+Keep the approved revision retrievable through a versioned artifact, snapshot or commit. When the preview changes in a way that affects accepted visuals or behavior, preserve the old approval as history and return the affected scope to pending/provisional for another review. A file with the same name does not inherit approval for new content. Only then derive or update the implementation specification from the newly accepted baseline.
 
 The validator checks the record's structure and local link existence, not aesthetic quality, remote availability, approval authenticity, or image contents. Human/agent review remains required.
 
