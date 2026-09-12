@@ -16,6 +16,16 @@ last_reviewed: YYYY-MM-DD
 | Product owner | [role/name] |
 | Target release | [date/range] |
 
+## Charter and feasibility basis
+
+- Source/authority and existing feasibility material:
+- Problem, intended outcome and scope boundary:
+- Feasibility assumptions and evidence gaps:
+- Hard constraints and viable alternatives:
+- Conditions for proceeding, revising scope or stopping; decision owner:
+
+Reuse goals, MVP/non-goals and constraints below by reference; do not duplicate them in another charter spec.
+
 ## Problem and users
 
 - Problem:

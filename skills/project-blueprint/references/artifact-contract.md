@@ -4,9 +4,12 @@
 
 | Artifact | Owns | Must not own |
 |---|---|---|
-| `PRD.md` | users, problem, scope, outcomes, product requirements | internal technology and deployment topology |
-| `SPEC.md` | global behavior rules, glossary, domain index, traceability, readiness | detailed domain behavior or implementation |
-| `specs/*.md` | externally observable requirements and scenarios | framework, database, internal modules |
+| `PRD.md` | charter/source intent, feasibility assumptions, users, scope, outcomes, product requirements | internal technology and deployment topology |
+| `SPEC.md` | global rules, layered index, delivery scope, dependencies, traceability, readiness | detailed domain behavior or implementation |
+| domain specs under `specs/` | observable requirements, independently identified AC and validation evidence | framework, database, internal algorithms |
+| `specs/interfaces/` | provider/consumer contract, business semantics, protocol source, compatibility | duplicated wire schemas or architecture decisions |
+| `contracts/` | authoritative machine-readable interface definitions | duplicated Markdown field tables |
+| `specs/tasks/` | implementation handoff, dependencies, change boundary, test plan and completion criteria | copied functional AC or unsolicited detailed algorithms |
 | `DESIGN.md` | information architecture, interaction, visual direction, review evidence, implementation design source, UI states | backend internals |
 | `ARCHITECTURE.md` | system boundaries, components, data flow, interfaces, quality budgets | product justification or visual styling |
 | `SECURITY.md` | threats, data protection, identity controls, verification | generic legal conclusions |
@@ -25,32 +28,15 @@ When behavior changes, update PRD/SPEC first, then design/architecture/tasks/tes
 
 Never renumber an identifier after another artifact references it. Mark removed requirements as superseded and link the replacement.
 
-## Domain spec contract
+## Spec decomposition and traceability
 
-Every confirmed domain requirement includes:
+Read [spec-decomposition.md](spec-decomposition.md) when creating or auditing specs. New root SPEC files declare `spec_schema: 2`; absence retains legacy validation with migration guidance. Stable IDs additionally include `AC-<DOMAIN>-NNN`, `IFACE-<DOMAIN>-NNN` and `TASK-<DOMAIN>-NNN`.
 
-1. Spec ID and title.
-2. Source PRD ID(s).
-3. Decision state.
-4. Normative requirement stated as observable behavior.
-5. Preconditions and actors when relevant.
-6. At least one normal scenario.
-7. Failure, boundary, permission, concurrency, offline, or recovery scenarios when relevant.
-8. Observable result and acceptance method.
+Root SPEC indexes PRD → functional SPEC → AC → interface/task → test evidence, with links to DESIGN and ARCHITECTURE where applicable. AC is defined once under its owning SPEC; tasks reference IDs rather than copying assertions. Each interface and task references its source functional specs. Security or operational requirements enter this chain through an explicit PRD requirement linked to the authoritative control; do not manufacture a product rationale or leave the source untraceable.
 
-Use Given/When/Then to remove ambiguity, not to inflate obvious statements. Never specify invisible implementation details in a scenario.
+Document the MVP capability map and current delivery scope separately. Future work may remain skeletal with a refinement trigger. Keep decision state (`confirmed / provisional / pending / not-applicable`), task readiness (`ready / blocked`), verification mode (`automated / manual / hybrid`) and execution result (`not-run / passed / failed / blocked`) distinct.
 
-## Traceability
-
-The root `SPEC.md` contains:
-
-| PRD ID | SPEC ID | Design evidence | Architecture evidence | Test status |
-|---|---|---|---|---|
-
-- One PRD requirement may map to several specs.
-- A spec without a PRD source needs an explicit source such as security/compliance/operational requirement.
-- Design and architecture evidence may be section anchors rather than duplicated text.
-- Test status uses `planned / automated / manual / passed / deferred` and must not claim `passed` without evidence.
+The machine-readable contract owns wire fields and schemas; interface Markdown owns semantic explanation and links. A source change requires impact review, not duplicate edits to several field lists. Tests and README link or derive from authoritative sources; generation and traceability reduce drift but do not prove its absence.
 
 ## Frontmatter
 
@@ -65,7 +51,7 @@ last_reviewed: YYYY-MM-DD
 ---
 ```
 
-Allowed `blueprint_kind` values are `prd`, `spec-index`, `domain-spec`, `design`, `architecture`, `security`, `deploy`, `engineering`, and `adr`.
+Allowed `blueprint_kind` values are `prd`, `spec-index`, `domain-spec`, `design`, `architecture`, `security`, `deploy`, `engineering`, `adr`, `interface-spec`, and `task-spec`.
 
 ## Templates
 

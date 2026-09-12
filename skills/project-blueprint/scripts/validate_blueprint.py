@@ -8,7 +8,7 @@ import json
 import re
 import sys
 from dataclasses import asdict, dataclass
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 from typing import Iterable
 
@@ -385,6 +385,316 @@ def has_scenario_terms(block: str) -> bool:
     return given and when and then
 
 
+SPEC_ID_PATTERN = r"(?:PRD|SPEC|AC|IFACE|TASK)-[A-Z0-9]+(?:-[A-Z0-9]+)*-\d{3}"
+SPEC_ID_RE = re.compile(r"\b" + SPEC_ID_PATTERN + r"\b")
+SPEC_NODE_HEADING_RE = re.compile(r"^(#{1,6})\s+(.+?)\s*$", re.MULTILINE)
+DECISION_STATES = {"confirmed", "provisional", "pending", "not-applicable"}
+EXECUTION_RESULTS = {"not-run", "passed", "failed", "blocked"}
+SPEC_KINDS = {"domain-spec", "interface-spec", "task-spec"}
+
+
+@dataclass(frozen=True)
+class SpecNode:
+    identifier: str
+    body: str
+    path: Path
+    parent: str | None = None
+    level: int = 2
+
+    def field(self, label: str) -> str:
+        return record_field(self.body, label)
+
+
+def meaningful(value: str) -> bool:
+    """Reject empty/template values; semantic sufficiency still needs review."""
+    return bool(value.strip()) and not (
+        re.fullmatch(r"\[[^\n]*\]", value.strip())
+        or re.fullmatch(r"(?:TBD(?:-[\w-]+)?|pending|unknown|-)", value.strip(), re.IGNORECASE)
+    )
+
+
+def has_ac_scenario(body: str) -> bool:
+    """Require explicit nonempty scenario clauses, not words in a test-plan paragraph."""
+    for terms in (("GIVEN", "给定", "假设"), ("WHEN", "当"), ("THEN", "那么", "则")):
+        labels = "|".join(terms)
+        pattern = r"^[ \t]*-[ \t]*(?:\*\*)?(?:" + labels + r")(?:\*\*)?[ \t:：]+([^\n]+)$"
+        matches = re.findall(pattern, body, re.MULTILINE | re.IGNORECASE)
+        if not any(meaningful(value.strip()) for value in matches):
+            return False
+    return True
+
+
+def identifiers(value: str, prefix: str) -> set[str]:
+    return {item for item in SPEC_ID_RE.findall(value) if item.startswith(prefix + "-")}
+
+
+def spec_nodes(path: Path, text: str) -> list[SpecNode]:
+    # Example definitions in fenced code are not authoritative definitions.
+    text = re.sub(r"^(`{3,}|~{3,})[^\n]*\n.*?^\1[^\n]*$", "", text, flags=re.MULTILINE | re.DOTALL)
+    headings = list(SPEC_NODE_HEADING_RE.finditer(text))
+    parent = None
+    nodes = []
+    for index, heading in enumerate(headings):
+        level = len(heading.group(1))
+        match = re.match(r"(" + SPEC_ID_PATTERN + r")(?:\s|$)", heading.group(2))
+        if level <= 2:
+            parent = None
+        if not match:
+            continue
+        identifier = match.group(1)
+        if identifier.startswith("SPEC-") and level == 2:
+            parent = identifier
+        end = len(text)
+        for following in headings[index + 1:]:
+            if len(following.group(1)) <= level or re.match(SPEC_ID_PATTERN + r"(?:\s|$)", following.group(2)):
+                end = following.start()
+                break
+        nodes.append(SpecNode(identifier, text[heading.end():end], path,
+                              parent if identifier.startswith("AC-") and level == 3 else None, level))
+    return nodes
+
+
+def validate_spec_v2(root: Path, texts: dict[Path, str], index_text: str,
+                     findings: list[Finding]) -> None:
+    """Structural graph/coverage validation. Never execute document commands."""
+    start = len(findings)
+    metadata = parse_frontmatter(index_text)
+    nodes: dict[str, SpecNode] = {}
+    expected = {"prd": {"PRD"}, "domain-spec": {"SPEC", "AC"},
+                "interface-spec": {"IFACE"}, "task-spec": {"TASK"}}
+
+    def report(code: str, node: SpecNode | None, message: str, severity: str = "error") -> None:
+        add(findings, severity, code, rel(node.path, root) if node else "SPEC.md",
+            (node.identifier + ": " if node else "") + message)
+
+    for path, text in texts.items():
+        kind = parse_frontmatter(text).get("blueprint_kind")
+        if kind not in expected:
+            continue
+        parsed = spec_nodes(path, text)
+        if kind == "task-spec" and len([n for n in parsed if n.identifier.startswith("TASK-")]) != 1:
+            add(findings, "error", "TASK_FILE_CARDINALITY", rel(path, root), "Each task-spec file must define exactly one TASK")
+        if kind in SPEC_KINDS and not parsed:
+            add(findings, "error", "SPEC_DEFINITION_MISSING", rel(path, root), "Typed spec file contains no identifier heading")
+        for node in parsed:
+            expected_level = 3 if node.identifier.startswith("AC-") else 2
+            if kind != "prd" and node.level != expected_level:
+                report("SPEC_HEADING_LEVEL", node, f"Use an H{expected_level} definition heading")
+            if node.identifier.split("-", 1)[0] not in expected[kind]:
+                report("SPEC_DEFINITION_KIND", node, f"Definition does not belong in {kind}")
+            if node.identifier in nodes:
+                report("DUPLICATE_SPEC_ID", node, f"Already defined in {rel(nodes[node.identifier].path, root)}")
+            else:
+                nodes[node.identifier] = node
+
+    def refs(value: str, prefix: str, node: SpecNode | None, field: str,
+             allow_none: bool = False, required: bool = True) -> set[str]:
+        result = identifiers(value, prefix)
+        if value.strip() == "none" and allow_none:
+            return set()
+        if not result and required:
+            report("SPEC_REFERENCE_MISSING", node, f"{field} needs {prefix} IDs" + (" or none" if allow_none else ""))
+        for identifier in result:
+            if identifier not in nodes:
+                report("SPEC_REFERENCE_UNKNOWN", node, f"{field} references undefined {identifier}")
+        # Field syntax is deliberately simple: comma-separated IDs, not prose/arrays.
+        if value and any(not re.fullmatch(prefix + r"-[A-Z0-9]+(?:-[A-Z0-9]+)*-\d{3}", part.strip())
+                         for part in value.split(",")):
+            report("SPEC_REFERENCE_INVALID", node, f"{field} must contain comma-separated {prefix} IDs" + (" or none" if allow_none else ""))
+        return result
+
+    current_specs = refs(metadata.get("current_specs", ""), "SPEC", None, "current_specs", True)
+    current_tasks = refs(metadata.get("current_tasks", ""), "TASK", None, "current_tasks", True)
+    if not meaningful(metadata.get("delivery_scope", "")) or metadata.get("delivery_scope", "").lower() == "none":
+        report("DELIVERY_SCOPE_MISSING", None, "Name the current delivery scope, separately from the entire MVP", "warning")
+
+    def require(node: SpecNode, fields: tuple[str, ...]) -> None:
+        for field in fields:
+            if not meaningful(node.field(field)):
+                report("SPEC_FIELD_MISSING", node, f"Resolve {field} before claiming readiness", "warning")
+
+    def execution(node: SpecNode, label: str, required: bool) -> None:
+        result = node.field(label)
+        if not result and not required:
+            return
+        if result not in EXECUTION_RESULTS:
+            report("SPEC_RESULT_INVALID", node, f"{label} must be not-run, passed, failed or blocked", "warning")
+        if result == "passed":
+            evidence = node.field("Evidence")
+            if not has_source_reference(evidence, texts[node.path]):
+                report("SPEC_PASS_WITHOUT_EVIDENCE", node, "A passing claim needs actual linked evidence")
+            if not meaningful(node.field("Tested revision")):
+                report("SPEC_PASS_WITHOUT_REVISION", node, "A passing claim needs the actual tested revision")
+            executed = node.field("Executed on")
+            try:
+                if re.fullmatch(r"\d{4}-\d{2}-\d{2}", executed):
+                    date.fromisoformat(executed)
+                elif re.match(r"\d{4}-\d{2}-\d{2}T", executed):
+                    datetime.fromisoformat(executed.replace("Z", "+00:00"))
+                else:
+                    raise ValueError
+            except ValueError:
+                report("SPEC_PASS_WITHOUT_DATE", node, "A passing claim needs a valid ISO execution date/time")
+
+    sources: dict[str, set[str]] = {}
+    task_acs: dict[str, set[str]] = {}
+    task_interfaces: dict[str, set[str]] = {}
+    dependencies: dict[str, set[str]] = {}
+    ac_by_spec: dict[str, set[str]] = {}
+    for identifier, node in nodes.items():
+        prefix = identifier.split("-", 1)[0]
+        if prefix == "PRD":
+            continue
+        indexed = False
+        index_body = FRONTMATTER_RE.sub("", index_text, count=1)
+        for line in index_body.splitlines():
+            if identifier not in SPEC_ID_RE.findall(line):
+                continue
+            for target in MARKDOWN_LINK_RE.findall(line):
+                clean = target.strip().strip("<>").split("#", 1)[0]
+                if clean and not re.match(r"https?://", clean) and (root / clean).resolve() == node.path.resolve():
+                    indexed = True
+        if not indexed:
+            report("SPEC_INDEX_MISSING", node, "Add this definition ID and a link to its source file in the root index")
+        if node.field("Superseded by"):
+            replacements = refs(node.field("Superseded by"), prefix, node, "Superseded by")
+            if identifier in replacements:
+                report("SPEC_SUPERSESSION_INVALID", node, "A definition cannot replace itself")
+            if identifier in current_specs or identifier in current_tasks:
+                report("CURRENT_SPEC_SUPERSEDED", node, "Select the replacement instead of a retired definition", "warning")
+        if prefix in {"SPEC", "IFACE", "TASK"} and node.field("State") and node.field("State") not in DECISION_STATES:
+            report("SPEC_STATE_INVALID", node, "Use confirmed, provisional, pending or not-applicable", "warning")
+        if (identifier in current_specs or identifier in current_tasks or node.parent in current_specs) and ID_RE["tbd"].search(node.body):
+            report("CURRENT_SPEC_PENDING", node, "Current contract still references a pending decision", "warning")
+        if prefix in {"SPEC", "IFACE", "TASK"}:
+            sources[identifier] = refs(node.field("Source"), "PRD" if prefix == "SPEC" else "SPEC", node, "Source")
+        if prefix == "AC":
+            if node.parent is None or node.parent not in nodes:
+                report("AC_PARENT_MISSING", node, "Define each AC as an H3 under its owning H2 functional SPEC")
+            elif not node.field("Superseded by"):
+                ac_by_spec.setdefault(node.parent, set()).add(identifier)
+            if node.parent in current_specs and not node.field("Superseded by"):
+                require(node, ("Fixture", "Assertion", "Procedure", "Evidence required"))
+                if not has_ac_scenario(node.body):
+                    report("AC_SCENARIO_MISSING", node, "AC needs its own Given/When/Then scenario", "warning")
+                if node.field("Verification") not in {"automated", "manual", "hybrid"}:
+                    report("AC_VERIFICATION_INVALID", node, "Choose automated, manual or hybrid verification", "warning")
+                if node.field("Verification") in {"manual", "hybrid"}:
+                    require(node, ("Acceptance owner",))
+            execution(node, "Result", node.parent in current_specs and not node.field("Superseded by"))
+        if prefix == "SPEC" and identifier in current_specs:
+            require(node, ("Actors", "Trigger", "Preconditions", "Inputs", "Rules", "Outcome"))
+            if node.field("State") != "confirmed":
+                report("CURRENT_SPEC_UNCONFIRMED", node, "Current behavior needs confirmation before implementation", "warning")
+        if prefix == "TASK":
+            require(node, ("Goal", "Risk", "Refine when"))
+            dependencies[identifier] = refs(node.field("Depends on"), "TASK", node, "Depends on", True)
+            if identifier in current_tasks or node.field("AC"):
+                task_acs[identifier] = refs(node.field("AC"), "AC", node, "AC")
+            if identifier in current_tasks or node.field("Interfaces"):
+                task_interfaces[identifier] = refs(node.field("Interfaces"), "IFACE", node, "Interfaces", True)
+            if identifier in current_tasks:
+                require(node, ("Non-goals", "Change scope", "Constraints", "Test plan", "Done when"))
+                if node.field("State") != "confirmed":
+                    report("CURRENT_TASK_UNCONFIRMED", node, "Current task needs confirmation before implementation", "warning")
+                if node.field("Readiness") not in {"ready", "blocked"}:
+                    report("TASK_READINESS_INVALID", node, "Use ready or blocked", "warning")
+                if not sources[identifier] <= current_specs:
+                    report("TASK_OUTSIDE_DELIVERY", node, "Current task source specs must be in current_specs")
+            execution(node, "Completion", identifier in current_tasks)
+
+    for identifier in current_specs:
+        if identifier in nodes and not ac_by_spec.get(identifier):
+            report("CURRENT_SPEC_WITHOUT_AC", nodes[identifier], "Current capability needs independently identified AC", "warning")
+    current_acs = set().union(*(ac_by_spec.get(key, set()) for key in current_specs))
+    covered = set().union(*(task_acs.get(key, set()) for key in current_tasks))
+    for ac in sorted(current_acs - covered):
+        report("CURRENT_AC_UNCOVERED", nodes[ac], "No current task implements or enables this AC", "warning")
+    for task, acs in task_acs.items():
+        for ac in acs:
+            if ac in nodes and nodes[ac].field("Superseded by") and task in current_tasks:
+                report("CURRENT_SPEC_SUPERSEDED", nodes[task], f"Use the replacement of retired AC {ac}", "warning")
+            if ac in nodes and nodes[ac].parent not in sources.get(task, set()):
+                report("TASK_AC_SOURCE_MISMATCH", nodes[task], f"{ac} does not belong to this task's Source specs")
+    for task, ifaces in task_interfaces.items():
+        for iface in ifaces:
+            if iface in nodes and not sources.get(iface, set()) & sources.get(task, set()):
+                report("TASK_INTERFACE_SOURCE_MISMATCH", nodes[task], f"{iface} has no shared source behavior")
+
+    current_ifaces = set().union(*(task_interfaces.get(key, set()) for key in current_tasks))
+    # Interfaces for current behavior cannot evade validation by being omitted from a task.
+    current_ifaces.update(key for key in nodes if key.startswith("IFACE-") and not nodes[key].field("Superseded by") and sources.get(key, set()) & current_specs)
+    for identifier, node in nodes.items():
+        if not identifier.startswith("IFACE-"):
+            continue
+        is_current = identifier in current_ifaces
+        if is_current:
+            require(node, ("Provider", "Consumer", "Protocol", "Operations", "Auth", "Errors", "Compatibility", "Contract checks"))
+            if node.field("Superseded by"):
+                report("CURRENT_SPEC_SUPERSEDED", node, "Current behavior still uses a retired interface", "warning")
+            if node.field("State") != "confirmed":
+                report("CURRENT_INTERFACE_UNCONFIRMED", node, "Current interface needs confirmation", "warning")
+        contract = node.field("Contract")
+        in_process = node.field("Protocol").lower() in {"in-process", "internal"}
+        exemption = bool(re.fullmatch(r"not-applicable:\s*\S.*", contract)) and in_process
+        targets = MARKDOWN_LINK_RE.findall(contract)
+        if is_current and not targets and not exemption:
+            report("INTERFACE_CONTRACT_MISSING", node, "Link a machine contract, or explain an in-process non-applicability", "warning")
+        for target in targets:
+            clean = target.strip().strip("<>").split("#", 1)[0]
+            if not clean:
+                report("INTERFACE_CONTRACT_MISSING", node, "Contract must point to a machine artifact, not an inline prose anchor", "warning")
+                continue
+            if re.match(r"https?://", clean):
+                continue
+            path = (node.path.parent / clean).resolve()
+            if path.suffix.lower() not in {".json", ".yaml", ".yml", ".proto"}:
+                report("INTERFACE_CONTRACT_FORMAT", node, "Local machine contracts must use JSON, YAML or protobuf source", "warning")
+            if path.is_file() and path.suffix.lower() == ".json":
+                try:
+                    json.loads(path.read_text(encoding="utf-8"))
+                except (ValueError, UnicodeError):
+                    report("CONTRACT_JSON_INVALID", node, f"Invalid JSON source: {clean}")
+        execution(node, "Result", is_current and not exemption)
+
+    # Iterative topological traversal avoids recursion limits on larger task graphs.
+    indegree = {key: 0 for key in dependencies}
+    dependents: dict[str, list[str]] = {key: [] for key in dependencies}
+    for task, prereqs in dependencies.items():
+        for prerequisite in prereqs:
+            if prerequisite in indegree:
+                indegree[task] += 1
+                dependents[prerequisite].append(task)
+        if task in current_tasks:
+            for prerequisite in prereqs - current_tasks:
+                if prerequisite in nodes and nodes[prerequisite].field("Completion") != "passed":
+                    report("TASK_DEPENDENCY_OUTSIDE_SCOPE", nodes[task], f"Include unfinished dependency {prerequisite} in current_tasks", "warning")
+    queue = [key for key, degree in indegree.items() if degree == 0]
+    for key in queue:
+        for dependent in dependents[key]:
+            indegree[dependent] -= 1
+            if indegree[dependent] == 0:
+                queue.append(dependent)
+    if len(queue) != len(indegree):
+        report("TASK_DEPENDENCY_CYCLE", None, "Task graph has a cycle; unresolved nodes: " + ", ".join(sorted(key for key, degree in indegree.items() if degree)))
+
+    for task in current_tasks & nodes.keys():
+        node = nodes[task]
+        relevant = {task} | sources.get(task, set()) | task_acs.get(task, set()) | task_interfaces.get(task, set()) | dependencies.get(task, set())
+        relevant.update(key for key in current_ifaces if sources.get(key, set()) & sources.get(task, set()))
+        issues = [item for item in findings[start:] if item.severity in {"error", "warning"}
+                  and (any(item.message.startswith(key + ":") for key in relevant) or item.code == "TASK_DEPENDENCY_CYCLE")]
+        if node.field("Readiness") == "ready" and issues:
+            report("TASK_READY_WITH_GAPS", node, "Task claims ready with unresolved source, AC, contract or dependency findings")
+    implementation_ready = bool(re.search(r"^\s*\|\s*`?implementation-ready`?\s*\|\s*`?ready`?\s*\|", index_text, re.MULTILINE | re.IGNORECASE))
+    if implementation_ready and (
+        not current_specs or not current_tasks
+        or any(nodes[key].field("Readiness") != "ready" for key in current_tasks & nodes.keys())
+        or any(item.severity in {"error", "warning"} for item in findings[start:])
+    ):
+        report("SPEC_READINESS_CONFLICT", None, "implementation-ready requires a named nonempty current scope, covered AC and ready current task contracts; execution may still be not-run")
+
+
 def validate(project_root: Path) -> list[Finding]:
     root = project_root.resolve()
     findings: list[Finding] = []
@@ -417,23 +727,36 @@ def validate(project_root: Path) -> list[Finding]:
         else:
             texts[path] = read_text(path)
 
+    index_text = texts.get(root / "SPEC.md", "")
+    schema = parse_frontmatter(index_text).get("spec_schema")
+    if schema is None:
+        add(findings, "info", "LEGACY_SPEC_SCHEMA", "SPEC.md",
+            "No spec_schema: retaining legacy checks; migrate explicitly to spec_schema: 2 for AC/interface/task validation")
+    elif schema != "2":
+        add(findings, "error", "SPEC_SCHEMA_INVALID", "SPEC.md", "Supported spec_schema is 2; absence selects legacy behavior")
+
     specs_dir = root / "specs"
-    domain_files = sorted(specs_dir.glob("*.md")) if specs_dir.is_dir() else []
-    domain_files = [path for path in domain_files if path.name.lower() != "readme.md"]
+    candidates = sorted(specs_dir.rglob("*.md") if schema == "2" else specs_dir.glob("*.md")) if specs_dir.is_dir() else []
+    domain_files = []
+    for path in candidates:
+        text = read_text(path)
+        actual_kind = parse_frontmatter(text).get("blueprint_kind")
+        if path.name.lower() in {"readme.md", "index.md"} and actual_kind is None:
+            continue
+        texts[path] = text
+        if schema == "2":
+            if actual_kind not in SPEC_KINDS:
+                add(findings, "error", "INVALID_KIND", rel(path, root),
+                    f"Expected domain-spec, interface-spec or task-spec, found '{actual_kind or 'missing'}'")
+            if actual_kind == "domain-spec":
+                domain_files.append(path)
+        else:
+            domain_files.append(path)
+            if actual_kind != "domain-spec":
+                add(findings, "error", "INVALID_KIND", rel(path, root),
+                    f"Expected blueprint_kind 'domain-spec', found '{actual_kind or 'missing'}'")
     if not domain_files:
         add(findings, "error", "MISSING_DOMAIN_SPEC", "specs/", "At least one domain spec is required")
-    for path in domain_files:
-        text = read_text(path)
-        texts[path] = text
-        actual_kind = parse_frontmatter(text).get("blueprint_kind")
-        if actual_kind != "domain-spec":
-            add(
-                findings,
-                "error",
-                "INVALID_KIND",
-                rel(path, root),
-                f"Expected blueprint_kind 'domain-spec', found '{actual_kind or 'missing'}'",
-            )
 
     # Include ADRs, but do not audit unrelated repository Markdown.
     for path in adr_files(root):
@@ -447,6 +770,8 @@ def validate(project_root: Path) -> list[Finding]:
     defined_specs: set[str] = set()
 
     for path in domain_files:
+        if schema == "2":
+            continue
         text = texts[path]
         blocks = list(spec_blocks(text))
         if not blocks:
@@ -473,6 +798,9 @@ def validate(project_root: Path) -> list[Finding]:
     for gate in ("design-ready", "implementation-ready", "production-ready"):
         if gate not in index_text:
             add(findings, "error", "MISSING_GATE", "SPEC.md", f"Readiness ledger is missing {gate}")
+
+    if schema == "2":
+        validate_spec_v2(root, texts, index_text, findings)
 
     design_text = texts.get(root / "DESIGN.md")
     if design_text is not None:

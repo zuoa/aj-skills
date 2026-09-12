@@ -87,3 +87,11 @@ Before editing, report:
 |---|---|---|---|---|
 
 Preserve authored prose where it remains correct. Update the narrowest authoritative document, then repair references. If two sources disagree and authority is unclear, create a pending decision rather than picking silently.
+
+## Spec v2 delivery and task readiness
+
+Root SPEC declares `spec_schema: 2`, a named `delivery_scope`, and comma-separated `current_specs`/`current_tasks` IDs. This is the scope of the existing readiness ledger, not a claim that the entire MVP is specified or finished. An empty current set is permitted in a blocked planning draft. Record later capabilities and refinement triggers separately; do not block the current delivery merely because unrelated later tasks remain skeletal.
+
+Task `Readiness` concerns starting work, while `Completion` concerns executed results. A ready task has a complete current contract, confirmed source behavior and required interfaces, and relevant design/architecture decisions available. Dependencies must be satisfied before execution, even when several ready tasks are planned in the same delivery. Unfinished dependencies outside the selected scope prevent ready status; a completed prerequisite needs evidence. AC `not-run` is expected before implementation and is not itself a readiness blocker.
+
+Keep root design/implementation/production gates and the visual-stage checks. Backend tasks can be ready while unrelated visual work is exploratory; the root gate must still reflect any unresolved visual work within the delivery. Structural spec validation does not run protocol validators or prove business correctness. Existing no-version specs retain legacy checks with a migration note; unknown versions are errors.

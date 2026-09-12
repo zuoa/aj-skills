@@ -1,15 +1,19 @@
 ---
 blueprint_kind: spec-index
+spec_schema: 2
+delivery_scope: TBD-SPEC-001
+current_specs: none
+current_tasks: none
 blueprint_status: draft
 owner: TBD-PRODUCT-001
 last_reviewed: YYYY-MM-DD
 ---
 
-# System Behavior Specification
+# Specification Index and Delivery Scope
 
 ## Scope and authority
 
-This index owns shared behavioral rules and traceability. Detailed behavior lives in `specs/`.
+This index owns shared rules, layered navigation, current delivery scope and traceability. PRD owns charter/product intent; ARCHITECTURE owns internal design; domain specs own behavior and AC; interfaces own boundary semantics; tasks own implementation handoff. Keep machine schemas in their authoritative contract files. Do not duplicate layer contents.
 
 ## Glossary
 
@@ -21,17 +25,31 @@ This index owns shared behavioral rules and traceability. Detailed behavior live
 | Rule ID | Observable rule | Source | State |
 |---|---|---|---|
 
-## Domain specs
+## MVP capability map and delivery scope
 
-| Domain | File | Owner | State |
+- Scope named by frontmatter; current outcome and exclusions:
+- Dependency order and scope assumptions:
+- Later capabilities and refinement triggers:
+
+| Capability / SPEC ID | Outcome | Current/later | Dependencies | Refinement trigger |
+|---|---|---|---|---|
+
+## Layered specification index
+
+List every functional SPEC, AC, IFACE and TASK ID with its definition link; group related entries without copying requirements. Keep current_specs/current_tasks frontmatter in sync with this delivery's chosen scope.
+
+| Layer / ID | Definition / source | Owner | Decision state |
 |---|---|---|---|
-| Core | `specs/<domain>.md` | [role/name] | pending |
 
 ## Traceability
 
-| PRD ID | SPEC ID | Design evidence | Architecture evidence | Test status |
-|---|---|---|---|---|
-| PRD-CORE-001 | SPEC-CORE-001 | DESIGN.md#[anchor] | ARCHITECTURE.md#[anchor] | planned |
+| PRD ID | SPEC ID | AC IDs | Interface IDs | Task IDs | Design/architecture source | Verification evidence |
+|---|---|---|---|---|---|---|
+
+## Change impact
+
+| Baseline revision | Changed IDs | Reason: defect/requirement/ambiguity | Affected AC/interfaces/tasks/tests | Compatibility/migration impact | Review state |
+|---|---|---|---|---|---|
 
 ## Readiness ledger
 
@@ -45,4 +63,4 @@ This index owns shared behavioral rules and traceability. Detailed behavior live
 
 | TBD ID | Decision | Owner | Decision by | Blocked gate | State |
 |---|---|---|---|---|---|
-| TBD-SPEC-001 | Confirm observable MVP behavior | [role/name] | [date/milestone] | implementation-ready | pending |
+| TBD-SPEC-001 | Confirm the current delivery scope and observable behavior | [role/name] | [date/milestone] | implementation-ready | pending |

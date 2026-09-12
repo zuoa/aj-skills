@@ -24,3 +24,5 @@ Read [ENGINEERING.md](ENGINEERING.md) before implementation. Then read the autho
 - Test: `[canonical command]`
 - Typecheck/lint: `[canonical command]`
 - Build: `[canonical command]`
+
+For spec_schema 2, start from root SPEC's current delivery scope and the assigned task spec. Read its source SPEC/AC, interface contract and relevant architecture/design constraints. Execute in dependency order, record real AC evidence and completion status, and classify failures before proposing spec changes. Do not mark passed from a checklist or automatically relax AC to fit the implementation. ENGINEERING owns the detailed workflow.

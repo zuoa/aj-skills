@@ -51,7 +51,7 @@ class DesignStageTests(unittest.TestCase):
         path.write_text(path.read_text() + f"\n| Gate | Status |\n|---|---|\n| implementation-ready | {status} |\n")
 
     def codes(self) -> set[str]:
-        return {item.code for item in MODULE.validate(self.root)}
+        return {item.code for item in MODULE.validate(self.root) if item.severity != "info"}
 
     def test_direction_accepts_no_exact_visual_values(self) -> None:
         self.write_design("direction", DIRECTION)

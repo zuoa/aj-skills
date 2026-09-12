@@ -33,8 +33,10 @@ last_reviewed: YYYY-MM-DD
 
 ## Interfaces and integrations
 
-| Interface | Contract/versioning | Auth | Timeout/retry/idempotency | Degradation |
+| Interface ID/source | Machine contract reference | Data-flow/module responsibility | Key architectural tradeoff | Related SPEC |
 |---|---|---|---|---|
+
+Boundary semantics and wire fields belong to the linked interface spec and machine contract; this section owns internal responsibility and data flow. Record implementation constraints needed by task specs without predesigning every local algorithm.
 
 ## Technology and middleware decisions
 
