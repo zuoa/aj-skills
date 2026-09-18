@@ -38,6 +38,8 @@ Record unresolved material conflicts as a stable TBD instead of silently choosin
 
 At direction stage, use `frontend-design` to refine recognizable references, composition, visual hierarchy and key customization; use `ui-ux-pro-max` only for unresolved candidate or UX questions. Companion suggestions for exact palettes or dimensions remain exploratory until reviewed. Do not let a companion's preferred aesthetic or planning template override the selected direction.
 
+When using reference collections or external DESIGN.md files, apply `design-reference-workflow.md` before synthesizing companion suggestions. Pass the actual surface, task, adopted characteristics and exclusions into preview work; a brand name alone is not a design brief.
+
 At prototype stage, project-blueprint produces the lightweight component and representative-page preview, using `frontend-design` when available. Follow `design-and-architecture.md` for the default standalone HTML, project-route alternative, scope limits and human confirmation workflow. A larger prototype may be handed off to a frontend task, with links, revision/context and observations returned to the blueprint. Use `web-design-guidelines` on available UI for task/accessibility review, alongside visual critique. Agent checks inform human review; they do not confirm visual acceptance automatically.
 
 At specification stage, derive tokens and component differences from accepted results or reuse approved design-system sources. Missing companions do not prevent lightweight preview generation using available tools. Missing generation/rendering capabilities leave an explicit gap and a usable artifact or handoff; never fabricate a passing review or require installation to continue.

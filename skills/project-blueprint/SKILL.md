@@ -42,6 +42,7 @@ description: 为新建或早期 Web、SaaS、API 与移动应用建立可执行�
 
 - 需要技术选型或中间件判断时，读取 [references/selection-rubric.md](references/selection-rubric.md)。
 - 需要 UI、移动端或系统设计时，读取 [references/design-and-architecture.md](references/design-and-architecture.md)；需要推荐、比较或确认应用骨架、导航和工作区布局时，同时读取 [references/layout-catalog.md](references/layout-catalog.md)；需要推荐、比较或落地视觉主题时，同时读取 [references/theme-catalog.md](references/theme-catalog.md)。
+- 用户提供设计网站、截图、外部 `DESIGN.md`，或需要参考案例来收敛风格时，读取 [references/design-reference-workflow.md](references/design-reference-workflow.md)：参考筛选、来源判断、特征转译及设计规范与预览的一致性。`awesome-design-md` 是可选案例入口，不是固定主题菜单或项目设计权威。
 - 项目包含 Web 前端、交互式客户端或已有界面审计时，读取 [references/frontend-companion-skills.md](references/frontend-companion-skills.md)，按阶段使用已安装的伴随 Skills；React/Next.js 专属规则只能在确认技术栈后启用。
 - 需要安全、部署、上线或运维约束时，读取 [references/security-and-deployment.md](references/security-and-deployment.md)。
 - 目标市场涉及中国大陆、跨境/全球，或项目包含 AI/LLM 时，读取 [references/regional-and-ai.md](references/regional-and-ai.md)。
@@ -105,6 +106,8 @@ description: 为新建或早期 Web、SaaS、API 与移动应用建立可执行�
 - **specification：从认可设计提取实现规范。** 仅在视觉确认后补入 [实现规范补充模板](assets/templates/DESIGN_IMPLEMENTATION.md) 的适用章节，仍以 DESIGN.md 为权威入口。统一记录配色、排版、空间/动效 token 来源及组件差异，允许链接已有设计系统或主题文件；不要求每个组件重复完整字体栈和数值。实现所需决定必须可追溯，不能用无来源的“品牌色/系统默认”代替。
 
 区分功能硬约束、已确认品牌要求和可探索视觉建议。构思时保留字号、留白、圆角、阴影和组件外观的探索空间；确有既定品牌数值则保留。紧凑列表不意味着全页紧凑，文档语言克制不意味着视觉必须素白、中性或禁止品牌表达。参考选择要说明借鉴什么、哪些特征不适合当前任务，不只给网站名加一个主色。
+
+参考驱动的设计要形成可追溯链：来源与适用页面 → 借鉴/调整/排除 → 本项目的视觉主张与使用边界 → 预览中的验证位置 → 认可后的 token、组件规则和实现交接。外部分析中的精确数值仍是待验证参考，不自动成为已确认设计；官网、工作台和原生端分别判断。`DESIGN.md` 用简短视觉主张说明核心任务如何影响层级、排版和表面关系，并记录少量有依据的“采用/避免”规则。实现阶段给出链接到认可版本、共享 token 与组件规则的代理交接说明，避免下游重新猜风格。
 
 布局仍区分 `layout family`、`navigation model`、`work-surface model` 和 `platform chrome`；SSO、身份或租户切换不直接决定侧边栏。方向阶段说明空间关系和内容优先级，精确几何留待样稿验证。
 

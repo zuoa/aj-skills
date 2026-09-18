@@ -27,6 +27,8 @@ last_reviewed: YYYY-MM-DD
 
 For later skeletal tasks retain Source, Goal, Depends on, Risk and Refine when; omit unmade detail decisions. Current selection is authoritative in root SPEC frontmatter, not inferred from this file. A task contributes to source AC; it must not redefine them. Append Evidence, Tested revision and Executed on when Completion is passed. Do not claim completion from a written plan.
 
+For UI tasks, Constraints should link to DESIGN.md's Agent implementation brief (when present), accepted preview revision/scope and theme/component sources. Do not substitute an external reference brand for those project decisions or copy the full token system into the task.
+
 ## Open decisions
 
 | TBD ID | Decision | Owner | Decision by | Blocked gate | State |

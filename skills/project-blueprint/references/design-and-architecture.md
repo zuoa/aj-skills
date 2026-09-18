@@ -17,6 +17,8 @@ Start with `assets/templates/DESIGN.md`. Once the design is accepted, merge appl
 
 ### Direction and customization
 
+When using external examples, follow [design-reference-workflow.md](design-reference-workflow.md) for source inspection, surface fit and adopt/adapt/reject decisions. Write a concise visual thesis that connects the primary job to hierarchy, typography and surface relationships. A reference name is an input; the project-specific rules and their rationale are the output.
+
 Use a reference-led direction the user can recognize, such as Apple-site-like product presentation or an enterprise dark workbench. Explain the characteristics to borrow: composition, type hierarchy, surface depth, content density, imagery, or motion. Adapt them to the actual task; a reference name and accent color alone are insufficient.
 
 When the user has chosen a direction, refine it instead of reopening selection. Otherwise offer two or three plausible directions and one recommendation. The theme catalog is optional vocabulary, not a closed taxonomy. No weighted scoring is required for visual taste. Keep theme family, appearance, and density distinct; density can differ by region, and a dense work surface can coexist with a more expressive brand/search area.
@@ -35,6 +37,8 @@ The preview contains two complementary views, normally in one file:
 
 - Project-relevant components: semantic colors, type hierarchy, buttons, inputs, selection controls, cards, tags and applicable tables/dialogs/feedback. Show useful default, focus, disabled, loading and error states; omit unused components. Use the chosen direction instead of an unchanged library gallery.
 - At least one representative business page: navigation, content hierarchy, information density and component composition around a primary task. Use real or clearly labeled representative content. Start with desktop and narrow-screen views where applicable; add materially different surfaces only as needed.
+
+Use the same semantic token definitions for the catalog and business page; label the catalog's roles so reviewers can identify what is being approved. Demonstrate the selected appearances and density scopes, with theme controls only when those modes are required. Record which reference-derived decisions are being tested and where. See [preview/source alignment](design-reference-workflow.md#keep-design-preview-and-implementation-aligned) for keeping the accepted values and later implementation consistent.
 
 Provide simple local interactions where they affect judgment, such as tabs, filters, dialog open/close or form feedback. Use fixture data, with no real authentication, API writes or business services. A standalone visual approximation does not establish production component behavior or change the selected UI foundation; record differences for implementation. This exception does not authorize production business code, test implementations, running mock services or a complete scaffold.
 
@@ -70,6 +74,8 @@ After visual acceptance, derive the system used by implementation:
 - Color and typography sections contain the relevant semantic palette, contrast/state rules, font stacks, fallbacks/loading, and responsive type scale, or link directly to the maintained source. Do not duplicate external or shared definitions merely to satisfy tables.
 - Component specifications map used components to shared type/geometry tokens or named foundation variants and record only product-specific deltas and important states. Do not repeat resolved font families and numbers on every row. A token reference must resolve to a documented source.
 - Define supported appearances, spacing/grid, radius/elevation and motion as used by the accepted design. Verify actual text, long content, narrow layouts, zoom, status cues and focus against the source.
+- State the surface/depth relationships and a few scoped design guardrails: what to use, what to avoid, and why. Keep reference observations distinct from approved project rules.
+- Add a concise Agent implementation brief linking the accepted revision/scope, applicable SPEC/tasks, theme/token source, component rules and validation checks. Link rather than duplicate definitions; UI task constraints can route to this brief.
 
 Color, typography, UI foundation and component sections remain structural checks at specification stage. The source and values can live in maintained code or an approved system; a phrase such as “use brand colors” without a concrete definition or source is not a contract. No exhaustive tables are required during direction or prototype work.
 

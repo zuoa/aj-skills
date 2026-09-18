@@ -7,6 +7,9 @@ Merge applicable sections into DESIGN.md only after visual acceptance and set `d
 - Authoritative source: [link to theme/config/design system, or an inline section anchor]
 - Supported appearance and density:
 - Ownership and permitted overrides:
+- Mapping from the accepted preview baseline to this source; known differences and verification:
+
+Keep exact definitions in one maintained source. The component catalog and business-page preview must use that source or a documented equivalent. Do not duplicate the token set across Markdown, nested frontmatter and CSS; keep blueprint frontmatter for metadata.
 
 ## Color system
 
@@ -88,3 +91,21 @@ Map used components to shared tokens or named foundation variants. Record only p
 | Responsive breakpoints | | | |
 | Radius/border/elevation | | | |
 | Motion duration/easing | | | |
+
+## Surface hierarchy and depth
+
+Describe how the accepted design distinguishes canvas, content regions, selected/raised elements and overlays using surface, border, radius and elevation together. Include only used layers; link existing theme definitions rather than repeating values. A light page containing a dark region does not imply support for a full dark theme.
+
+| Layer / actual use | Shared surface, border and elevation tokens | Relationship to adjacent layers | Appearance / focus considerations |
+|---|---|---|---|
+
+## Agent implementation brief
+
+Keep this brief short enough to use directly in a frontend task. Replace these prompts with project-specific links and instructions, then remove them. This section routes to authoritative rules and does not create another copy of the design system.
+
+- Implement the linked [SPEC/task and target page] within its confirmed behavior and scope.
+- Match [accepted preview or approved system] at [reviewed revision], covering [accepted components, states, viewports and appearances].
+- Use [Token source], [Component specifications] and [Design guardrails]; preserve the visual thesis and named product-specific differences.
+- Respect [pending decisions / excluded scope]; do not treat reference-site features or unreviewed modes as approved requirements.
+- Check the representative page, required states, long/localized content, responsive behavior and applicable accessibility criteria; record actual results and the tested revision.
+- Iterate against that baseline. Material visual changes return to review before updating acceptance and dependent implementation readiness.

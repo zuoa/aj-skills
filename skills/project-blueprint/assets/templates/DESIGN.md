@@ -38,6 +38,7 @@ Describe spatial relationships first. Keep layout family, navigation model, work
 
 ## Visual direction
 
+- Visual thesis: how the primary job shapes hierarchy, typography, surface relationships and emphasis:
 - Selected reference-led direction and rationale; confirmed/provisional state:
 - References: what to borrow, what to adapt, and inspection status:
 - Appearance and density by surface:
@@ -49,6 +50,22 @@ When the user specifies a direction, refine it directly. Otherwise compare two o
 
 Present unresolved direction options in the conversation and obtain a choice or explicit delegation before calling the direction settled. Record the decision source, actual date and scope here; for a no-questions draft retain the provisional recommendation and pending selection. Direction selection is separate from the later visual review.
 
+## Reference adaptation
+
+Include when references inform the design; omit for an original direction without external references. Record only sources that change a decision. Identify the actual source page/surface and distinguish secondary analysis, inspected visuals, extracted values and estimates. Record source revision/access date and inspection limits. A collection entry is not an official brand specification or evidence of project approval.
+
+| Reference and inspected evidence | Characteristic to borrow | Adopt / adapt / reject and task-based reason | Applicable surface and exclusions | Preview check / decision state |
+|---|---|---|---|---|
+
+If several references are used, name the primary composition and the bounded contribution of each secondary reference. Explain material conflicts, local font/content adaptations and unverified assumptions without copying whole external design systems.
+
+## Design guardrails
+
+Keep a few concrete, project-specific rules. During direction work mark exploratory choices provisional; after review link them to the accepted baseline. Existing approved rules may be referenced instead of repeated.
+
+| Surface / element | Use | Avoid | Task or brand reason / source | State |
+|---|---|---|---|---|
+
 ## Visual preview
 
 At prototype stage, produce a lightweight preview after direction selection: default `design/preview.html`, or an existing project preview route/native prototype. Include project-relevant components and a representative business page. If delivery is deferred, omit Artifact and state the actual constraint plus owner and next step in Deferred reason. Remove unused fields; do not leave a link to a nonexistent artifact.
@@ -56,6 +73,8 @@ At prototype stage, produce a lightweight preview after direction selection: def
 - Artifact:
 - Preview revision and viewing/startup instructions:
 - Components, variants and states demonstrated:
+- Shared provisional token source for catalog/page, supported appearances and density scopes:
+- Reference-derived decisions and where they can be judged:
 - Representative page(s), primary task and acceptance owner:
 - Real content or clearly labeled representative content and important states:
 - Target devices: core desktop and narrow-screen views by default:

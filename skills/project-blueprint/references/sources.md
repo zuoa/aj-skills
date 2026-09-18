@@ -21,6 +21,7 @@ Use these as reference models, not as a requirement to apply every practice.
 
 ## Design, security, and operations
 
+- [VoltAgent awesome-design-md](https://github.com/VoltAgent/awesome-design-md): optional reference analyses for articulating visual language, semantic tokens, component treatments, scoped guardrails and previews. These are community interpretations, not official brand specifications or project approval. Inspected examples and adaptation procedure: [design-reference-workflow.md](design-reference-workflow.md), reviewed 2026-09-18.
 - [Nielsen Norman Group: 10 Usability Heuristics](https://www.nngroup.com/articles/ten-usability-heuristics/): stable review questions for status visibility, user control, consistency, error prevention, recognition and recovery; treat them as heuristics rather than a visual style.
 - [WCAG 2.2](https://www.w3.org/TR/wcag/): testable web accessibility success criteria.
 - [W3C H86: text alternatives for emojis and emoticons](https://www.w3.org/WAI/WCAG21/Techniques/html/H86.html): Emoji names may not communicate the intended meaning to assistive technology; provide an appropriate alternative when used.

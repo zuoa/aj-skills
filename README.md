@@ -36,6 +36,8 @@ Skill 名称以各目录 `SKILL.md` 中的 `name` 字段为准，可使用 `--sk
 
 `project-blueprint` 负责规划和约束；UI 方向确认后，默认生成包含常用组件和代表性业务页面的 `design/preview.html`（也可复用项目预览入口），供人工确认后沉淀实现规范。它不生成业务实现或替代代码审查。项目包含 Web 前端时，建议同时安装以下伴随 Skills：
 
+设计参考可从 [awesome-design-md](https://github.com/VoltAgent/awesome-design-md) 等案例中按需选取；通过来源检查、适用页面和借鉴/调整/排除记录形成项目自己的视觉主张。认可后，`DESIGN.md` 将共享 token、组件规则、设计边界和代理实现交接关联到同一预览基线。
+
 ```bash
 npx skills add https://github.com/anthropics/skills --skill frontend-design
 npx skills add https://github.com/vercel-labs/agent-skills --skill web-design-guidelines

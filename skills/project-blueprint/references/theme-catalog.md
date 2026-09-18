@@ -91,6 +91,12 @@ do not translate it forcibly into one of the six families above. State which
 reference characteristics to borrow and how they serve this product. Verify a
 provided reference when accessible, and disclose when it has not been inspected.
 
+For source selection and adaptation, use [design-reference-workflow.md](design-reference-workflow.md).
+The optional awesome-design-md collection provides concrete analyses to inspect;
+its brand names and extracted palettes are not additional fixed theme families.
+Distinguish marketing-site references from actual workbench or native-screen
+evidence, and record what the project adopts, changes and excludes.
+
 If the user has selected a direction, refine its appearance, density, brand color,
 typography relationship, composition and focal treatment without requiring an
 alternative or scorecard. Otherwise show two or three credible options with a
