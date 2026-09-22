@@ -146,6 +146,18 @@ bash scripts/setup_env.sh
 
 ## 附图
 
+新版绘图支持嵌套架构分组、节点对齐、带标签的连接、反馈线和独立时序图，保留原有 JSON 输入。默认输出300dpi PNG、矢量SVG/PDF、DOT、原生可编辑 `.drawio` 和 `.layout.json` 排版报告；按 Word 实际宽高适配，小字号会提示拆图。具体输入、限制和视觉检查流程见 [附图说明](../../skills/aj-patent-disclosure-cn/references/figure_workflow.md)。
+
+实现来源、验证结果及未完成的环境相关检查见 [附图引擎升级记录](figure_engine_upgrade.md)。
+
+查看三类演示图（仅为演示关系，不用于实际交底书）：
+
+```bash
+python3 scripts/generate_figures.py \
+  --input-json assets/examples/figure_gallery.sample.json \
+  --output-dir "${PATENT_CASE_DIR}/outputs/figure-gallery"
+```
+
 先确认附图清单、图元和术语，再运行程序化脚本：
 
 ```bash

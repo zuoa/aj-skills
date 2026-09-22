@@ -1,0 +1,20 @@
+[
+  {
+    "num": 1,
+    "caption": "端边云协作架构示例（演示数据）",
+    "display_width_cm": 14.0,
+    "file": "disclosure_figures/fig1.png"
+  },
+  {
+    "num": 2,
+    "caption": "条件分流与反馈流程示例（演示数据）",
+    "display_width_cm": 14.0,
+    "file": "disclosure_figures/fig2.png"
+  },
+  {
+    "num": 3,
+    "caption": "边云复核交互示例（演示数据）",
+    "display_width_cm": 12.291,
+    "file": "disclosure_figures/fig3.png"
+  }
+]

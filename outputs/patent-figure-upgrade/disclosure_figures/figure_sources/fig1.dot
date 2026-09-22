@@ -1,0 +1,25 @@
+digraph G {
+graph [rankdir=TB, splines=spline, bgcolor=white, pad=0.18, nodesep=0.55, ranksep=0.6, newrank=true, outputorder=edgesfirst];
+node [shape=box, fontname="PingFang SC", fontsize=13, color=black, fillcolor=white, style=filled, penwidth=1.1, margin="0.18,0.12", width=1.35, height=0.5];
+edge [fontname="PingFang SC", fontsize=11, color=black, penwidth=1, arrowsize=0.7];
+subgraph cluster_0 {
+graph [label="终端 100", fontname="PingFang SC", fontsize=13, color=black, penwidth=1, style=solid, margin=18, labelloc=t, labeljust=l];
+"camera" [label="图像采集\n110", shape=box];
+}
+subgraph cluster_1 {
+graph [label="边缘节点 200", fontname="PingFang SC", fontsize=13, color=black, penwidth=1, style=solid, margin=18, labelloc=t, labeljust=l];
+"route" [label="任务分流\n210", shape=box];
+"update" [label="阈值更新\n220", shape=box];
+}
+subgraph cluster_2 {
+graph [label="云端 300", fontname="PingFang SC", fontsize=13, color=black, penwidth=1, style=solid, margin=18, labelloc=t, labeljust=l];
+"review" [label="样本复核\n310", shape=box];
+"store" [label="复核记录\n320", shape=cylinder];
+}
+{ rank=same; "camera"; "route"; "review"; }
+"camera" -> "route" [label="图像", style=solid];
+"route" -> "review" [label="复核样本", style=solid];
+"update" -> "route" [label="更新阈值", constraint=false, minlen=2, style=solid, tailport=n, headport=s];
+"review" -> "store" [label="存储结果", style=solid];
+"review" -> "update" [label="复核反馈", style=solid, tailport=w, headport=e];
+}

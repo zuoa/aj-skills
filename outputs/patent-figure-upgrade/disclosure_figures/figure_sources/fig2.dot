@@ -1,0 +1,19 @@
+digraph G {
+graph [rankdir=TB, splines=spline, bgcolor=white, pad=0.18, nodesep=0.55, ranksep=0.6, newrank=true, outputorder=edgesfirst];
+node [shape=box, fontname="PingFang SC", fontsize=13, color=black, fillcolor=white, style=filled, penwidth=1.1, margin="0.18,0.12", width=1.35, height=0.5];
+edge [fontname="PingFang SC", fontsize=11, color=black, penwidth=1, arrowsize=0.7];
+"S1" [label="S1 接收待处理图像", shape=parallelogram];
+"S2" [label="S2 队列长度\n超过阈值？", shape=diamond];
+"S3" [label="S3 本地推理", shape=box];
+"S4" [label="S4 云端复核", shape=box];
+"S5" [label="S5 更新分流阈值", shape=box];
+"S6" [label="S6 输出检测结果", shape=parallelogram];
+{ rank=same; "S3"; "S4"; }
+"S1" -> "S2" [label="", style=solid];
+"S2" -> "S3" [label="否", style=solid];
+"S2" -> "S4" [label="是", style=solid];
+"S3" -> "S6" [label="", style=solid];
+"S4" -> "S5" [label="", style=solid];
+"S5" -> "S2" [label="供下一任务使用", constraint=false, minlen=2, style=solid, tailport=e, headport=e];
+"S5" -> "S6" [label="", style=solid];
+}

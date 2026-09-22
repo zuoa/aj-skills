@@ -1,0 +1,23 @@
+{
+  "font": "PingFang SC",
+  "print_size": {
+    "width_cm": 14.0,
+    "height_cm": 3.787,
+    "scale": 0.7782448447841613
+  },
+  "estimated_min_font_pt": 10.12,
+  "warnings": [],
+  "geometry": {
+    "node_count": 4,
+    "overlapping_node_boxes": [],
+    "disconnected_arrowheads": [],
+    "not_checked": [
+      "连线穿框/交叉",
+      "边标签重叠",
+      "技术语义",
+      "Word实际分页"
+    ]
+  },
+  "visual_review": "required",
+  "drawio_note": "原生可编辑副本；曲线转折线、标签及容器编辑后需重新查看，非像素一致副本"
+}

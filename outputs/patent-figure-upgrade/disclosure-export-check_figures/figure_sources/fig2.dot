@@ -1,0 +1,12 @@
+digraph G {
+graph [rankdir=TB, splines=spline, bgcolor=white, pad=0.18, nodesep=0.55, ranksep=0.6, newrank=true, outputorder=edgesfirst];
+node [shape=box, fontname="PingFang SC", fontsize=13, color=black, fillcolor=white, style=filled, penwidth=1.1, margin="0.18,0.12", width=1.35, height=0.5];
+edge [fontname="PingFang SC", fontsize=11, color=black, penwidth=1, arrowsize=0.7];
+"S1" [label="S1 构建用户行为序列特征", shape=box];
+"S2" [label="S2 构建实时上下文特征", shape=box];
+"S3" [label="S3 生成并应用融合权重", shape=box];
+"S4" [label="S4 生成推荐结果", shape=box];
+"S1" -> "S2" [label="", style=solid];
+"S2" -> "S3" [label="", style=solid];
+"S3" -> "S4" [label="", style=solid];
+}

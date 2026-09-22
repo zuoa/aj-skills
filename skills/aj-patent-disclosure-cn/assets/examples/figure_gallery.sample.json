@@ -1,0 +1,208 @@
+{
+  "figure_plan": {
+    "drawings": [
+      {
+        "kind": "architecture",
+        "caption": "端边云协作架构示例（演示数据）",
+        "layout": {
+          "direction": "TB",
+          "routing": "spline",
+          "same_rank": [
+            [
+              "camera",
+              "route",
+              "review"
+            ]
+          ]
+        },
+        "groups": [
+          {
+            "id": "terminal",
+            "label": "终端 100"
+          },
+          {
+            "id": "edge",
+            "label": "边缘节点 200"
+          },
+          {
+            "id": "cloud",
+            "label": "云端 300"
+          }
+        ],
+        "components": [
+          {
+            "id": "camera",
+            "name": "图像采集",
+            "ref": "110",
+            "group": "terminal",
+            "connections": [
+              {
+                "to": "route",
+                "label": "图像"
+              }
+            ]
+          },
+          {
+            "id": "route",
+            "name": "任务分流",
+            "ref": "210",
+            "group": "edge",
+            "connections": [
+              {
+                "to": "review",
+                "label": "复核样本"
+              }
+            ]
+          },
+          {
+            "id": "update",
+            "name": "阈值更新",
+            "ref": "220",
+            "group": "edge",
+            "connections": [
+              {
+                "to": "route",
+                "label": "更新阈值",
+                "feedback": true,
+                "tailport": "n",
+                "headport": "s"
+              }
+            ]
+          },
+          {
+            "id": "review",
+            "name": "样本复核",
+            "ref": "310",
+            "group": "cloud",
+            "connections": [
+              {
+                "to": "store",
+                "label": "存储结果"
+              },
+              {
+                "to": "update",
+                "label": "复核反馈",
+                "tailport": "w",
+                "headport": "e"
+              }
+            ]
+          },
+          {
+            "id": "store",
+            "name": "复核记录",
+            "ref": "320",
+            "type": "storage",
+            "group": "cloud",
+            "connections": []
+          }
+        ]
+      },
+      {
+        "kind": "flowchart",
+        "caption": "条件分流与反馈流程示例（演示数据）",
+        "layout": {
+          "direction": "TB",
+          "same_rank": [
+            [
+              "S3",
+              "S4"
+            ]
+          ]
+        },
+        "steps": [
+          {
+            "id": "S1",
+            "label": "S1 接收待处理图像",
+            "type": "input",
+            "next": [
+              "S2"
+            ]
+          },
+          {
+            "id": "S2",
+            "label": "S2 队列长度\n超过阈值？",
+            "type": "decision",
+            "next": [
+              "S3",
+              "S4"
+            ],
+            "edge_label": {
+              "S3": "否",
+              "S4": "是"
+            }
+          },
+          {
+            "id": "S3",
+            "label": "S3 本地推理",
+            "next": [
+              "S6"
+            ]
+          },
+          {
+            "id": "S4",
+            "label": "S4 云端复核",
+            "next": [
+              "S5"
+            ]
+          },
+          {
+            "id": "S5",
+            "label": "S5 更新分流阈值",
+            "next": [
+              "S2",
+              "S6"
+            ],
+            "edge_label": {
+              "S2": "供下一任务使用"
+            },
+            "edge_options": {
+              "S2": {
+                "feedback": true,
+                "tailport": "e",
+                "headport": "e"
+              }
+            }
+          },
+          {
+            "id": "S6",
+            "label": "S6 输出检测结果",
+            "type": "output",
+            "next": []
+          }
+        ]
+      },
+      {
+        "kind": "sequence",
+        "caption": "边云复核交互示例（演示数据）",
+        "participants": [
+          {
+            "id": "edge",
+            "label": "边缘节点 200"
+          },
+          {
+            "id": "cloud",
+            "label": "云端 300"
+          }
+        ],
+        "messages": [
+          {
+            "from": "edge",
+            "to": "cloud",
+            "label": "上传待复核样本"
+          },
+          {
+            "from": "cloud",
+            "to": "edge",
+            "label": "返回复核结果",
+            "style": "dashed"
+          },
+          {
+            "from": "edge",
+            "to": "cloud",
+            "label": "确认结果已接收"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -425,7 +425,10 @@ def render_markdown(payload: Dict[str, Any], strict_cnipa: bool = False) -> str:
         if isinstance(fig, dict):
             caption = f"图{fig['num']} {fig['caption']}"
             if fig.get("file"):
-                lines.extend([f"![{caption}](<{fig['file']}>){{width=14cm}}", ""])
+                width = fig.get('display_width_cm', 14)
+                if not isinstance(width, (int, float)) or not 0 < width <= 14:
+                    raise ValueError('display_width_cm 必须为大于0且不超过14的有限数值')
+                lines.extend([f"![{caption}](<{fig['file']}>){{width={width:.3f}cm}}", ""])
             else:
                 lines.extend([caption, ""])
             if fig.get("elements"):

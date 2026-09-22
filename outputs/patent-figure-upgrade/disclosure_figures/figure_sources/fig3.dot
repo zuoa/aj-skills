@@ -1,0 +1,20 @@
+digraph G {
+graph [bgcolor=white, pad=0.2, splines=line, outputorder=edgesfirst];
+node [fontname="PingFang SC", fontsize=13, shape=box, penwidth=1.1];
+edge [fontname="PingFang SC", fontsize=11, arrowsize=0.7];
+"actor_0" [pos="90,318!", width=1.8, height=0.6, label="边缘节点 200"];
+"a0_0" [pos="90,263!", shape=point, width=0.01, height=0.01, label="", style=invis];
+"a0_1" [pos="90,187!", shape=point, width=0.01, height=0.01, label="", style=invis];
+"a0_2" [pos="90,111!", shape=point, width=0.01, height=0.01, label="", style=invis];
+"a0_3" [pos="90,35!", shape=point, width=0.01, height=0.01, label="", style=invis];
+"actor_0" -> "a0_3" [style=dashed, arrowhead=none, color=black];
+"actor_1" [pos="280,318!", width=1.8, height=0.6, label="云端 300"];
+"a1_0" [pos="280,263!", shape=point, width=0.01, height=0.01, label="", style=invis];
+"a1_1" [pos="280,187!", shape=point, width=0.01, height=0.01, label="", style=invis];
+"a1_2" [pos="280,111!", shape=point, width=0.01, height=0.01, label="", style=invis];
+"a1_3" [pos="280,35!", shape=point, width=0.01, height=0.01, label="", style=invis];
+"actor_1" -> "a1_3" [style=dashed, arrowhead=none, color=black];
+"a0_0" -> "a1_0" [label="上传待复核样本", lp="185.0,283", style=solid];
+"a1_1" -> "a0_1" [label="返回复核结果", lp="185.0,207", style=dashed];
+"a0_2" -> "a1_2" [label="确认结果已接收", lp="185.0,131", style=solid];
+}

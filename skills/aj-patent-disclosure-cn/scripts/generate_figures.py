@@ -603,35 +603,10 @@ def write_figure_source(path: Path, content: str) -> None:
     path.write_text(content, encoding="utf-8")
 
 
-def render_graph(nodes, edges, output: Path, source: Path) -> None:
-    """Graphviz routes branches/cycles around nodes and preserves editable DOT."""
-    if not shutil.which("dot"):
-        raise RuntimeError("需要 Graphviz dot 绘制附图；安装 Graphviz 后重试。")
-    ids = [str(node['id']) for node in nodes]
-    if not ids or len(ids) != len(set(ids)):
-        raise ValueError("图节点不能为空，且 id 必须唯一")
-    quote = lambda value: json.dumps(str(value), ensure_ascii=False)
-    lines = ['digraph G {', 'graph [rankdir=TB, bgcolor=white, pad=0.2, nodesep=0.5, ranksep=0.65];',
-             'node [shape=box, fontname="PingFang SC", fontsize=12, color=black, margin="0.18,0.12"];',
-             'edge [fontname="PingFang SC", fontsize=11, color=black];']
-    import textwrap
-    for node in nodes:
-        label = '\n'.join(textwrap.wrap(str(node.get('label', node['id'])), width=18))
-        shape = {'decision': 'diamond', 'start': 'ellipse', 'end': 'ellipse'}.get(node.get('type'), 'box')
-        lines.append(f'{quote(node["id"])} [label={quote(label)}, shape={shape}];')
-    for src, dst, label in edges:
-        if str(src) not in ids or str(dst) not in ids:
-            raise ValueError(f"附图连线引用不存在的节点: {src} -> {dst}")
-        lines.append(f'{quote(src)} -> {quote(dst)} [label={quote(label)}];')
-    lines.append('}')
-    source.parent.mkdir(parents=True, exist_ok=True)
-    source.write_text('\n'.join(lines), encoding='utf-8')
-    for suffix in ('png', 'svg'):
-        target = output.with_suffix('.' + suffix)
-        subprocess.run(['dot', '-T' + suffix, '-Gdpi=200', str(source), '-o', str(target)],
-                       check=True, capture_output=True, timeout=60)
-        if not target.is_file() or not target.stat().st_size:
-            raise RuntimeError(f"附图未生成: {target}")
+def render_graph(nodes, edges, output: Path, source: Path, spec=None) -> dict:
+    from figure_layout import render_patent_graph
+    normalized = [e if isinstance(e, dict) else {'from': e[0], 'to': e[1], 'label': e[2]} for e in edges]
+    return render_patent_graph(nodes, normalized, output, source, spec)
 
 
 def prepare_figures(payload: dict, input_path: Path, output_path: Path) -> dict:
@@ -655,7 +630,7 @@ def prepare_figures(payload: dict, input_path: Path, output_path: Path) -> dict:
                 for i, x in enumerate(steps)]})
     figures = result.get('figures', [])
     if not figures and specifications:
-        figures = [{'num': i, 'caption': spec.get('caption', {'flowchart': '方法流程图', 'architecture': '系统架构图'}.get(spec['kind'], '技术附图'))}
+        figures = [{'num': i, 'caption': spec.get('caption', {'flowchart': '方法流程图', 'architecture': '系统架构图', 'sequence': '交互时序图'}.get(spec['kind'], '技术附图'))}
                    for i, spec in enumerate(specifications, 1)]
     if not figures:
         if result.get('drawings_not_applicable'):
@@ -674,8 +649,16 @@ def prepare_figures(payload: dict, input_path: Path, output_path: Path) -> dict:
             kind = spec['kind']
             if kind == 'architecture':
                 components = spec['components']
-                nodes = [{'id': c['name'], 'label': c['name']} for c in components]
-                edges = [(c['name'], dst, '') for c in components for dst in c.get('connections', [])]
+                nodes = [dict(c, id=c.get('id', c['name']), label=c.get('label', c['name']),
+                              type=c.get('type', 'process') if c.get('type', 'process') in
+                              {'process', 'storage', 'input', 'output', 'subprocess'} else 'process')
+                         for c in components]
+                edges = []
+                for c, node in zip(components, nodes):
+                    for destination in c.get('connections', []):
+                        edge = dict(destination) if isinstance(destination, dict) else {'to': destination}
+                        edge['from'] = node['id']
+                        edges.append(edge)
             elif kind == 'flowchart':
                 nodes = spec['steps']
                 for node in nodes:
@@ -683,10 +666,20 @@ def prepare_figures(payload: dict, input_path: Path, output_path: Path) -> dict:
                         raise ValueError(f"流程节点 {node['id']} 必须显式给出 next（终点为 []）")
                     if node.get('type') == 'decision' and (len(node['next']) < 2 or any(not node.get('edge_label', {}).get(dst) for dst in node['next'])):
                         raise ValueError('判断节点必须有至少两个带条件标签的出口')
-                edges = [(n['id'], dst, n.get('edge_label', {}).get(dst, '')) for n in nodes for dst in n['next']]
+                edges = []
+                for n in nodes:
+                    for dst in n['next']:
+                        edge = dict(n.get('edge_options', {}).get(dst, {}))
+                        edge.update({'from': n['id'], 'to': dst, 'label': n.get('edge_label', {}).get(dst, '')})
+                        edges.append(edge)
+            elif kind == 'sequence':
+                nodes, edges = [], []
             else:
                 raise ValueError(f'不支持自动绘制 {kind}；请将已有图像通过 figures.file 提供，或使用 nodes/edges 对应的架构、流程表达')
-            render_graph(nodes, edges, target, folder / 'figure_sources' / f'fig{index+1}.dot')
+            report = render_graph(nodes, edges, target, folder / 'figure_sources' / f'fig{index+1}.dot', spec)
+            figure['display_width_cm'] = report['print_size']['width_cm']
+            for warning in report['warnings']:
+                print(f'附图{index+1}排版提醒: {warning}', file=sys.stderr)
         else:
             source = Path(figure.get('file', ''))
             if not source.is_absolute():
@@ -709,7 +702,12 @@ def main() -> int:
     if args.input_json:
         try:
             raw = json.loads(Path(args.input_json).read_text(encoding="utf-8"))
-            if "invention" in raw or "drawings" in raw.get("figure_plan", {}):
+            plan = raw.get('figure_plan', raw)
+            if "invention" in raw or "drawings" in plan or (
+                any(k in plan for k in ('components', 'steps')) and not any(k in plan for k in ('structure', 'interactions'))
+            ):
+                if 'figure_plan' not in raw and 'invention' not in raw:
+                    raw = {'figure_plan': raw}
                 result = prepare_figures(raw, Path(args.input_json).resolve(), output_dir.resolve() / "disclosure.docx")
                 print(json.dumps(result["figures"], ensure_ascii=False, indent=2))
                 return 0

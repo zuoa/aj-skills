@@ -1,0 +1,12 @@
+digraph G {
+graph [rankdir=LR, splines=spline, bgcolor=white, pad=0.18, nodesep=0.55, ranksep=0.6, newrank=true, outputorder=edgesfirst];
+node [shape=box, fontname="PingFang SC", fontsize=13, color=black, fillcolor=white, style=filled, penwidth=1.1, margin="0.18,0.12", width=1.35, height=0.5];
+edge [fontname="PingFang SC", fontsize=11, color=black, penwidth=1, arrowsize=0.7];
+"行为事件采集模块100" [label="行为事件采集模块100", shape=box];
+"上下文采集模块200" [label="上下文采集模块200", shape=box];
+"特征融合模块300" [label="特征融合模块300", shape=box];
+"候选排序模块400" [label="候选排序模块400", shape=box];
+"行为事件采集模块100" -> "特征融合模块300" [label="", style=solid];
+"上下文采集模块200" -> "特征融合模块300" [label="", style=solid];
+"特征融合模块300" -> "候选排序模块400" [label="", style=solid];
+}

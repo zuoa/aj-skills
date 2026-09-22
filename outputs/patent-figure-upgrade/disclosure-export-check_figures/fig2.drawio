@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net">
+  <diagram id="patent-figure" name="fig2">
+    <mxGraphModel grid="1" gridSize="10" page="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="v0" parent="1" vertex="1" value="S1 构建用户行为序列特征" style="html=0;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontFamily=PingFang SC;fontSize=17.333333333333332;shape=rectangle;">
+          <mxGeometry x="0.001599999999996271" y="0.0065066666666808715" width="228.55679999999998" height="48.040319999999994" as="geometry" />
+        </mxCell>
+        <mxCell id="v1" parent="1" vertex="1" value="S2 构建实时上下文特征" style="html=0;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontFamily=PingFang SC;fontSize=17.333333333333332;shape=rectangle;">
+          <mxGeometry x="7.0" y="105.37984000000002" width="214.55999999999997" height="48.040319999999994" as="geometry" />
+        </mxCell>
+        <mxCell id="v2" parent="1" vertex="1" value="S3 生成并应用融合权重" style="html=0;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontFamily=PingFang SC;fontSize=17.333333333333332;shape=rectangle;">
+          <mxGeometry x="7.0" y="210.74650666666665" width="214.55999999999997" height="48.040319999999994" as="geometry" />
+        </mxCell>
+        <mxCell id="v3" parent="1" vertex="1" value="S4 生成推荐结果" style="html=0;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontFamily=PingFang SC;fontSize=17.333333333333332;shape=rectangle;">
+          <mxGeometry x="32.49759999999999" y="316.11984" width="163.5648" height="48.040319999999994" as="geometry" />
+        </mxCell>
+        <mxCell id="e0" parent="1" edge="1" source="v0" target="v1" value="" style="html=0;rounded=0;strokeColor=#000000;fontColor=#000000;fontFamily=PingFang SC;fontSize=14.666666666666666;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="114.27999999999999" y="61.919999999999995" />
+              <mxPoint x="114.27999999999999" y="78.78666666666666" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e1" parent="1" edge="1" source="v1" target="v2" value="" style="html=0;rounded=0;strokeColor=#000000;fontColor=#000000;fontFamily=PingFang SC;fontSize=14.666666666666666;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="114.27999999999999" y="167.29333333333332" />
+              <mxPoint x="114.27999999999999" y="184.16" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e2" parent="1" edge="1" source="v2" target="v3" value="" style="html=0;rounded=0;strokeColor=#000000;fontColor=#000000;fontFamily=PingFang SC;fontSize=14.666666666666666;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="114.27999999999999" y="272.66666666666663" />
+              <mxPoint x="114.27999999999999" y="289.5333333333333" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,232 @@
+{
+  "errors": [],
+  "warnings": [],
+  "info": [
+    {
+      "code": "prior-art",
+      "path": "$.prior_art",
+      "message": "no verified prior-art records included"
+    }
+  ],
+  "coverage": [
+    {
+      "section": "发明名称",
+      "required": true,
+      "fragments": 1,
+      "status": "passed"
+    },
+    {
+      "section": "inventors",
+      "required": false,
+      "fragments": 2,
+      "status": "passed"
+    },
+    {
+      "section": "department",
+      "required": false,
+      "fragments": 0,
+      "status": "not_applicable"
+    },
+    {
+      "section": "first_inventor_id",
+      "required": false,
+      "fragments": 0,
+      "status": "not_applicable"
+    },
+    {
+      "section": "关键点和欲保护点",
+      "required": true,
+      "fragments": 6,
+      "status": "passed"
+    },
+    {
+      "section": "technical_field",
+      "required": true,
+      "fragments": 1,
+      "status": "passed"
+    },
+    {
+      "section": "terminology",
+      "required": false,
+      "fragments": 4,
+      "status": "passed"
+    },
+    {
+      "section": "background",
+      "required": true,
+      "fragments": 5,
+      "status": "passed"
+    },
+    {
+      "section": "technical_problem",
+      "required": true,
+      "fragments": 1,
+      "status": "passed"
+    },
+    {
+      "section": "purpose",
+      "required": true,
+      "fragments": 1,
+      "status": "passed"
+    },
+    {
+      "section": "solution",
+      "required": false,
+      "fragments": 0,
+      "status": "not_applicable"
+    },
+    {
+      "section": "inputs",
+      "required": false,
+      "fragments": 3,
+      "status": "passed"
+    },
+    {
+      "section": "key_features",
+      "required": false,
+      "fragments": 6,
+      "status": "passed"
+    },
+    {
+      "section": "solution_steps",
+      "required": true,
+      "fragments": 21,
+      "status": "passed"
+    },
+    {
+      "section": "outputs",
+      "required": false,
+      "fragments": 2,
+      "status": "passed"
+    },
+    {
+      "section": "参考资料",
+      "required": false,
+      "fragments": 0,
+      "status": "not_applicable"
+    },
+    {
+      "section": "具体实施方式",
+      "required": true,
+      "fragments": 44,
+      "status": "passed"
+    },
+    {
+      "section": "技术效果",
+      "required": true,
+      "fragments": 5,
+      "status": "passed"
+    },
+    {
+      "section": "验证情况",
+      "required": true,
+      "fragments": 5,
+      "status": "passed"
+    },
+    {
+      "section": "替代方案",
+      "required": true,
+      "fragments": 2,
+      "status": "passed"
+    },
+    {
+      "section": "其它用途",
+      "required": false,
+      "fragments": 0,
+      "status": "not_applicable"
+    },
+    {
+      "section": "附图1",
+      "required": true,
+      "fragments": 5,
+      "status": "passed"
+    },
+    {
+      "section": "附图2",
+      "required": true,
+      "fragments": 5,
+      "status": "passed"
+    }
+  ],
+  "coverage_scope": "检查输入到章节的文本覆盖、结构和图片嵌入；不证明事实真实性或技术充分性，不替代视觉审阅。",
+  "input_sha256": "f6bc90c811816354fb4c514da1758045e6a8b95557900712e48cd75866e5ff53",
+  "output_sha256": "8d64ed43f6c48fb6becf4e5a90aa2be57f5cd2ee37baa33aa8615d6fbb890359",
+  "output": "/Users/yujian/Code/py/aj-skills/outputs/patent-figure-upgrade/disclosure-export-check.docx",
+  "artifacts": [
+    {
+      "kind": "docx",
+      "path": "disclosure-export-check.docx",
+      "sha256": "8d64ed43f6c48fb6becf4e5a90aa2be57f5cd2ee37baa33aa8615d6fbb890359"
+    },
+    {
+      "kind": "markdown",
+      "path": "disclosure-export-check.md",
+      "sha256": "0e3438d5ffe7514d557ef68cfc7cc2870c89f270b23188de2ac70ab880762e1f"
+    },
+    {
+      "kind": "figure",
+      "path": "disclosure-export-check_figures/fig1.drawio",
+      "sha256": "99efd72c2006075309944b9d450bcd62d572751747196b24761cc22badcc3f98"
+    },
+    {
+      "kind": "figure",
+      "path": "disclosure-export-check_figures/fig1.layout.json",
+      "sha256": "d4bacd2292bbdb4481fd798c26739155fa37e716140ffa34fc81f82931a25d6a"
+    },
+    {
+      "kind": "figure",
+      "path": "disclosure-export-check_figures/fig1.pdf",
+      "sha256": "f14839536f0edab1130ae0c346de75af09359e4c2b94f8162caafe3718797ecd"
+    },
+    {
+      "kind": "figure",
+      "path": "disclosure-export-check_figures/fig1.png",
+      "sha256": "7684923db74fc1d98c2fd9965b1ff5d398f29a368e7f88ab871da6f6598e451e"
+    },
+    {
+      "kind": "figure",
+      "path": "disclosure-export-check_figures/fig1.svg",
+      "sha256": "ddd75b9f3c0661d5911c951c405282a3056c38d1a21ac7f9e45bfe673ceddf6b"
+    },
+    {
+      "kind": "figure",
+      "path": "disclosure-export-check_figures/fig2.drawio",
+      "sha256": "64832341a44cbc9de3899051a604075ab425745717b65c038567a0fb1fb49e93"
+    },
+    {
+      "kind": "figure",
+      "path": "disclosure-export-check_figures/fig2.layout.json",
+      "sha256": "b9c0e4e2211af28c2ef1369a4ceb061621c166dbaf28385e7a88c364db45cc5b"
+    },
+    {
+      "kind": "figure",
+      "path": "disclosure-export-check_figures/fig2.pdf",
+      "sha256": "b0d203c4040b78507839b682fadd910eec9a83c7bde9c33e1209ebbb1a832e17"
+    },
+    {
+      "kind": "figure",
+      "path": "disclosure-export-check_figures/fig2.png",
+      "sha256": "3fc02bf5f1800669a1af772c98512e7b579e8a81ec01507bd276d3596b94edf5"
+    },
+    {
+      "kind": "figure",
+      "path": "disclosure-export-check_figures/fig2.svg",
+      "sha256": "b086a24d84405c6eca78dddad006fc6b4d5e73165d8dfacbbecdad1cd7100c5d"
+    },
+    {
+      "kind": "figure",
+      "path": "disclosure-export-check_figures/figure_sources/fig1.dot",
+      "sha256": "1b19680bc6d3850fb4eb17bd380a8b1a8efbc6a246df8c59aca7f5825cf7b77d"
+    },
+    {
+      "kind": "figure",
+      "path": "disclosure-export-check_figures/figure_sources/fig2.dot",
+      "sha256": "3cd3a1ebcd7f1281a805ec6bb0e1b07982f551c427094ddab8b594599bc9b4fc"
+    },
+    {
+      "kind": "figure",
+      "path": "disclosure-export-check_figures/manifest.json",
+      "sha256": "2ac79ab4f7870bd1101371882544eb53ff2a6f12197cb0a71a4f39aec739f767"
+    }
+  ]
+}

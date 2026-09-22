@@ -1,0 +1,26 @@
+[
+  {
+    "num": 1,
+    "caption": "推荐系统整体架构示意图",
+    "elements": [
+      "行为事件采集模块100",
+      "上下文采集模块200",
+      "特征融合模块300",
+      "候选排序模块400"
+    ],
+    "display_width_cm": 14.0,
+    "file": "disclosure-export-check_figures/fig1.png"
+  },
+  {
+    "num": 2,
+    "caption": "上下文自适应推荐方法流程图",
+    "elements": [
+      "步骤S1",
+      "步骤S2",
+      "步骤S3",
+      "步骤S4"
+    ],
+    "display_width_cm": 6.962,
+    "file": "disclosure-export-check_figures/fig2.png"
+  }
+]
