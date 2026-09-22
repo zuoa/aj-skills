@@ -1,0 +1,34 @@
+{
+  "summary": "",
+  "decision": "",
+  "next_question": "",
+  "gaps": [],
+  "selected_candidate": "P1",
+  "search_boundary": "",
+  "effects": [
+    {
+      "statement": "",
+      "evidence": "",
+      "status": "mechanism"
+    }
+  ],
+  "embodiments": [
+    {
+      "id": "E1",
+      "input": "",
+      "steps": "",
+      "output": ""
+    }
+  ],
+  "support": [
+    {
+      "feature_id": "T1",
+      "section": "",
+      "embodiment_id": "E1",
+      "source_ids": [
+        "SRC1"
+      ]
+    }
+  ],
+  "disclosure_file": "drafts/disclosure_input.json"
+}

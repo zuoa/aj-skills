@@ -1,0 +1,32 @@
+{
+  "summary": "",
+  "decision": "",
+  "next_question": "",
+  "gaps": [],
+  "sources": [
+    {
+      "id": "SRC1",
+      "kind": "conversation",
+      "locator": "",
+      "version": "",
+      "path": ""
+    }
+  ],
+  "facts": [
+    {
+      "id": "F1",
+      "statement": "",
+      "status": "unknown",
+      "source_ids": [
+        "SRC1"
+      ]
+    }
+  ],
+  "technical_chain": {
+    "problem": "",
+    "input": "",
+    "processing": "",
+    "output": "",
+    "effect": ""
+  }
+}

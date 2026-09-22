@@ -51,3 +51,7 @@ npx skills add https://github.com/vercel-labs/agent-skills --skill vercel-react-
 ```
 
 它们属于按项目安装的基础能力组合，不是 `project-blueprint` 的自动硬依赖：当前 `npx skills` 尚不能从一个 Skill 自动解析并安装跨仓库 Skill 依赖。未安装伴随 Skill 不会阻止生成蓝图；代理应按任务阶段使用已安装项，并明确说明缺失项带来的审查或实现能力降级。React 规则不得用于 Vue、Svelte、原生移动端或纯后端项目。
+
+### 专利交底书使用说明
+
+见 [使用指南](docs/aj-patent-disclosure-cn/README.md) 与 [快速开始](docs/aj-patent-disclosure-cn/QUICK_START.md)。运行资源位于 `skills/aj-patent-disclosure-cn/`，案件产物写入用户项目目录。

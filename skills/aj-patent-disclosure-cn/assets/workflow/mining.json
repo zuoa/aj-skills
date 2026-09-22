@@ -1,0 +1,51 @@
+{
+  "summary": "",
+  "decision": "",
+  "next_question": "",
+  "gaps": [],
+  "candidates": [
+    {
+      "id": "P1",
+      "problem": "",
+      "mechanism": "",
+      "effect": "",
+      "tradeoff": "",
+      "status": "core",
+      "features": [
+        {
+          "id": "T1",
+          "description": "",
+          "fact_ids": [
+            "F1"
+          ]
+        }
+      ]
+    }
+  ],
+  "selected_candidate": "P1",
+  "exploration": {
+    "mode": "expand",
+    "problem_reframing": "",
+    "assumptions": [],
+    "opportunities": [
+      {
+        "id": "O1",
+        "direction": "",
+        "mechanism": "",
+        "expected_effect": "",
+        "grounding": "hypothesis",
+        "fact_ids": [],
+        "risk": "",
+        "cost": "",
+        "validation": "",
+        "disposition": "consider"
+      }
+    ],
+    "recommendation": {
+      "opportunity_id": "O1",
+      "reason": "",
+      "tradeoff": "",
+      "next_action": ""
+    }
+  }
+}

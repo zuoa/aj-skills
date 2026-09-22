@@ -207,3 +207,6 @@ marimo/_lsp/
 __marimo__/
 .idea
 .DS_Store
+
+# Patent skill: case output belongs outside the installed skill
+/skills/aj-patent-disclosure-cn/outputs/

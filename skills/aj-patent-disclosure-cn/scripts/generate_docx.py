@@ -13,12 +13,14 @@ import argparse
 import datetime as dt
 import hashlib
 import json
+import os
 import re
+import subprocess
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
-DEFAULT_REFERENCE_DOC = Path("templates/cnipa-reference.docx")
-GENERATOR_VERSION = "3"
+DEFAULT_REFERENCE_DOC = Path(__file__).resolve().parents[1] / "assets/templates/技术交底书模板.docx"
+GENERATOR_VERSION = "7"
 
 
 def parse_args() -> argparse.Namespace:
@@ -26,10 +28,12 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--input", required=True, help="Path to JSON input file")
     p.add_argument("--output", required=True, help="Path to output .docx file")
     p.add_argument("--overwrite", action="store_true", help="Force regenerate output")
+    p.add_argument("--workflow-case", type=Path, help="Verify confirmed stage versions before exporting this case")
+    p.add_argument("--validation-report", type=Path, help="Write final machine validation report after successful export")
     p.add_argument(
         "--no-strict-cnipa",
         action="store_true",
-        help="Disable strict CNIPA mode (strict mode is enabled by default)",
+        help="Disable disclosure reference styling (legacy flag name; not a statutory CNIPA form)",
     )
     p.add_argument(
         "--word-only",
@@ -101,10 +105,10 @@ def validate_strict_payload(payload: Dict[str, Any]) -> List[str]:
         errors.append("invention must be an object")
         invention = {}
 
-    if not str(invention.get("technical_problem", "")).strip() and not str(
-        invention.get("purpose", "")
-    ).strip():
-        errors.append("missing required field: invention.technical_problem or invention.purpose")
+    for key in ("technical_problem", "purpose"):
+        value = invention.get(key)
+        if not isinstance(value, str) or not value.strip():
+            errors.append(f"missing required text field: invention.{key}")
 
     if not str(invention.get("solution", "")).strip() and not invention.get("solution_steps"):
         errors.append("missing required field: invention.solution or invention.solution_steps")
@@ -265,11 +269,11 @@ def _append_items(lines: List[str], value: Any, ordered: bool = False) -> None:
         lines.append(prefix + (primary or "记录"))
         nested_indent = "    " if ordered else "  "
         for key, detail in item.items():
-            if key in {primary_key, "id", "num", "title"}:
+            if key in {primary_key, "id", "num", "title", "status", "evidence_status", "source", "risk"}:
                 continue
             rendered = _inline_value(detail)
             if rendered:
-                lines.append(f"{nested_indent}- {FIELD_LABELS.get(str(key), str(key))}：{rendered}")
+                lines.append(f"{nested_indent}- **{FIELD_LABELS.get(str(key), str(key))}：**{rendered}")
 
 
 def _append_named_block(lines: List[str], heading: str, value: Any) -> None:
@@ -306,7 +310,7 @@ def _append_solution_steps(lines: List[str], steps: Any) -> None:
         ):
             rendered = _inline_value(step.get(key))
             if rendered:
-                lines.append(f"- {FIELD_LABELS.get(key, key)}：{rendered}")
+                lines.append(f"- **{FIELD_LABELS.get(key, key)}：**{rendered}")
         lines.append("")
 
 
@@ -325,49 +329,42 @@ def render_markdown(payload: Dict[str, Any], strict_cnipa: bool = False) -> str:
     embodiments = payload.get("embodiments", [])
     appendices = _as_list(payload.get("appendices"))
 
-    lines: List[str] = []
-    lines.append(f"# {title}")
-    lines.append("")
-    lines.append(f"生成日期：{date_text}")
-    if inventors:
-        lines.append("")
-        lines.append("发明人：" + "、".join([_to_text(x) for x in inventors if _to_text(x)]))
-    if applicant:
-        lines.append("")
-        lines.append("申请人：" + applicant)
+    def table_text(value):
+        return _inline_value(value).replace("|", "\\|").replace("\n", " ")
 
-    if payload.get("abstract"):
-        lines.extend(["", "## 摘要草案", ""])
-        lines.append(_normalize_markdown_block(payload.get("abstract")))
-
-    lines.extend(["", "## 1. 技术领域", ""])
+    lines: List[str] = [
+        "| 发明名称 | " + table_text(title) + " |",
+        "| --- | --- |",
+        "| 发明人姓名 | " + table_text("、".join(inventors)) + " |",
+        "| 所属部门 | " + table_text(payload.get("department")) + " |",
+        "| 第一发明人身份证号 | " + table_text(payload.get("first_inventor_id")) + " |",
+        "", "## 本发明的关键点和欲保护点是什么？", "",
+    ]
+    _append_named_block(lines, "### 关键技术点和欲保护点", payload.get("protection_points") or invention.get("key_features"))
+    lines.extend(["", "### 技术领域", ""])
     lines.append(_normalize_markdown_block(payload.get("technical_field")))
 
-    lines.extend(["", "## 2. 背景技术", ""])
+    _append_named_block(lines, "### 术语定义", payload.get("terminology"))
+
+    lines.extend(["", "### 背景技术", ""])
     background = payload.get("background")
     if isinstance(background, dict):
         summary = background.get("summary") or background.get("known_solution")
         if summary:
             lines.append(_normalize_markdown_block(summary))
-        _append_named_block(lines, "### 2.1 现有方案", background.get("current_solutions"))
-        _append_named_block(lines, "### 2.2 现有方案的技术不足", background.get("limitations"))
+        _append_named_block(lines, "#### 现有方案", background.get("current_solutions"))
+        _append_named_block(lines, "#### 现有方案的技术不足", background.get("limitations"))
     else:
         lines.append(_normalize_markdown_block(background))
 
-    lines.extend(["", "## 3. 发明内容", "", "### 3.1 要解决的技术问题", ""])
-    problem = invention.get("technical_problem") or invention.get("purpose")
+    lines.extend(["", "### 要解决的技术问题", ""])
+    problem = invention.get("technical_problem")
     lines.append(_normalize_markdown_block(problem))
 
-    if invention.get("purpose") and invention.get("technical_problem"):
-        lines.extend(["", "### 3.2 发明目的", ""])
-        lines.append(_normalize_markdown_block(invention.get("purpose")))
-        solution_heading = "### 3.3 技术方案"
-        effects_heading = "### 3.4 有益效果"
-    else:
-        solution_heading = "### 3.2 技术方案"
-        effects_heading = "### 3.3 有益效果"
+    lines.extend(["", "### 发明目的", ""])
+    lines.append(_normalize_markdown_block(invention.get("purpose")))
 
-    lines.extend(["", solution_heading, ""])
+    lines.extend(["", "### 技术方案", ""])
     if invention.get("solution"):
         lines.append(_normalize_markdown_block(invention.get("solution")))
     _append_named_block(lines, "#### 输入/处理对象", invention.get("inputs"))
@@ -376,40 +373,19 @@ def render_markdown(payload: Dict[str, Any], strict_cnipa: bool = False) -> str:
         lines.extend(["", "#### 处理步骤/模块关系", ""])
         _append_solution_steps(lines, invention.get("solution_steps"))
     _append_named_block(lines, "#### 输出", invention.get("outputs"))
-    _append_named_block(lines, "#### 替代实现与适用边界", invention.get("alternatives"))
-
-    lines.extend(["", effects_heading, ""])
-    _append_items(lines, effects, ordered=strict_cnipa)
-
-    lines.extend(["", "## 4. 附图说明", ""])
-    if figures:
-        for fig in figures:
-            if isinstance(fig, dict):
-                num = _to_text(fig.get("num")) or "?"
-                caption = _to_text(fig.get("caption"))
-                file_path = _to_text(fig.get("file"))
-                lines.append(f"- 图{num}：{caption}")
-                if file_path:
-                    lines.append(f"  - 文件：`{file_path}`")
-                if fig.get("elements"):
-                    lines.append(f"  - 主要图元：{_inline_value(fig.get('elements'))}")
-            else:
-                lines.append(f"- {_to_text(fig)}")
-    else:
-        lines.append("- 无")
-
-    lines.extend(["", "## 5. 具体实施方式", ""])
+    _append_named_block(lines, "#### 参考资料", payload.get("references"))
+    lines.extend(["", "### 具体实施方式", ""])
     if embodiments:
         for i, emb in enumerate(embodiments, start=1):
             if not isinstance(emb, dict):
-                lines.append(f"### 实施例{i}")
+                lines.append(f"#### 实施例{i}")
                 lines.append("")
                 lines.append(_normalize_markdown_block(emb))
                 lines.append("")
                 continue
 
             emb_title = _to_text(emb.get("title"))
-            lines.append(f"### 实施例{i}" + (f"：{emb_title}" if emb_title else ""))
+            lines.append(f"#### 实施例{i}" + (f"：{emb_title}" if emb_title else ""))
             lines.append("")
             if emb.get("objective"):
                 lines.append(_normalize_markdown_block(emb.get("objective")))
@@ -430,49 +406,32 @@ def render_markdown(payload: Dict[str, Any], strict_cnipa: bool = False) -> str:
     else:
         lines.append("无")
 
-    internal_sections = any(
-        payload.get(key)
-        for key in (
-            "terminology",
-            "prior_art",
-            "project_sources",
-            "innovation_candidates",
-            "claim_strategy",
-            "facts",
-            "assumptions",
-            "open_questions",
-        )
-    )
-    if internal_sections or appendices:
-        lines.extend(["", "## 内部附录（代理撰写与复核用）", ""])
-
-    _append_named_block(lines, "### A. 术语表", payload.get("terminology"))
-    _append_named_block(lines, "### B. 项目材料与证据来源", payload.get("project_sources"))
-    _append_named_block(lines, "### C. 现有技术记录", payload.get("prior_art"))
-    _append_named_block(lines, "### D. 创新点候选与检索状态", payload.get("innovation_candidates"))
-
-    claim_strategy = payload.get("claim_strategy", {})
-    if isinstance(claim_strategy, dict) and claim_strategy:
-        _append_named_block(
-            lines,
-            "### E. 拟保护的独立主题",
-            claim_strategy.get("independent_subjects"),
-        )
-        _append_named_block(
-            lines,
-            "### F. 从属限定候选",
-            claim_strategy.get("dependent_features"),
-        )
-        _append_named_block(
-            lines,
-            "### G. 权利要求支撑矩阵",
-            claim_strategy.get("support_matrix"),
-        )
-
-    _append_named_block(lines, "### H. 事实状态表", payload.get("facts"))
-    _append_named_block(lines, "### I. 假设", payload.get("assumptions"))
-    _append_named_block(lines, "### J. 待确认项", payload.get("open_questions"))
-    _append_named_block(lines, "### K. 其他附件", appendices)
+    lines.extend(["", "## 与现有技术相比，本发明有何优点？", ""])
+    _append_items(lines, effects, ordered=True)
+    lines.extend(["", "## 本发明是否经过实验、模拟、使用而证明可行，结果如何？", ""])
+    verification = payload.get("verification", {})
+    if isinstance(verification, dict):
+        for key, label in (("status", "验证情况"), ("method", "验证方法"), ("conditions", "验证条件"),
+                           ("baseline", "对比基线"), ("results", "验证结果"), ("evidence", "验证依据")):
+            if verification.get(key):
+                lines.extend([f"**{label}：**{_inline_value(verification[key])}", ""])
+    elif verification:
+        lines.append(_normalize_markdown_block(verification))
+    lines.extend(["", "## 本发明的变更设计（替代方案）及其它用途：", ""])
+    _append_items(lines, invention.get("alternatives") or payload.get("alternative_statement"))
+    _append_named_block(lines, "### 其它用途", payload.get("other_uses"))
+    lines.extend(["", "## 附图及说明", ""])
+    for fig in figures:
+        if isinstance(fig, dict):
+            caption = f"图{fig['num']} {fig['caption']}"
+            if fig.get("file"):
+                lines.extend([f"![{caption}](<{fig['file']}>){{width=14cm}}", ""])
+            else:
+                lines.extend([caption, ""])
+            if fig.get("elements"):
+                lines.extend(["**图中标记：**" + _inline_value(fig['elements']), ""])
+    if not figures and payload.get("drawings_not_applicable"):
+        lines.append(_normalize_markdown_block(payload['drawings_not_applicable']))
 
     return "\n".join(lines).strip() + "\n"
 
@@ -482,7 +441,7 @@ def convert_markdown_to_docx(markdown_text: str, output: Path, strict_cnipa: boo
 
     output.parent.mkdir(parents=True, exist_ok=True)
 
-    extra_args: List[str] = []
+    extra_args: List[str] = ["--resource-path", str(output.resolve().parent)]
     if strict_cnipa:
         if not DEFAULT_REFERENCE_DOC.exists():
             raise RuntimeError(
@@ -514,6 +473,8 @@ def generate_docx(
     markdown_text = render_markdown(payload, strict_cnipa=strict_cnipa)
     try:
         convert_markdown_to_docx(markdown_text, output, strict_cnipa=strict_cnipa)
+        from docx_layout import apply_layout
+        apply_layout(output, payload, DEFAULT_REFERENCE_DOC)
         return output, "docx"
     except Exception as e:
         if word_only:
@@ -529,40 +490,65 @@ def generate_docx(
 
 def main() -> int:
     args = parse_args()
-    input_path = Path(args.input)
-    output_path = Path(args.output)
+    input_path = Path(args.input).resolve()
+    output_path = Path(args.output).resolve()
     strict_cnipa = not args.no_strict_cnipa
+    if args.validation_report is None:
+        args.validation_report = output_path.with_suffix('.quality.json')
+
+    if args.validation_report:
+        report_path = args.validation_report.resolve()
+        if report_path in (input_path, output_path, output_path.with_suffix('.md')) or (report_path.exists() and not args.overwrite):
+            print('Validation report path conflicts with input/output or already exists; choose a new version path.')
+            return 2
 
     payload = read_json(input_path)
+    # A case input remains gated even when the caller omits --workflow-case.
+    workflow_case = args.workflow_case
+    if workflow_case is None:
+        workflow_case = next((parent for parent in input_path.parents if (parent / 'workflow/state.json').is_file()), None)
+    if workflow_case is not None:
+        from workflow import ensure_export
+        try:
+            ensure_export(workflow_case.resolve(), input_path)
+        except (ValueError, OSError, KeyError) as exc:
+            print(f"Workflow validation failed: {exc}")
+            return 3
+    if output_path.exists() and not args.overwrite:
+        # Preserve all companion assets as well as the existing document.
+        print("Output exists; use a new version filename or explicit --overwrite.")
+        return 2
     if strict_cnipa:
         strict_errors = validate_strict_payload(payload)
         if strict_errors:
-            print("Strict CNIPA validation failed:")
+            print("Disclosure validation failed:")
             for err in strict_errors:
                 print(f"- {err}")
             return 3
 
+    # Generate in an isolated version-specific directory; never mix another draft's figures.
+    from generate_figures import prepare_figures
+    from validate_disclosure import validate_payload
+    try:
+        payload = prepare_figures(payload, input_path, output_path)
+    except (ValueError, OSError, RuntimeError, subprocess.SubprocessError) as exc:
+        print(f"Figure generation failed: {exc}")
+        return 3
+    report = validate_payload(payload, output_path, final=True)
+    if report["errors"]:
+        for error in report["errors"]:
+            print(f"[{error['code']}] {error['path']}: {error['message']}")
+        return 3
+    from check_output_coverage import check_output
+    markdown_text = render_markdown(payload, strict_cnipa=strict_cnipa)
+    coverage = check_output(payload, markdown_text)
+    if coverage['errors']:
+        for error in coverage['errors']:
+            print(f"[{error['code']}] {error['path']}: {error['message']}")
+        return 3
     input_hash = stable_hash(payload, strict_cnipa=strict_cnipa)
 
     markdown_output = output_path.with_suffix(".md")
-    if not args.overwrite and should_skip(output_path, input_hash):
-        if args.with_markdown and not should_skip(markdown_output, input_hash):
-            write_markdown_fallback(
-                render_markdown(payload, strict_cnipa=strict_cnipa),
-                markdown_output,
-            )
-            write_hash(markdown_output, input_hash)
-            print(f"Generated missing Markdown companion: {markdown_output}")
-        print(f"Skip generation: unchanged input and existing output: {output_path}")
-        return 0
-
-    if output_path.exists() and not args.overwrite:
-        print(
-            "Output exists with different content hash. "
-            "Use --overwrite to regenerate or bump output version filename."
-        )
-        return 2
-
     word_only = args.word_only or strict_cnipa
     generated_path, mode = generate_docx(
         payload,
@@ -570,10 +556,21 @@ def main() -> int:
         strict_cnipa=strict_cnipa,
         word_only=word_only,
     )
+    coverage = check_output(payload, markdown_text, generated_path if mode == 'docx' else None)
+    report['coverage'] = coverage['coverage']
+    report['coverage_scope'] = coverage['scope']
+    report['errors'].extend(coverage['errors'])
+    if coverage['errors']:
+        failed_report = output_path.with_suffix('.failed-quality.json')
+        failed_report.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+        for error in coverage['errors']:
+            print(f"[{error['code']}] {error['path']}: {error['message']}")
+        print(f'Output failed coverage review; not a final delivery. Details: {failed_report}')
+        return 3
     write_hash(generated_path, input_hash)
     if args.with_markdown:
         write_markdown_fallback(
-            render_markdown(payload, strict_cnipa=strict_cnipa),
+            markdown_text,
             markdown_output,
         )
         write_hash(markdown_output, input_hash)
@@ -582,6 +579,22 @@ def main() -> int:
         print(f"Generated: {generated_path}")
     else:
         print(f"Generated fallback markdown: {generated_path}")
+    if args.validation_report:
+        report_path = args.validation_report.resolve()
+        report_path.parent.mkdir(parents=True, exist_ok=True)
+        report['input_sha256'] = _file_sha256(input_path)
+        report['output_sha256'] = _file_sha256(generated_path)
+        report['output'] = str(generated_path)
+        artifact_files = [(mode, generated_path)]
+        if args.with_markdown and markdown_output != generated_path:
+            artifact_files.append(('markdown', markdown_output))
+        figure_dir = output_path.parent / (output_path.stem + '_figures')
+        artifact_files.extend(('figure', path) for path in sorted(figure_dir.rglob('*')) if path.is_file())
+        report['artifacts'] = [
+            {'kind': kind, 'path': os.path.relpath(path, report_path.parent), 'sha256': _file_sha256(path)}
+            for kind, path in artifact_files
+        ]
+        report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     return 0
 
 

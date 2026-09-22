@@ -189,14 +189,19 @@ def validate_payload(
         add(errors, "required-object", "$.invention", "invention must be an object")
         invention = {}
 
-    problem = text(invention.get("technical_problem")) or text(invention.get("purpose"))
-    if not problem:
+    problem = invention.get("technical_problem")
+    if not isinstance(problem, str) or not problem.strip():
         add(
             errors,
             "technical-problem",
             "$.invention.technical_problem",
-            "state the technical problem or purpose",
+            "state the technical problem separately from invention.purpose",
         )
+
+    purpose = invention.get("purpose")
+    if not isinstance(purpose, str) or not purpose.strip():
+        add(errors if final else warnings, "invention-purpose", "$.invention.purpose",
+            "provide a separate invention purpose: the technical objective addressing the stated problem")
 
     solution = text(invention.get("solution"))
     solution_steps = as_list(invention.get("solution_steps"))
@@ -229,9 +234,10 @@ def validate_payload(
                         add(errors, "duplicate-step-id", f"{path}.id", f"duplicate step id: {step_id}")
                     seen_ids.add(step_id)
                 if final and not (step.get("input") or step.get("inputs")):
-                    add(warnings, "step-input", path, "verify the step input or trigger condition")
+                    if not step.get("conditions"):
+                        add(errors, "step-input", path, "final step needs input or an explicit trigger condition")
                 if final and not (step.get("output") or step.get("outputs")):
-                    add(warnings, "step-output", path, "verify the step output or resulting state")
+                    add(errors, "step-output", path, "final step needs output or resulting state")
             elif not text(step):
                 add(errors, "empty-step", path, "solution step cannot be empty")
 
@@ -268,7 +274,7 @@ def validate_payload(
             else:
                 add(warnings, "embodiment-steps", path, "structured embodiment should include steps")
             if final and not embodiment.get("outputs"):
-                add(warnings, "embodiment-output", path, "verify embodiment outputs/results")
+                add(errors, "embodiment-output", path, "final embodiment needs outputs/results")
         elif not text(embodiment):
             add(errors, "empty-embodiment", path, "embodiment cannot be empty")
     if final and embodiments and not structured_embodiment:
@@ -297,10 +303,42 @@ def validate_payload(
         if not caption:
             add(errors, "figure-caption", path, "figure requires caption")
         file_value = text(figure.get("file"))
-        if final and file_value:
-            candidates = [Path(file_value), input_path.parent / file_value]
-            if not any(candidate.exists() for candidate in candidates):
-                add(warnings, "figure-file", f"{path}.file", f"figure file not found: {file_value}")
+        if final:
+            candidate = Path(file_value)
+            if not candidate.is_absolute():
+                candidate = input_path.parent / candidate
+            if not file_value or not candidate.is_file() or not candidate.stat().st_size:
+                add(errors, "figure-file", f"{path}.file", f"figure file missing: {file_value}")
+            if number != str(index + 1):
+                add(errors, "figure-order", path, "figure numbers must be continuous from 1")
+
+    if final:
+        for index, question in enumerate(as_list(payload.get("open_questions"))):
+            if not isinstance(question, dict) or question.get("blocking", True):
+                add(errors, "unresolved-fact", f"$.open_questions[{index}]", "resolve blocking factual gaps before final export")
+        for index, assumption in enumerate(as_list(payload.get("assumptions"))):
+            if not isinstance(assumption, dict) or assumption.get("used_in_body", True):
+                add(errors, "unresolved-assumption", f"$.assumptions[{index}]", "unverified assumptions cannot support the final body")
+        for index, embodiment in enumerate(embodiments):
+            if isinstance(embodiment, dict):
+                for ref in as_list(embodiment.get("figure_refs")):
+                    for num in re.findall(r"图\s*(\d+)", text(ref)):
+                        if num not in figure_numbers:
+                            add(errors, "figure-reference", f"$.embodiments[{index}]", f"unknown figure: {num}")
+
+    if final and not payload.get("verification"):
+        add(errors, "verification", "$.verification", "template requires an evidence-based verification statement; never infer experiments")
+    if final and not (invention.get("alternatives") or payload.get("alternative_statement")):
+        add(errors, "alternatives", "$.alternative_statement", "provide supported alternatives or an explicit factual statement")
+
+    if final:
+        from check_output_coverage import content_groups
+        for group in content_groups(payload):
+            if group['required'] and not group['fragments']:
+                add(errors, 'coverage-required', group['label'], 'required section has no substantive input content')
+        verification = payload.get('verification')
+        if isinstance(verification, dict) and not text(verification.get('status')):
+            add(errors, 'verification-status', '$.verification.status', 'state the actual verification status, including not tested when applicable')
 
     facts = as_list(payload.get("facts"))
     for index, fact in enumerate(facts):
@@ -319,6 +357,7 @@ def validate_payload(
             "建议方案",
             "inferred",
             "proposal",
+            "待确认",
         }:
             add(
                 errors,
@@ -505,8 +544,13 @@ def validate_payload(
                     "verify embodiment support for the proposed feature",
                 )
 
-    for path, value in iter_strings(payload):
-        if final and has_placeholder(value):
+    body_fields = {key: payload[key] for key in (
+        "title", "technical_field", "background", "terminology", "invention",
+        "embodiments", "figures", "protection_points", "references", "verification",
+        "alternative_statement", "other_uses", "department"
+    ) if key in payload}
+    for path, value in iter_strings(body_fields):
+        if final and (has_placeholder(value) or re.search(r"待确认|待验证|内部附录|(?:^|\n)\s*#{0,6}\s*(?:假设清单|待确认项|下一步建议)", value)):
             add(errors, "placeholder", path, "unresolved placeholder in final delivery")
         for word in MARKETING_WORDS:
             if word in value and path != "$.title":

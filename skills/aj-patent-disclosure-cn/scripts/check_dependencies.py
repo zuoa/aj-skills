@@ -30,10 +30,11 @@ def run_pandoc_probe() -> bool:
 
 def check_docx(strict_cnipa: bool = True) -> List[Tuple[str, str, bool, str]]:
     rows: List[Tuple[str, str, bool, str]] = []
+    rows.append(("python module", "lxml", has_python_module("lxml"), "pip install lxml"))
     rows.append(("python module", "pypandoc", has_python_module("pypandoc"), "pip install pypandoc"))
     rows.append(("system binary", "pandoc", has_binary("pandoc") and run_pandoc_probe(), "brew install pandoc"))
     if strict_cnipa:
-        tpl = Path("templates/cnipa-reference.docx")
+        tpl = Path(__file__).resolve().parents[1] / "assets/templates/技术交底书模板.docx"
         rows.append(("file", str(tpl), tpl.exists(), "python scripts/create_cnipa_reference_doc.py"))
     return rows
 
@@ -41,6 +42,7 @@ def check_docx(strict_cnipa: bool = True) -> List[Tuple[str, str, bool, str]]:
 def check_figures() -> List[Tuple[str, str, bool, str]]:
     rows: List[Tuple[str, str, bool, str]] = []
     rows.append(("python module", "matplotlib", has_python_module("matplotlib"), "pip install matplotlib"))
+    rows.append(("system binary", "dot", has_binary("dot"), "brew install graphviz"))
     rows.append(("system binary(optional)", "mmdc", has_binary("mmdc"), "npm install -g @mermaid-js/mermaid-cli"))
     return rows
 

@@ -603,10 +603,119 @@ def write_figure_source(path: Path, content: str) -> None:
     path.write_text(content, encoding="utf-8")
 
 
+def render_graph(nodes, edges, output: Path, source: Path) -> None:
+    """Graphviz routes branches/cycles around nodes and preserves editable DOT."""
+    if not shutil.which("dot"):
+        raise RuntimeError("需要 Graphviz dot 绘制附图；安装 Graphviz 后重试。")
+    ids = [str(node['id']) for node in nodes]
+    if not ids or len(ids) != len(set(ids)):
+        raise ValueError("图节点不能为空，且 id 必须唯一")
+    quote = lambda value: json.dumps(str(value), ensure_ascii=False)
+    lines = ['digraph G {', 'graph [rankdir=TB, bgcolor=white, pad=0.2, nodesep=0.5, ranksep=0.65];',
+             'node [shape=box, fontname="PingFang SC", fontsize=12, color=black, margin="0.18,0.12"];',
+             'edge [fontname="PingFang SC", fontsize=11, color=black];']
+    import textwrap
+    for node in nodes:
+        label = '\n'.join(textwrap.wrap(str(node.get('label', node['id'])), width=18))
+        shape = {'decision': 'diamond', 'start': 'ellipse', 'end': 'ellipse'}.get(node.get('type'), 'box')
+        lines.append(f'{quote(node["id"])} [label={quote(label)}, shape={shape}];')
+    for src, dst, label in edges:
+        if str(src) not in ids or str(dst) not in ids:
+            raise ValueError(f"附图连线引用不存在的节点: {src} -> {dst}")
+        lines.append(f'{quote(src)} -> {quote(dst)} [label={quote(label)}];')
+    lines.append('}')
+    source.parent.mkdir(parents=True, exist_ok=True)
+    source.write_text('\n'.join(lines), encoding='utf-8')
+    for suffix in ('png', 'svg'):
+        target = output.with_suffix('.' + suffix)
+        subprocess.run(['dot', '-T' + suffix, '-Gdpi=200', str(source), '-o', str(target)],
+                       check=True, capture_output=True, timeout=60)
+        if not target.is_file() or not target.stat().st_size:
+            raise RuntimeError(f"附图未生成: {target}")
+
+
+def prepare_figures(payload: dict, input_path: Path, output_path: Path) -> dict:
+    """Return a copy with all declared figures rendered/resolved and ready to embed."""
+    import copy
+    import os
+    result = copy.deepcopy(payload)
+    plan = result.get('figure_plan', {})
+    specifications = plan.get('drawings', [])
+    # Legacy input remains usable; automatic sequencing requires explicit confirmation.
+    if not specifications and plan:
+        if plan.get('components'):
+            specifications.append({'kind': 'architecture', 'components': plan['components']})
+        if plan.get('steps'):
+            specifications.append({'kind': 'flowchart', 'steps': plan['steps']})
+        elif plan.get('sequential') is True:
+            steps = result.get('invention', {}).get('solution_steps', [])
+            specifications.append({'kind': 'flowchart', 'steps': [
+                {'id': x['id'], 'label': x['id'] + ' ' + x['action'],
+                 'next': [steps[i+1]['id']] if i+1 < len(steps) else []}
+                for i, x in enumerate(steps)]})
+    figures = result.get('figures', [])
+    if not figures and specifications:
+        figures = [{'num': i, 'caption': spec.get('caption', {'flowchart': '方法流程图', 'architecture': '系统架构图'}.get(spec['kind'], '技术附图'))}
+                   for i, spec in enumerate(specifications, 1)]
+    if not figures:
+        if result.get('drawings_not_applicable'):
+            return result
+        raise ValueError('完整交底书需要附图；确实不适用时填写 drawings_not_applicable 理由')
+    if specifications and len(figures) != len(specifications):
+        raise ValueError('figures 与 figure_plan.drawings 数量不一致')
+    folder = output_path.parent / (output_path.stem + '_figures')
+    folder.mkdir(parents=True, exist_ok=True)
+    for index, figure in enumerate(figures):
+        if str(figure.get('num')) != str(index + 1):
+            raise ValueError('附图编号必须从1开始连续排列')
+        target = folder / f'fig{index+1}.png'
+        if specifications:
+            spec = specifications[index]
+            kind = spec['kind']
+            if kind == 'architecture':
+                components = spec['components']
+                nodes = [{'id': c['name'], 'label': c['name']} for c in components]
+                edges = [(c['name'], dst, '') for c in components for dst in c.get('connections', [])]
+            elif kind == 'flowchart':
+                nodes = spec['steps']
+                for node in nodes:
+                    if 'next' not in node:
+                        raise ValueError(f"流程节点 {node['id']} 必须显式给出 next（终点为 []）")
+                    if node.get('type') == 'decision' and (len(node['next']) < 2 or any(not node.get('edge_label', {}).get(dst) for dst in node['next'])):
+                        raise ValueError('判断节点必须有至少两个带条件标签的出口')
+                edges = [(n['id'], dst, n.get('edge_label', {}).get(dst, '')) for n in nodes for dst in n['next']]
+            else:
+                raise ValueError(f'不支持自动绘制 {kind}；请将已有图像通过 figures.file 提供，或使用 nodes/edges 对应的架构、流程表达')
+            render_graph(nodes, edges, target, folder / 'figure_sources' / f'fig{index+1}.dot')
+        else:
+            source = Path(figure.get('file', ''))
+            if not source.is_absolute():
+                source = input_path.parent / source
+            if not source.is_file() or source.suffix.lower() not in {'.png', '.jpg', '.jpeg', '.svg'}:
+                raise ValueError(f"附图缺失或格式不支持: {source}")
+            target = target.with_suffix(source.suffix)
+            if source.resolve() != target.resolve():
+                shutil.copy2(source, target)
+        figure['file'] = os.path.relpath(target, output_path.parent)
+    result['figures'] = figures
+    (folder / 'manifest.json').write_text(json.dumps(figures, ensure_ascii=False, indent=2), encoding='utf-8')
+    return result
+
+
 def main() -> int:
     args = parse_args()
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
+    if args.input_json:
+        try:
+            raw = json.loads(Path(args.input_json).read_text(encoding="utf-8"))
+            if "invention" in raw or "drawings" in raw.get("figure_plan", {}):
+                result = prepare_figures(raw, Path(args.input_json).resolve(), output_dir.resolve() / "disclosure.docx")
+                print(json.dumps(result["figures"], ensure_ascii=False, indent=2))
+                return 0
+        except (ValueError, OSError, RuntimeError, subprocess.SubprocessError) as exc:
+            print(f"附图生成失败: {exc}", file=sys.stderr)
+            return 2
     try:
         payload = load_payload(args.input_json, demo=args.demo)
     except (OSError, ValueError, json.JSONDecodeError) as exc:

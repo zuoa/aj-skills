@@ -9,8 +9,8 @@ from pathlib import Path
 
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Generate templates/cnipa-reference.docx from pandoc default reference")
-    p.add_argument("--output", default="templates/cnipa-reference.docx", help="Output path")
+    p = argparse.ArgumentParser(description="Generate assets/templates/cnipa-reference.docx from pandoc default reference")
+    p.add_argument("--output", default=str(Path(__file__).resolve().parents[1] / "assets/templates/cnipa-reference.docx"), help="Output path")
     p.add_argument("--overwrite", action="store_true", help="Overwrite existing template")
     return p.parse_args()
 
@@ -45,7 +45,7 @@ def main() -> int:
         )
         output.write_bytes(proc.stdout)
         print(f"Generated: {output}")
-        print("Note: this is pandoc default reference. Replace it if you need stricter CNIPA typography.")
+        print("Legacy pandoc reference only; default export uses 技术交底书模板.docx.")
         return 0
     except subprocess.CalledProcessError as e:
         stderr = e.stderr.decode("utf-8", errors="ignore")
