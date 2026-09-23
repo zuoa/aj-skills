@@ -102,7 +102,8 @@
         "basis": "由步骤 S3 和 S4 的候选过滤机制直接推导。",
         "evidence_status": "机理推导"
       }
-    ]
+    ],
+    "principle": "行为序列反映相对稳定的偏好，实时上下文反映当前网络与使用条件；依上下文调整融合权重并过滤当前带宽难以承载的候选，使排序同时受用户偏好与传输约束影响。该段仅为示例原理说明。"
   },
   "figure_plan": {
     "components": [
@@ -319,5 +320,18 @@
     "conditions": "连续7日匿名交互样本；评价指标为Top-10命中率。",
     "results": "申请人提供的实验记录显示，Top-10命中率相对基线提高约25%。",
     "evidence": "申请人离线A/B对照实验记录（仅示例数据，真实项目需替换）。"
-  }
+  },
+  "existing_technology": {
+    "name": "仅示例：基于历史行为的内容推荐方案",
+    "source": "仅示例：本 JSON 中 background 的现有方案描述；没有真实文献来源，实际申请需补充。"
+  },
+  "application_purposes": [
+    "保护技术（示例选择，实际申请需确认）"
+  ],
+  "applicant_profile": {
+    "product_types": "仅示例：内容推荐软件",
+    "work_content": "仅示例：推荐算法开发与服务维护",
+    "field": "仅示例：计算机信息处理"
+  },
+  "software_analysis": "本示例未提供特定软件分析结果。"
 }

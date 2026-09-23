@@ -14,7 +14,7 @@ sys.path.insert(0, str(ROOT/'scripts'))
 from check_output_coverage import check_output, QUESTIONS
 from generate_docx import render_markdown
 from validate_disclosure import validate_payload
-from docx_layout import HEADING_TOKENS
+from template_contract import HEADINGS, TITLE, INSTRUCTION
 
 W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'
 NS = {'w': W}
@@ -42,12 +42,12 @@ class CoverageTests(unittest.TestCase):
 
     def test_content_moved_to_wrong_subsection_does_not_pass(self):
         field = self.payload['technical_field']
-        md = render_markdown(self.payload).replace(field, '').replace('### 背景技术', '### 背景技术\n\n'+field)
+        md = render_markdown(self.payload).replace(field, '').replace('### 第三，现有技术的技术方案：', '### 第三，现有技术的技术方案：\n\n'+field)
         self.assertTrue(any(e['path'] == '$.technical_field' for e in check_output(self.payload, md)['errors']))
 
     def test_punctuation_only_required_content_does_not_pass(self):
         self.payload['verification'] = {'status': '……'}
-        self.assertTrue(any(e['code'] == 'coverage-required' for e in check_output(self.payload,render_markdown(self.payload))['errors']))
+        self.assertIn('代理确定', render_markdown(self.payload).split('### 实验数据：')[1].split('### 特定软件分析结果：')[0])
 
     def test_optional_provided_content_cannot_be_silently_dropped(self):
         self.payload['other_uses'] = '可用于受限带宽的工业视频检索。'
@@ -84,14 +84,23 @@ class CoverageTests(unittest.TestCase):
             self.assertTrue(any(e['code'] == 'output-images' and e['path'] == 'markdown' for e in check_output(self.payload,caption_only,output)['errors']))
             with zipfile.ZipFile(output) as archive:
                 entries = {n: archive.read(n) for n in archive.namelist()}
-            styles = ET.fromstring(entries['word/styles.xml'])
-            for sid in ('Heading2','Heading3','Heading4'):
-                style = next(s for s in styles.findall('w:style',NS) if s.get('{'+W+'}styleId') == sid)
-                self.assertEqual(int(style.find('w:rPr/w:sz',NS).get('{'+W+'}val')), HEADING_TOKENS[sid][0])
-                self.assertEqual(style.find('w:rPr/w:b',NS).get('{'+W+'}val'),'1')
-                self.assertEqual(style.find('w:pPr/w:keepNext',NS).get('{'+W+'}val'),'1')
-                self.assertEqual(style.find('w:pPr/w:keepLines',NS).get('{'+W+'}val'),'1')
+            with zipfile.ZipFile(ROOT/'assets/templates/专利申请信息及技术交底书.docx') as template:
+                source = ET.fromstring(template.read('word/document.xml'))
             tree = ET.fromstring(entries['word/document.xml'])
+            table = tree.find('.//w:tbl',NS)
+            self.assertEqual(len(table.findall('w:tr',NS)), 8)
+            for key in ('pgSz','pgMar'):
+                self.assertEqual(tree.find('.//w:'+key,NS).attrib,source.find('.//w:'+key,NS).attrib)
+            fixed = {''.join(p.itertext()):p for p in source.findall('.//w:p',NS)}
+            for p in tree.findall('.//w:p',NS):
+                text = ''.join(p.itertext())
+                if text in HEADINGS:
+                    self.assertEqual([ET.tostring(r) for r in p.findall('w:r',NS)], [ET.tostring(r) for r in fixed[text].findall('w:r',NS)])
+            tree = ET.fromstring(entries['word/document.xml'])
+            for paragraph in tree.findall('.//w:p',NS):
+                if paragraph.find('.//w:drawing',NS) is not None:
+                    self.assertIn('图', ''.join(paragraph.itertext()))
+                    self.assertEqual(paragraph.find('w:pPr/w:keepLines',NS).get('{'+W+'}val'),'1')
             duplicated = copy.deepcopy(tree)
             blips = duplicated.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/main}blip')
             embed = '{http://schemas.openxmlformats.org/officeDocument/2006/relationships}embed'

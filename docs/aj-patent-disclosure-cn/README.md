@@ -142,7 +142,7 @@ bash scripts/setup_env.sh
   --final
 ```
 
-`setup_env.sh` 默认使用清华 PyPI 镜像，可通过 `PIP_INDEX_URL` 覆盖。系统需安装 `pandoc` 和 Graphviz `dot` 才能一次生成附图及 Word。默认使用用户提供的 `assets/templates/技术交底书模板.docx`，沿用首页信息表及五个问答章节，详见 `references/disclosure_format.md`。
+`setup_env.sh` 默认使用清华 PyPI 镜像，可通过 `PIP_INDEX_URL` 覆盖。系统需安装 `pandoc` 和 Graphviz `dot` 才能一次生成附图及 Word。默认使用用户提供的 `assets/templates/专利申请信息及技术交底书.doc`，在原八行单列表格内填充所有栏目，详见 `references/disclosure_format.md`。
 
 ## 附图
 
@@ -208,7 +208,7 @@ python3 scripts/revision_log.py \
 
 正式交底书不含假设、待确认项、内部证据状态、检索工作清单和摘要草案。内部材料留在 JSON 或 reports/；关键事实缺口应先补齐，不能隐藏后当作终稿。
 
-默认模板已切换为用户提供的 `assets/templates/技术交底书模板.docx`。原模板中的机器人示例和填写提示不会进入正式稿。新增 `verification` 用于真实验证情况；`department`、`first_inventor_id` 为可选行政字段，缺失留空。
+默认严格遵循用户更新的 `assets/templates/专利申请信息及技术交底书.doc`。保留标题、红色填写说明、八行单列表格及黄色栏目高亮；没有材料的栏目填“代理确定”。新增 `existing_technology`、`invention.principle`、`software_analysis`、`application_purposes`、`applicant_profile` 字段；旧部门和身份证号字段不再输出。生成器使用同名 DOCX 转换副本并校验源文件摘要。
 
 ## 网上专利 skills 调研迭代
 

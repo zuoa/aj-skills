@@ -326,11 +326,6 @@ def validate_payload(
                         if num not in figure_numbers:
                             add(errors, "figure-reference", f"$.embodiments[{index}]", f"unknown figure: {num}")
 
-    if final and not payload.get("verification"):
-        add(errors, "verification", "$.verification", "template requires an evidence-based verification statement; never infer experiments")
-    if final and not (invention.get("alternatives") or payload.get("alternative_statement")):
-        add(errors, "alternatives", "$.alternative_statement", "provide supported alternatives or an explicit factual statement")
-
     if final:
         from check_output_coverage import content_groups
         for group in content_groups(payload):
@@ -547,7 +542,7 @@ def validate_payload(
     body_fields = {key: payload[key] for key in (
         "title", "technical_field", "background", "terminology", "invention",
         "embodiments", "figures", "protection_points", "references", "verification",
-        "alternative_statement", "other_uses", "department"
+        "alternative_statement", "other_uses", "existing_technology", "software_analysis", "application_purposes", "applicant_profile"
     ) if key in payload}
     for path, value in iter_strings(body_fields):
         if final and (has_placeholder(value) or re.search(r"待确认|待验证|内部附录|(?:^|\n)\s*#{0,6}\s*(?:假设清单|待确认项|下一步建议)", value)):

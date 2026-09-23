@@ -45,7 +45,7 @@ def main() -> int:
         )
         output.write_bytes(proc.stdout)
         print(f"Generated: {output}")
-        print("Legacy pandoc reference only; default export uses 技术交底书模板.docx.")
+        print("Legacy pandoc reference only; default export uses 专利申请信息及技术交底书.docx.")
         return 0
     except subprocess.CalledProcessError as e:
         stderr = e.stderr.decode("utf-8", errors="ignore")

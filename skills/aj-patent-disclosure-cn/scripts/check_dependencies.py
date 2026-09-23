@@ -34,8 +34,15 @@ def check_docx(strict_cnipa: bool = True) -> List[Tuple[str, str, bool, str]]:
     rows.append(("python module", "pypandoc", has_python_module("pypandoc"), "pip install pypandoc"))
     rows.append(("system binary", "pandoc", has_binary("pandoc") and run_pandoc_probe(), "brew install pandoc"))
     if strict_cnipa:
-        tpl = Path(__file__).resolve().parents[1] / "assets/templates/技术交底书模板.docx"
-        rows.append(("file", str(tpl), tpl.exists(), "python scripts/create_cnipa_reference_doc.py"))
+        tpl = Path(__file__).resolve().parents[1] / "assets/templates/专利申请信息及技术交底书.docx"
+        rows.append(("file", str(tpl), tpl.exists(), "按 references/disclosure_format.md 转换用户原 .doc，并更新 template_provenance.json"))
+        from template_contract import verify_template_files
+        try:
+            verify_template_files()
+            synchronized = True
+        except (OSError, ValueError, KeyError):
+            synchronized = False
+        rows.append(("template contract", "source/reference hashes", synchronized, "重新转换并核对源模板，更新 template_provenance.json"))
     return rows
 
 

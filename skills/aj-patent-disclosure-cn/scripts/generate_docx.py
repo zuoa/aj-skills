@@ -19,8 +19,8 @@ import subprocess
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
-DEFAULT_REFERENCE_DOC = Path(__file__).resolve().parents[1] / "assets/templates/技术交底书模板.docx"
-GENERATOR_VERSION = "7"
+DEFAULT_REFERENCE_DOC = Path(__file__).resolve().parents[1] / "assets/templates/专利申请信息及技术交底书.docx"
+GENERATOR_VERSION = "8"
 
 
 def parse_args() -> argparse.Namespace:
@@ -315,132 +315,75 @@ def _append_solution_steps(lines: List[str], steps: Any) -> None:
 
 
 def render_markdown(payload: Dict[str, Any], strict_cnipa: bool = False) -> str:
-    title = _sanitize_title(_to_text(payload.get("title")))
-    date_text = _to_text(payload.get("date")) or dt.date.today().isoformat()
-    inventors = payload.get("inventors", [])
-    applicant = _to_text(payload.get("applicant"))
+    from template_contract import TITLE, INSTRUCTION, OUTLINE, FALLBACK
+    from check_output_coverage import content_groups
 
-    invention = payload.get("invention", {})
-    if not isinstance(invention, dict):
-        invention = {}
-    effects = _as_list(invention.get("effects"))
+    lines = ["# " + TITLE, "", INSTRUCTION, ""]
+    groups = content_groups(payload)
+    labels = {**FIELD_LABELS, "summary": "概述", "current_solutions": "现有方案",
+              "limitations": "不足", "known_solution": "已知方案", "title": "名称",
+              "objective": "目标", "preconditions": "前提与环境", "steps": "实施步骤",
+              "observed_effects": "观察效果", "effects": "效果", "variations": "替代实现",
+              "figure_refs": "对应附图", "id": "步骤编号", "action": "处理",
+              "term": "术语", "effect": "效果", "method": "方法", "baseline": "基线",
+              "results": "结果", "product_types": "产品种类", "work_content": "工作内容",
+              "field": "所属领域"}
 
-    figures = payload.get("figures", [])
-    embodiments = payload.get("embodiments", [])
-    appendices = _as_list(payload.get("appendices"))
+    def emit(value, skip=()):
+        if isinstance(value, dict):
+            for key, item in value.items():
+                if key not in skip and item not in (None, "", [], {}):
+                    label = "**" + labels.get(key, key) + "：**"
+                    if isinstance(item, (dict, list)):
+                        lines.extend([label, ""])
+                        emit(item, skip)
+                    else:
+                        lines.extend([label + _normalize_markdown_block(item), ""])
+        elif isinstance(value, list):
+            for item in value:
+                emit(item, skip)
+        elif value is not None and str(value).strip():
+            # User Markdown cannot introduce extra template chapters.
+            text = re.sub(r"(?m)^#{1,6}\s+(.+)$", r"**\1**", _normalize_markdown_block(value))
+            lines.extend([text, ""])
 
-    def table_text(value):
-        return _inline_value(value).replace("|", "\\|").replace("\n", " ")
-
-    lines: List[str] = [
-        "| 发明名称 | " + table_text(title) + " |",
-        "| --- | --- |",
-        "| 发明人姓名 | " + table_text("、".join(inventors)) + " |",
-        "| 所属部门 | " + table_text(payload.get("department")) + " |",
-        "| 第一发明人身份证号 | " + table_text(payload.get("first_inventor_id")) + " |",
-        "", "## 本发明的关键点和欲保护点是什么？", "",
-    ]
-    _append_named_block(lines, "### 关键技术点和欲保护点", payload.get("protection_points") or invention.get("key_features"))
-    lines.extend(["", "### 技术领域", ""])
-    lines.append(_normalize_markdown_block(payload.get("technical_field")))
-
-    _append_named_block(lines, "### 术语定义", payload.get("terminology"))
-
-    lines.extend(["", "### 背景技术", ""])
-    background = payload.get("background")
-    if isinstance(background, dict):
-        summary = background.get("summary") or background.get("known_solution")
-        if summary:
-            lines.append(_normalize_markdown_block(summary))
-        _append_named_block(lines, "#### 现有方案", background.get("current_solutions"))
-        _append_named_block(lines, "#### 现有方案的技术不足", background.get("limitations"))
-    else:
-        lines.append(_normalize_markdown_block(background))
-
-    lines.extend(["", "### 要解决的技术问题", ""])
-    problem = invention.get("technical_problem")
-    lines.append(_normalize_markdown_block(problem))
-
-    lines.extend(["", "### 发明目的", ""])
-    lines.append(_normalize_markdown_block(invention.get("purpose")))
-
-    lines.extend(["", "### 技术方案", ""])
-    if invention.get("solution"):
-        lines.append(_normalize_markdown_block(invention.get("solution")))
-    _append_named_block(lines, "#### 输入/处理对象", invention.get("inputs"))
-    _append_named_block(lines, "#### 核心必要技术特征", invention.get("key_features"))
-    if invention.get("solution_steps"):
-        lines.extend(["", "#### 处理步骤/模块关系", ""])
-        _append_solution_steps(lines, invention.get("solution_steps"))
-    _append_named_block(lines, "#### 输出", invention.get("outputs"))
-    _append_named_block(lines, "#### 参考资料", payload.get("references"))
-    lines.extend(["", "### 具体实施方式", ""])
-    if embodiments:
-        for i, emb in enumerate(embodiments, start=1):
-            if not isinstance(emb, dict):
-                lines.append(f"#### 实施例{i}")
-                lines.append("")
-                lines.append(_normalize_markdown_block(emb))
-                lines.append("")
-                continue
-
-            emb_title = _to_text(emb.get("title"))
-            lines.append(f"#### 实施例{i}" + (f"：{emb_title}" if emb_title else ""))
-            lines.append("")
-            if emb.get("objective"):
-                lines.append(_normalize_markdown_block(emb.get("objective")))
-            _append_named_block(lines, "#### 前提与环境", emb.get("preconditions"))
-            if emb.get("steps"):
-                lines.extend(["", "#### 实施步骤", ""])
-                _append_solution_steps(lines, emb.get("steps"))
-            _append_named_block(lines, "#### 参数与条件", emb.get("parameters"))
-            _append_named_block(lines, "#### 输出与结果", emb.get("outputs"))
-            _append_named_block(
-                lines,
-                "#### 效果证据",
-                emb.get("observed_effects") or emb.get("effects"),
-            )
-            _append_named_block(lines, "#### 替代实现", emb.get("variations"))
-            if emb.get("figure_refs"):
-                lines.extend(["", f"对应附图：{_inline_value(emb.get('figure_refs'))}", ""])
-    else:
-        lines.append("无")
-
-    lines.extend(["", "## 与现有技术相比，本发明有何优点？", ""])
-    _append_items(lines, effects, ordered=True)
-    lines.extend(["", "## 本发明是否经过实验、模拟、使用而证明可行，结果如何？", ""])
-    verification = payload.get("verification", {})
-    if isinstance(verification, dict):
-        for key, label in (("status", "验证情况"), ("method", "验证方法"), ("conditions", "验证条件"),
-                           ("baseline", "对比基线"), ("results", "验证结果"), ("evidence", "验证依据")):
-            if verification.get(key):
-                lines.extend([f"**{label}：**{_inline_value(verification[key])}", ""])
-    elif verification:
-        lines.append(_normalize_markdown_block(verification))
-    lines.extend(["", "## 本发明的变更设计（替代方案）及其它用途：", ""])
-    _append_items(lines, invention.get("alternatives") or payload.get("alternative_statement"))
-    _append_named_block(lines, "### 其它用途", payload.get("other_uses"))
-    lines.extend(["", "## 附图及说明", ""])
-    for fig in figures:
-        if isinstance(fig, dict):
-            caption = f"图{fig['num']} {fig['caption']}"
-            if fig.get("file"):
-                width = fig.get('display_width_cm', 14)
-                if not isinstance(width, (int, float)) or not 0 < width <= 14:
-                    raise ValueError('display_width_cm 必须为大于0且不超过14的有限数值')
-                lines.extend([f"![{caption}](<{fig['file']}>){{width={width:.3f}cm}}", ""])
-            else:
-                lines.extend([caption, ""])
-            if fig.get("elements"):
-                lines.extend(["**图中标记：**" + _inline_value(fig['elements']), ""])
-    if not figures and payload.get("drawings_not_applicable"):
-        lines.append(_normalize_markdown_block(payload['drawings_not_applicable']))
-
+    from template_contract import LEAF_HEADINGS
+    for level, heading in OUTLINE:
+        lines.extend(["#" * level + " " + heading, ""])
+        matching = [g for g in groups if g['heading'] == heading]
+        start = len(lines)
+        if heading == "附图：":
+            for fig in payload.get("figures", []):
+                caption = f"图{fig['num']} {fig['caption']}"
+                if fig.get("file"):
+                    width = fig.get('display_width_cm', 14)
+                    if not isinstance(width, (int, float)) or not 0 < width <= 14:
+                        raise ValueError('display_width_cm 必须为大于0且不超过14的有限数值')
+                    lines.extend([f"![{caption}](<{fig['file']}>){{width={width:.3f}cm}}", ""])
+                else:
+                    lines.extend([caption, ""])
+                if fig.get('elements'):
+                    lines.extend(["**图中标记：**", ""])
+                    emit(fig['elements'])
+            if not payload.get('figures'):
+                emit(payload.get('drawings_not_applicable'))
+        else:
+            for group in matching:
+                if group['fragments']:
+                    if group.get('display_label'):
+                        lines.extend(["**" + group['label'] + "：**", ""])
+                    emit(group['value'], group['skip'])
+                elif group.get('fallback'):
+                    lines.extend(["**" + group['label'] + "：**", "", FALLBACK, ""])
+        if len(lines) == start and heading in LEAF_HEADINGS:
+            lines.extend([FALLBACK, ""])
     return "\n".join(lines).strip() + "\n"
 
 
 def convert_markdown_to_docx(markdown_text: str, output: Path, strict_cnipa: bool = False) -> None:
     import pypandoc
+    from template_contract import verify_template_files
+    verify_template_files()
 
     output.parent.mkdir(parents=True, exist_ok=True)
 
@@ -562,6 +505,7 @@ def main() -> int:
     coverage = check_output(payload, markdown_text, generated_path if mode == 'docx' else None)
     report['coverage'] = coverage['coverage']
     report['coverage_scope'] = coverage['scope']
+    report['template_pending_fields'] = coverage['template_pending_fields']
     report['errors'].extend(coverage['errors'])
     if coverage['errors']:
         failed_report = output_path.with_suffix('.failed-quality.json')

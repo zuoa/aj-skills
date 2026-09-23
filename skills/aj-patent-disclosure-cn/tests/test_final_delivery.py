@@ -41,10 +41,10 @@ class FinalDeliveryTests(unittest.TestCase):
         md = render_markdown(self.payload)
         problem = self.payload['invention']['technical_problem']
         purpose = self.payload['invention']['purpose']
-        self.assertIn('### 要解决的技术问题\n\n' + problem, md)
-        self.assertIn('### 发明目的\n\n' + purpose, md)
-        self.assertLess(md.index('### 要解决的技术问题'), md.index('### 发明目的'))
-        self.assertLess(md.index('### 发明目的'), md.index('### 技术方案'))
+        self.assertIn('### 发明人认为要解决的技术问题：\n\n' + problem, md)
+        self.assertIn('**发明目的：**\n\n' + purpose, md)
+        self.assertLess(md.index('### 发明人认为要解决的技术问题：'), md.index('**发明目的：**'))
+        self.assertLess(md.index('**发明目的：**'), md.index('## 专利申报目的'))
 
     def test_missing_purpose_is_warning_in_draft_and_error_in_final(self):
         for value in (None, '', '  ', [], {}):
@@ -61,7 +61,7 @@ class FinalDeliveryTests(unittest.TestCase):
         report = validate_payload(self.payload, Path('input.json'), final=False)
         self.assertIn('technical-problem', {e['code'] for e in report['errors']})
         md = render_markdown(self.payload)
-        before_purpose = md.split('### 要解决的技术问题')[1].split('### 发明目的')[0]
+        before_purpose = md.split('### 发明人认为要解决的技术问题：')[1].split('### 发明人认为可实现的技术效果：')[0]
         self.assertNotIn(self.payload['invention']['purpose'], before_purpose)
 
     @unittest.skipUnless(shutil.which('dot'), 'Graphviz unavailable')
@@ -100,14 +100,14 @@ class FinalDeliveryTests(unittest.TestCase):
                 self.assertIn(self.payload['invention']['technical_problem'], text)
                 ns = {'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'}
                 table = xml.find('.//w:tbl', ns)
-                self.assertEqual(len(table.findall('w:tr', ns)), 5)
-                self.assertIn('所属部门', ''.join(table.itertext()))
+                self.assertEqual(len(table.findall('w:tr', ns)), 8)
+                self.assertNotIn('所属部门', ''.join(table.itertext()))
                 self.assertNotIn('******', text)
                 self.assertNotIn('机器人', text)
                 self.assertNotIn('写技术交底书需注意', text)
-                self.assertIn('本发明是否经过实验、模拟、使用而证明可行，结果如何？', text)
+                self.assertIn('特定软件分析结果：', text)
                 margins = xml.find('.//w:pgMar', ns)
-                self.assertEqual(margins.get('{'+ns['w']+'}left'), '1800')
+                self.assertEqual(margins.get('{'+ns['w']+'}left'), '1418')
             before = output.read_bytes()
             self.assertNotEqual(subprocess.run(command, capture_output=True).returncode, 0)
             self.assertEqual(before, output.read_bytes())
