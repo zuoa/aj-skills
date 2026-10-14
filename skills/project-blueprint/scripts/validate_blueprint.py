@@ -704,6 +704,220 @@ def validate_spec_v2(root: Path, texts: dict[Path, str], index_text: str,
         report("SPEC_READINESS_CONFLICT", None, "implementation-ready requires a named nonempty current scope, covered AC and ready current task contracts; execution may still be not-run")
 
 
+def markdown_without_examples(text: str) -> str:
+    return re.sub(r"^(`{3,}|~{3,})[^\n]*\n.*?^\1[^\n]*$", "", text,
+                  flags=re.MULTILINE | re.DOTALL)
+
+
+def configured_schema(text: str) -> str:
+    """Read a top-level scalar hint; the official CLI owns YAML validation."""
+    match = re.search(r"^schema:[ \t]*([^\n#]+)", text, re.MULTILINE)
+    return match.group(1).strip().strip("\"'") if match else ""
+
+
+def native_spec_records(text: str) -> list[tuple[str, str, str, str]]:
+    """Read native headings for blueprint traceability, not delta merge semantics."""
+    text = markdown_without_examples(text)
+    headings = list(SPEC_NODE_HEADING_RE.finditer(text))
+    records = []
+    operation = ""
+    for i, heading in enumerate(headings):
+        level, title = len(heading.group(1)), heading.group(2)
+        if level == 2:
+            operation = title
+        match = re.match(r"(Requirement|Scenario):\s*(.+)", title)
+        if not match or level != (3 if match.group(1) == "Requirement" else 4):
+            continue
+        end = len(text)
+        for following in headings[i + 1:]:
+            if len(following.group(1)) <= level or following.group(2).startswith("Scenario:"):
+                end = following.start()
+                break
+        records.append((match.group(1), match.group(2), text[heading.end():end], operation))
+    return records
+
+
+def validate_native_evidence(path: Path, text: str, root: Path, findings: list[Finding]) -> None:
+    """A passing claim must be supported even outside a scenario (e.g. reports)."""
+    clean = markdown_without_examples(text)
+    records = re.split(r"^#{1,6}\s+[^\n]*$", clean, flags=re.MULTILINE)
+    for body in records:
+        for label in ("Result", "Completion"):
+            result = record_field(body, label)
+            if result and result not in EXECUTION_RESULTS:
+                add(findings, "warning", "OPENSPEC_RESULT_INVALID", rel(path, root),
+                    f"{label} must be not-run, passed, failed or blocked")
+            if result != "passed":
+                continue
+            if not has_source_reference(record_field(body, "Evidence"), text):
+                add(findings, "error", "SPEC_PASS_WITHOUT_EVIDENCE", rel(path, root),
+                    "A passing claim needs actual linked evidence")
+            if not meaningful(record_field(body, "Tested revision")):
+                add(findings, "error", "SPEC_PASS_WITHOUT_REVISION", rel(path, root),
+                    "A passing claim needs the actual tested revision")
+            executed = record_field(body, "Executed on")
+            try:
+                if re.fullmatch(r"\d{4}-\d{2}-\d{2}", executed):
+                    date.fromisoformat(executed)
+                elif re.match(r"\d{4}-\d{2}-\d{2}T", executed):
+                    datetime.fromisoformat(executed.replace("Z", "+00:00"))
+                else:
+                    raise ValueError
+            except ValueError:
+                add(findings, "error", "SPEC_PASS_WITHOUT_DATE", rel(path, root),
+                    "A passing claim needs a valid ISO execution date/time")
+
+
+def validate_openspec(root: Path, texts: dict[Path, str], index_text: str,
+                      findings: list[Finding]) -> None:
+    """Supplement native OpenSpec with blueprint scope, evidence and readiness checks."""
+    metadata = parse_frontmatter(index_text)
+    openspec_dir = root / "openspec"
+    if not openspec_dir.is_dir():
+        add(findings, "error", "OPENSPEC_ROOT_MISSING", "openspec/", "OpenSpec directory is missing")
+    if not (openspec_dir / "config.yaml").is_file():
+        add(findings, "warning", "OPENSPEC_CONFIG_MISSING", "openspec/config.yaml",
+            "Add project context/rules for the blueprint, or preserve the project's existing setup")
+    config_path = openspec_dir / "config.yaml"
+    default_schema = configured_schema(read_text(config_path)) if config_path.is_file() else ""
+
+    baseline = sorted((openspec_dir / "specs").rglob("spec.md"))
+    changes_dir = openspec_dir / "changes"
+    active = {path.name: path for path in sorted(changes_dir.iterdir())
+              if path.is_dir() and path.name != "archive"} if changes_dir.is_dir() else {}
+    selection = metadata.get("current_changes", "")
+    current = set() if selection == "none" else {name.strip() for name in selection.split(",") if name.strip()}
+    if not selection or (selection != "none" and any(
+        not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", name.strip()) for name in selection.split(",")
+    )):
+        add(findings, "error", "OPENSPEC_SCOPE_INVALID", "SPEC.md",
+            "current_changes must contain comma-separated change names or none")
+    for name in sorted(current - active.keys()):
+        add(findings, "error", "OPENSPEC_CHANGE_UNKNOWN", "SPEC.md",
+            f"Selected change is missing or archived: {name}")
+    ready = bool(re.search(r"^\s*\|\s*`?implementation-ready`?\s*\|\s*`?ready`?\s*\|",
+                          index_text, re.MULTILINE | re.IGNORECASE))
+    if not meaningful(metadata.get("delivery_scope", "")):
+        add(findings, "warning", "DELIVERY_SCOPE_MISSING", "SPEC.md", "Name the current delivery scope")
+
+    # Archives are historical. Unrelated repository Markdown stays out of scope.
+    native_files = set(baseline)
+    for change in active.values():
+        native_files.update(change.glob("*.md"))
+        native_files.update((change / "specs").rglob("*.md"))
+    native_files.update((root / "docs" / "interfaces").rglob("*.md"))
+    for path in sorted(native_files):
+        texts[path] = read_text(path)
+        validate_native_evidence(path, texts[path], root, findings)
+        for target in MARKDOWN_LINK_RE.findall(texts[path]):
+            clean = target.strip().strip("<>").split("#", 1)[0]
+            if not clean or re.match(r"[a-zA-Z][\w+.-]*:", clean):
+                continue
+            contract = (path.parent / clean).resolve()
+            if contract.suffix.lower() == ".json" and contract.is_file():
+                try:
+                    json.loads(read_text(contract))
+                except (ValueError, UnicodeError):
+                    add(findings, "error", "CONTRACT_JSON_INVALID", rel(path, root), f"Invalid JSON source: {clean}")
+    if not baseline and not active:
+        add(findings, "warning", "OPENSPEC_NO_BEHAVIOR", "openspec/",
+            "Document an implemented baseline or draft an initial behavior change")
+
+    defined_prd = set(re.findall(r"^#{2,4}\s+(PRD-[A-Z0-9]+(?:-[A-Z0-9]+)*-\d{3})\b",
+                                texts.get(root / "PRD.md", ""), re.MULTILINE))
+    current_issue = False
+    for name, change in active.items():
+        start = len(findings)
+        selected = name in current
+        proposal_path = change / "proposal.md"
+        tasks_path = change / "tasks.md"
+        proposal = texts.get(proposal_path, "")
+        tasks = texts.get(tasks_path, "")
+        deltas = sorted((change / "specs").rglob("spec.md"))
+        change_metadata = change / ".openspec.yaml"
+        schema = (configured_schema(read_text(change_metadata)) if change_metadata.is_file() else "") or default_schema or "spec-driven"
+        if schema != "spec-driven":
+            add(findings, "info", "OPENSPEC_CUSTOM_SCHEMA", rel(change, root),
+                f"Preserving schema {schema}; use official status/instructions/validation for its artifact contract. Blueprint links and evidence are still checked")
+            continue
+        if selected:
+            for path in (proposal_path, tasks_path):
+                if path not in texts:
+                    add(findings, "warning", "OPENSPEC_ARTIFACT_MISSING", rel(path, root),
+                        "Current delivery needs this change artifact")
+            if not any((root / target.strip().strip("<>").split("#", 1)[0]).resolve() == proposal_path.resolve()
+                       for target in MARKDOWN_LINK_RE.findall(index_text)
+                       if not target.startswith(("http://", "https://", "#"))):
+                add(findings, "warning", "OPENSPEC_CHANGE_UNINDEXED", "SPEC.md",
+                    f"Link the proposal for selected change {name}")
+        if not proposal:
+            current_issue |= selected
+            continue  # A later change may still be at the explore stage.
+        source_text = proposal + "\n" + "\n".join(texts[path] for path in deltas)
+        sources = set(ID_RE["prd"].findall(markdown_without_examples(source_text)))
+        if deltas and not sources:
+            add(findings, "warning", "OPENSPEC_SOURCE_MISSING", rel(proposal_path, root),
+                "Link the source PRD requirement in the proposal or delta requirements")
+        for source in sorted(sources - defined_prd):
+            add(findings, "error", "UNKNOWN_PRD_SOURCE", rel(proposal_path, root),
+                f"Change references undefined {source}")
+        if selected:
+            skip_specs = change_metadata.is_file() and bool(re.search(
+                r"^skip_specs:\s*true\s*(?:#.*)?$", read_text(change_metadata), re.MULTILINE))
+            if not deltas and not skip_specs:
+                add(findings, "warning", "OPENSPEC_DELTA_MISSING", rel(change, root),
+                    "Current behavior change needs delta specs; native/custom schema checks remain separate")
+            checks = re.findall(r"^\s*- \[[ xX]\]\s+(.+)$", markdown_without_examples(tasks), re.MULTILINE)
+            if not checks:
+                add(findings, "warning", "OPENSPEC_TASKS_MISSING", rel(tasks_path, root),
+                    "Use numbered checkbox implementation tasks")
+            elif any(not re.match(r"\d+(?:\.\d+)+\s+\S", item) for item in checks):
+                add(findings, "warning", "OPENSPEC_TASK_NUMBERING", rel(tasks_path, root),
+                    "Use numbered tasks such as - [ ] 1.1 Implement and verify the outcome")
+            if ID_RE["tbd"].search(source_text + tasks + texts.get(change / "design.md", "")):
+                add(findings, "warning", "CURRENT_SPEC_PENDING", rel(change, root),
+                    "Current change references an unresolved decision; review its blocking scope")
+            if record_field(proposal, "State") in {"pending", "provisional"}:
+                add(findings, "warning", "CURRENT_SPEC_UNCONFIRMED", rel(proposal_path, root),
+                    "Current change scope/behavior is not confirmed")
+            for path in deltas:
+                for kind, title, body, operation in native_spec_records(texts[path]):
+                    if kind != "Scenario" or operation not in {"ADDED Requirements", "MODIFIED Requirements"}:
+                        continue
+                    for label in ("Verification", "Procedure", "Evidence required"):
+                        if not meaningful(record_field(body, label)):
+                            add(findings, "warning", "OPENSPEC_ACCEPTANCE_MISSING", rel(path, root),
+                                f"{title}: record {label} for current delivery")
+                    verification = record_field(body, "Verification")
+                    if verification and verification not in {"automated", "manual", "hybrid"}:
+                        add(findings, "warning", "AC_VERIFICATION_INVALID", rel(path, root),
+                            f"{title}: choose automated, manual or hybrid")
+                    if verification in {"manual", "hybrid"} and not meaningful(record_field(body, "Acceptance owner")):
+                        add(findings, "warning", "OPENSPEC_ACCEPTANCE_OWNER_MISSING", rel(path, root),
+                            f"{title}: name the human acceptance owner")
+                    ac_ids = identifiers(title, "AC")
+                    covered = bool(ac_ids & identifiers(tasks, "AC")) if ac_ids else title in tasks
+                    if not covered:
+                        # Existing native titles can instead use a link to their scenario anchor.
+                        anchor = "scenario-" + re.sub(r"[^\w\- ]", "", title.lower()).replace(" ", "-")
+                        covered = any((tasks_path.parent / target.split("#", 1)[0]).resolve() == path.resolve()
+                                      and target.partition("#")[2] == anchor
+                                      for target in MARKDOWN_LINK_RE.findall(tasks) if "#" in target)
+                    if not covered:
+                        add(findings, "warning", "CURRENT_AC_UNCOVERED", rel(path, root),
+                            f"{title}: no current task references this scenario")
+        current_issue |= selected and any(item.severity in {"error", "warning"} for item in findings[start:])
+
+    # Evidence/link errors in a selected change cannot be hidden by a ready ledger.
+    current_issue |= any(item.severity == "error" and any(
+        item.path == rel(active[name], root) or item.path.startswith(rel(active[name], root) + "/")
+        for name in current & active.keys()) for item in findings)
+    if ready and (not current or current - active.keys() or current_issue
+                  or not meaningful(metadata.get("delivery_scope", ""))):
+        add(findings, "error", "SPEC_READINESS_CONFLICT", "SPEC.md",
+            "implementation-ready requires a named current change scope, task coverage and resolved blueprint findings; native validation remains separate")
+
+
 def validate(project_root: Path) -> list[Finding]:
     root = project_root.resolve()
     findings: list[Finding] = []
@@ -737,15 +951,27 @@ def validate(project_root: Path) -> list[Finding]:
             texts[path] = read_text(path)
 
     index_text = texts.get(root / "SPEC.md", "")
-    schema = parse_frontmatter(index_text).get("spec_schema")
-    if schema is None:
+    index_metadata = parse_frontmatter(index_text)
+    schema = index_metadata.get("spec_schema")
+    framework = index_metadata.get("spec_framework")
+    use_openspec = framework == "openspec" or (
+        framework is None and schema is None and (root / "openspec").is_dir()
+    )
+    if framework is not None and framework != "openspec":
+        add(findings, "error", "SPEC_FRAMEWORK_INVALID", "SPEC.md", "Supported spec_framework is openspec")
+    if use_openspec and schema is not None:
+        add(findings, "error", "SPEC_FRAMEWORK_CONFLICT", "SPEC.md", "Remove legacy spec_schema when migrating to OpenSpec")
+    if use_openspec:
+        add(findings, "info", "OPENSPEC_NATIVE_VALIDATION_REQUIRED", "openspec/",
+            "This supplement does not execute OpenSpec; separately run openspec validate --all --strict --no-interactive in the project root")
+    elif schema is None:
         add(findings, "info", "LEGACY_SPEC_SCHEMA", "SPEC.md",
-            "No spec_schema: retaining legacy checks; migrate explicitly to spec_schema: 2 for AC/interface/task validation")
+            "No spec framework/version: retaining legacy checks; migrate explicitly to OpenSpec when revising this blueprint")
     elif schema != "2":
         add(findings, "error", "SPEC_SCHEMA_INVALID", "SPEC.md", "Supported spec_schema is 2; absence selects legacy behavior")
 
     specs_dir = root / "specs"
-    candidates = sorted(specs_dir.rglob("*.md") if schema == "2" else specs_dir.glob("*.md")) if specs_dir.is_dir() else []
+    candidates = sorted(specs_dir.rglob("*.md") if schema == "2" else specs_dir.glob("*.md")) if specs_dir.is_dir() and not use_openspec else []
     domain_files = []
     for path in candidates:
         text = read_text(path)
@@ -764,7 +990,7 @@ def validate(project_root: Path) -> list[Finding]:
             if actual_kind != "domain-spec":
                 add(findings, "error", "INVALID_KIND", rel(path, root),
                     f"Expected blueprint_kind 'domain-spec', found '{actual_kind or 'missing'}'")
-    if not domain_files:
+    if not domain_files and not use_openspec:
         add(findings, "error", "MISSING_DOMAIN_SPEC", "specs/", "At least one domain spec is required")
 
     # Include ADRs, but do not audit unrelated repository Markdown.
@@ -808,7 +1034,9 @@ def validate(project_root: Path) -> list[Finding]:
         if gate not in index_text:
             add(findings, "error", "MISSING_GATE", "SPEC.md", f"Readiness ledger is missing {gate}")
 
-    if schema == "2":
+    if use_openspec:
+        validate_openspec(root, texts, index_text, findings)
+    elif schema == "2":
         validate_spec_v2(root, texts, index_text, findings)
 
     design_text = texts.get(root / "DESIGN.md")
@@ -849,6 +1077,22 @@ def validate(project_root: Path) -> list[Finding]:
                     rel(path, root),
                     f"Local link target does not exist: {target}",
                 )
+
+    if use_openspec and re.search(
+        r"^\s*\|\s*`?implementation-ready`?\s*\|\s*`?ready`?\s*\|", index_text,
+        re.MULTILINE | re.IGNORECASE,
+    ):
+        selected = {name.strip() for name in index_metadata.get("current_changes", "").split(",")}
+        scope_prefixes = ["openspec/specs/", "docs/interfaces/"] + [
+            f"openspec/changes/{name}/" for name in selected if name != "none"
+        ]
+        unresolved = any(item.severity == "error" and (
+            item.path in REQUIRED_KINDS or item.path == "."
+            or any(item.path.startswith(prefix) for prefix in scope_prefixes)
+        ) for item in findings)
+        if unresolved and not any(item.code == "SPEC_READINESS_CONFLICT" for item in findings):
+            add(findings, "error", "SPEC_READINESS_CONFLICT", "SPEC.md",
+                "implementation-ready conflicts with unresolved blueprint source, link or evidence errors")
 
     if not defined_prd:
         add(findings, "warning", "NO_PRD_REQUIREMENT", "PRD.md", "No PRD-* requirement heading was found")

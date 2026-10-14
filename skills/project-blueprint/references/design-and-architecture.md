@@ -179,7 +179,7 @@ Record:
 
 ## Relationship to SPEC
 
-- Functional SPEC/AC says what an actor can observe; architecture says how responsibilities collaborate to make it true. Interface specs link the canonical wire contract; task specs reference the necessary architecture decisions instead of copying them.
+- OpenSpec requirements/scenarios say what an actor can observe; architecture says how responsibilities collaborate to make it true. Change design.md records change-specific technical choices, distinct from root DESIGN.md. Interface notes link canonical wire contracts; change tasks.md references necessary architecture/visual decisions instead of copying them.
 - A technical limitation that changes observable behavior must return to PRD/SPEC for approval.
 - Link architecture sections from the traceability matrix instead of copying scenarios.
 - Architecture tests validate boundaries and quality attributes; behavior tests validate SPEC scenarios.

@@ -1,36 +1,19 @@
----
-blueprint_kind: task-spec
-blueprint_status: draft
-owner: TBD-TASK-001
-last_reviewed: YYYY-MM-DD
----
+# Tasks: [change-name]
 
-# Implementation Work Package
+## 1. [Independently reviewable outcome]
 
-## TASK-CORE-001 — [independently reviewable outcome]
+- [ ] 1.1 TASK-CORE-001 [implement or enable the outcome for SPEC-CORE-001 / AC-CORE-001]
+  - Source: [requirement/scenario links in specs/<capability>/spec.md]
+  - Depends on: none
+  - Change scope: [allowed modules/boundaries; exclude unrelated work]
+  - Constraints: [design.md, root architecture/security and canonical contracts]
+  - Verification: [test command or reproducible manual checks and required evidence]
+- [ ] 1.2 TASK-CORE-002 [cover AC-CORE-002 failure/boundary and its verification]
+  - Depends on: 1.1
+  - Verification: [checks that demonstrate the referenced scenario]
 
-- Source: SPEC-CORE-001
-- Goal: [observable contribution]
-- Depends on: none
-- Risk: [material uncertainty]
-- Refine when: [trigger; use none with explanation if already detailed]
-- State: pending
-- AC: AC-CORE-001, AC-CORE-002
-- Interfaces: IFACE-CORE-001
-- Non-goals: [excluded outcomes]
-- Change scope: [known modules/files; allowed/excluded boundaries]
-- Constraints: [necessary architecture/design/security/deployment references and invariants]
-- Test plan: [spec-first approach and applicable commands/manual checks]
-- Done when: [AC results, evidence and review conditions]
-- Readiness: blocked
-- Completion: not-run
+## Completion and evidence
 
-For later skeletal tasks retain Source, Goal, Depends on, Risk and Refine when; omit unmade detail decisions. Current selection is authoritative in root SPEC frontmatter, not inferred from this file. A task contributes to source AC; it must not redefine them. Append Evidence, Tested revision and Executed on when Completion is passed. Do not claim completion from a written plan.
+Task checkboxes track implemented work. Acceptance results remain separate: not-run / passed / failed / blocked. A passed record requires linked Evidence, Tested revision and Executed on; retain per-scenario records in verification.md or an existing report. Do not mark a task complete from a written plan.
 
-For UI tasks, Constraints should link to DESIGN.md's Agent implementation brief (when present), accepted preview revision/scope and theme/component sources. Do not substitute an external reference brand for those project decisions or copy the full token system into the task.
-
-## Open decisions
-
-| TBD ID | Decision | Owner | Decision by | Blocked gate | State |
-|---|---|---|---|---|---|
-| TBD-TASK-001 | Confirm this work package | [role/name] | [date/milestone] | implementation-ready | pending |
+For UI tasks, Constraints link root DESIGN.md's Agent implementation brief, accepted preview revision/scope and theme/component sources. Do not copy the visual system into tasks or substitute an external reference brand for project approval.

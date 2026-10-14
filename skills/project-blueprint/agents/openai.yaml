@@ -1,4 +1,4 @@
 interface:
   display_name: "Project Blueprint"
-  short_description: "确认全栈项目的 PRD、SPEC、设计、架构、安全与部署约束"
-  default_prompt: "Use $project-blueprint to turn this Web or mobile product idea into a constraint-driven, traceable project blueprint before implementation."
+  short_description: "采用 OpenSpec 确认项目需求、变更规格、设计架构及部署约束"
+  default_prompt: "Use $project-blueprint to turn this Web or mobile product idea into a traceable OpenSpec project blueprint with behavior deltas and implementation tasks before coding."

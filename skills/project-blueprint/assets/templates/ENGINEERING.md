@@ -40,7 +40,7 @@ last_reviewed: YYYY-MM-DD
 
 ## Spec-first execution and evidence
 
-1. Read the root SPEC delivery scope, current task, source functional AC, applicable interfaces and architecture/design decisions. Respect task dependencies and allowed change scope.
+1. Read root SPEC’s current_changes, the assigned OpenSpec proposal/delta specs/technical design/tasks, applicable contracts and root architecture/visual design decisions. Respect task dependencies and allowed change scope.
 2. Review the contract before implementation. Prepare tests for testable behavior, implement, then run the relevant checks. Prototypes, documentation and manual-only work specify appropriate verification instead of mandatory unit-test rituals.
 3. Record AC result separately from verification method. A passed AC or task completion requires actual evidence links, tested revision and execution date. Planned commands and generated tests are not passing evidence.
 4. Review both spec conformance and code quality, including security, maintainability and unintended effects. Human acceptance remains explicit where AC requires judgment.
@@ -50,10 +50,12 @@ Protocol checks, contract tests and mock generation use the selected toolchain a
 
 ## Spec changes and derived artifacts
 
-- Record baseline revision, changed IDs and downstream AC/interface/task/test impact in root SPEC; preserve stable IDs and link replacements.
+- Record behavior changes in OpenSpec change deltas and downstream scenario/contract/task/test impact in root SPEC; preserve existing requirement titles and stable IDs. MODIFIED deltas retain the full requirement and every scenario.
 - A changed assertion or contract makes affected old acceptance evidence historical until reviewed or re-run.
 - Keep machine schemas authoritative for wire fields; README and tests link to or derive from those sources. Record actual generator/check commands and regeneration owner when used.
 - Use Git diffs and review; do not automatically commit, claim zero drift, or treat every spec diff as a product requirement change.
+
+Use numbered task checkboxes to track implemented work. Keep them unchecked while only planning. Official native validation is `openspec validate --all --strict --no-interactive` in the project root; blueprint checks are separate. Merge deltas into the baseline with the project’s OpenSpec sync/archive workflow after implementation and verification. A file-complete change or checked task is not an acceptance report.
 
 ## Test and review gates
 
@@ -62,7 +64,7 @@ Protocol checks, contract tests and mock generation use the selected toolchain a
 
 ## Definition of done
 
-- Current task, source PRD/SPEC/AC, applicable interface contracts and ADR are current; declared delivery scope is accurate.
+- Current OpenSpec change, source PRD/requirements/scenarios, applicable contracts and ADR are current; declared delivery scope is accurate.
 - Relevant automated and manual checks pass with AC-linked evidence, tested revision and execution date; unrun checks remain explicit.
 - Security, migration, observability and rollback impacts were considered.
 - Only intentional changes remain in the diff.

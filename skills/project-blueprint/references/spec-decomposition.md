@@ -1,107 +1,97 @@
-# Spec decomposition, contracts, and evidence
+# OpenSpec decomposition, contracts, and evidence
 
-## Scope and authority
+## Directory and authority
 
-Use PRD as the charter/source of intent and ARCHITECTURE/ADR as the architectural spec. Do not create competing copies named charter or architecture spec. A functional spec owns observable behavior, an interface spec owns boundary semantics, and a task spec owns implementation handoff. See [artifact-contract.md](artifact-contract.md).
+Use the official OpenSpec `spec-driven` schema for new blueprints. Existing configured schemas and integration files take precedence; inspect them before writing. `SPEC.md` remains a blueprint index and readiness ledger, not another specification engine. PRD owns product intent, ARCHITECTURE/ADR own durable architecture, and root DESIGN owns UI/UX.
 
-This skill creates specifications and machine-readable contracts, not business code, tests or running mocks. Inspect existing artifacts first. Generate a contract only for a known interface/protocol; verify the selected protocol's current official documentation when its syntax/version matters. Preserve existing schema conventions and toolchains. Do not install or run tools just because a document contains a command.
-
-Use [DOMAIN_SPEC.md](../assets/templates/DOMAIN_SPEC.md) for behavior/AC, [INTERFACE_SPEC.md](../assets/templates/INTERFACE_SPEC.md) for boundaries and [TASK_SPEC.md](../assets/templates/TASK_SPEC.md) for work packages. The root [SPEC template](../assets/templates/SPEC.md) owns scope and indexes. Copy only the templates applicable to this delivery.
-
-## Split by independently verifiable outcomes
-
-1. Map MVP capabilities, business boundaries, shared invariants and dependencies. Identify current delivery scope separately from the whole MVP.
-2. Group closely related behavior in `specs/<domain>.md`. Split a large domain into `specs/<domain>/<capability>.md` when ownership, independent review, interface boundaries or delivery timing justify it. Never split just to meet a line count.
-3. Prefer a vertical task that can demonstrate a result across UI/API/storage. Separate shared infrastructure, a schema migration or an interface when it has a real independent contract and verification. Reference the related functional requirement even for enabling tasks.
-4. Split a task containing unrelated outcomes, incompatible permissions, different blocking dependencies or independently deployable changes. Do not make one spec per function/file or force identical task durations.
-5. Fully specify near-term tasks after relevant architectural and interface choices exist. Later tasks keep goal, source, dependencies, risk and refinement trigger. Do not prewrite speculative algorithms or exact file lists for an unexplored repository.
-
-For example, “booking” can contain availability lookup, reservation creation and cancellation. A reservation task may span form, API and persistence while sharing one outcome and its failure AC. A prerequisite slot-uniqueness migration can be separate if it has its own invariant and verification. Avoid independent “write all frontend / write all backend” tasks that cannot demonstrate a complete result.
-
-## Machine-readable envelope
-
-Use the following simple scalar frontmatter fields in root SPEC (comma-separated IDs, not YAML arrays):
-
-```yaml
-spec_schema: 2
-delivery_scope: first-booking-slice
-current_specs: SPEC-BOOKING-001
-current_tasks: TASK-BOOKING-001, TASK-BOOKING-002
+```text
+PRD.md, SPEC.md, DESIGN.md, ARCHITECTURE.md, SECURITY.md, DEPLOY.md, ENGINEERING.md
+openspec/
+  config.yaml
+  specs/<capability>/spec.md                    # Implemented behavior baseline
+  changes/<change-name>/
+    proposal.md                                # Why / what / impact
+    design.md                                  # Change-specific technical approach
+    tasks.md                                   # Numbered implementation checklist
+    specs/<capability>/spec.md                  # Proposed behavior deltas
+  changes/archive/                             # Completed change history
+contracts/                                     # Canonical wire definitions, when needed
+docs/interfaces/                              # Optional semantic contract notes
 ```
 
-`none` is allowed for an honest planning draft with blocked implementation readiness. All tasks not selected in `current_tasks` are later work. Every referenced dependency must be defined; current tasks must include unfinished dependencies in the delivery scope. Dependencies outside the current set may be reused only with `Completion: passed` and actual completion evidence. Current coverage is determined from AC belonging to `current_specs`, not from an arbitrary subset chosen by an implementing agent.
+A greenfield blueprint normally has an empty baseline and an initial change containing ADDED deltas. Do not write future behavior into the implemented baseline or archive a plan. Existing implemented behavior may be documented as a baseline after checking code, tests and scope; distinguish observed facts from assumptions. Reuse existing capability paths, including nested paths where the project uses them. New segments and change names use kebab-case. Task/interface notes must not live under OpenSpec `specs/`, which contains behavior specs only.
 
-New domain/interface/task files use `blueprint_kind: domain-spec / interface-spec / task-spec`. Discover them recursively under `specs/` by kind. Interface files belong in `specs/interfaces/`, task files in `specs/tasks/`; a task file contains exactly one TASK definition. Ignore untyped README/index helpers. Root PRD/SPEC, existing blueprint kinds and command-line options remain unchanged.
+Use [SPEC.md](../assets/templates/SPEC.md) for the index, [OPENSPEC_CONFIG.yaml](../assets/templates/OPENSPEC_CONFIG.yaml) for project routing, [PROPOSAL.md](../assets/templates/PROPOSAL.md), [DELTA_SPEC.md](../assets/templates/DELTA_SPEC.md), [CHANGE_DESIGN.md](../assets/templates/CHANGE_DESIGN.md) and [TASK_SPEC.md](../assets/templates/TASK_SPEC.md) for changes. [DOMAIN_SPEC.md](../assets/templates/DOMAIN_SPEC.md) is only for an implemented baseline. [INTERFACE_SPEC.md](../assets/templates/INTERFACE_SPEC.md) is an optional note outside OpenSpec specs.
 
-Use H2 functional headings `SPEC-<DOMAIN>-NNN`, H3 AC headings `AC-<DOMAIN>-NNN` inside their parent SPEC, and H2 interface/task headings `IFACE-<DOMAIN>-NNN` / `TASK-<DOMAIN>-NNN`. IDs are globally unique within their prefix and never renumbered. Mark a retired definition with `Superseded by: <same-prefix replacement ID>` and retain its last decision state; do not add superseded to the four decision states or reuse the ID. Retired definitions remain indexed as history and must not be selected for current implementation.
+## Setup and artifact flow
 
-The bullet-field labels below are stable English parser keys even when descriptions are Chinese. Use plain `- Field: value` lines. Record identifier lists comma-separated and absence as `none`. Additional narrative, diagrams and scenario subheadings are welcome. Do not put instructional placeholders into ready artifacts.
+Reuse `openspec/config.yaml` and installed OpenSpec integrations. For a new project, `schema: spec-driven` plus `context` and artifact `rules` is sufficient; do not fork a schema merely to add PRD/design links or blueprint readiness. Generate the files directly when the CLI is unavailable. Installing the CLI, updating agent integrations and generating business scaffolding are not prerequisites for drafting a blueprint.
 
-## Functional spec and AC
+When using a CLI, inspect its version/help and work in the target project root. Setup and agent command delivery vary by installed version/tool; use `openspec init --help` and preserve existing agent instructions. Prefer CLI instructions over assumptions about slash commands. Typical artifact commands are:
 
-Every functional SPEC records `Source` (PRD IDs), `State`, `Actors`, `Trigger`, `Preconditions`, `Inputs`, `Rules`, and `Outcome`. Keep normative behavior observable; architecture owns mechanisms. Add invariants and state-transition tables when they clarify behavior. Future capabilities may be pending with a refinement plan; current capability omissions are reported.
+```bash
+openspec list --specs
+openspec list
+openspec new change <change-name> --schema spec-driven
+openspec status --change <change-name> --json
+openspec instructions proposal --change <change-name> --json
+openspec instructions specs --change <change-name> --json
+openspec instructions design --change <change-name> --json
+openspec instructions tasks --change <change-name> --json
+```
 
-Each AC belongs to its nearest parent SPEC and contains its own Given/When/Then scenario plus:
+Read relevant baseline specs in full before drafting deltas. Proposal precedes specs and technical design; tasks consume both. Dependencies guide preparation, without requiring a fixed interview order. Existing custom schemas may allow a simpler change without design; follow the resolved schema rather than manufacturing content.
 
-| Field | Meaning |
-|---|---|
-| Verification | `automated / manual / hybrid`; this is a method, not a result |
-| Fixture | Data and environment needed to reproduce the scenario |
-| Assertion | Observable result, including relevant state/data effects |
-| Procedure | Test command or reproducible manual steps; prospective tests may use a planned command |
-| Evidence required | Expected test report, response, screenshot or human acceptance record |
-| Acceptance owner | Required for manual/hybrid judgment |
-| Result | `not-run / passed / failed / blocked` |
-| Evidence | Actual Markdown links; required only when claiming passed |
-| Tested revision | Actual tested source/spec revision; required when passed |
-| Executed on | Actual ISO date, optionally with ISO time; required when passed |
+## Capability, requirement and scenario format
 
-Cover normal behavior and applicable failure, boundary, permission, duplicate, concurrency, partial-result and recovery cases. Explain meaningful omissions; do not generate irrelevant cases. Unknown business thresholds remain explicit pending decisions. “Works correctly” is not an assertion. All AC must be decidable, but business acceptance and aesthetic judgment need not be automated.
+Group by cohesive, independently reviewable system behavior; split on ownership, interface or delivery boundaries, not on file count or fixed work duration. Prefer vertical outcomes across client/API/storage. Detail the current slice; keep future capability goals, sources, dependencies, risks and refinement triggers in the roadmap.
 
-Passed means an actual run or authorized manual review produced the required evidence for the tested revision. A screenshot does not prove keyboard behavior. Command text, generated tests, a green checklist or source inspection alone are not execution evidence. A functional spec can be ready before its AC run; `not-run` does not block starting implementation.
+The native syntax is required even when prose is Chinese:
 
-## Interface spec and protocol source
+```markdown
+### Requirement: SPEC-BOOKING-001 Reserve an available slot
+The system SHALL create a reservation only if the slot is still available.
 
-Each IFACE records `Source` (SPEC IDs), `State`, `Provider`, `Consumer`, `Protocol`, `Contract`, `Operations`, `Auth`, `Errors`, `Compatibility`, and `Contract checks`.
+#### Scenario: AC-BOOKING-001 Successful reservation
+- GIVEN a signed-in member and an available slot
+- WHEN the member submits a reservation
+- THEN exactly one reservation is visible in that member's list
+```
 
-Use `Contract` Markdown links to authoritative OpenAPI, protobuf or JSON Schema under `contracts/`, or an existing authoritative project contract. An in-process interface with no wire schema may use `not-applicable: <reason>`; a missing/undecided schema is pending, not not-applicable. State why a given format is needed; do not emit all three formats for every interface.
+Use exactly H3 `Requirement:` and H4 `Scenario:`. Each ADDED/MODIFIED requirement needs at least one scenario and normative SHALL/MUST behavior. Use optional GIVEN plus explicit WHEN/THEN. New baseline specs use `## Purpose` and `## Requirements`; change deltas use `## ADDED Requirements`, `## MODIFIED Requirements`, `## REMOVED Requirements`, and/or `## RENAMED Requirements`. A new capability delta includes a meaningful Purpose; an existing capability keeps its baseline Purpose.
 
-Document error semantics, authentication/authorization and version evolution; add pagination, retry, timeout, idempotency, event ordering and deduplication only where relevant. Map operations/schema symbols back to functional SPEC/AC. Markdown explains these semantics and points at the machine contract rather than duplicating its field definitions. ARCHITECTURE keeps internal data ownership, module boundaries and design tradeoffs.
+The current default strict validator expects Purpose to contain at least 50 characters and flags new requirement descriptions longer than 500 characters. Put concrete examples and edge cases in scenarios. Preserve existing MODIFIED blocks intact; do not trim or split an existing requirement merely to satisfy a length warning. Recheck limits against the installed CLI when they matter.
 
-`Contract checks` names the project's protocol validator/compiler and the intended contract-test/mock generation entrypoints or their non-applicability. Record protocol validation using `Result`, `Evidence`, `Tested revision`, `Executed on`, with the same meanings as AC. The structural checker verifies references and JSON syntax when the linked source is local JSON; it does not implement OpenAPI/protobuf/schema semantic validation. YAML/protobuf semantic checks require the selected external tool; no tool available means not-run/blocked, never passed. External commands are not automatically executed by the structural checker.
+Stable PRD/SPEC/AC IDs are useful blueprint traceability, not extra OpenSpec grammar. Preserve existing names and IDs. Link source PRD in the proposal or `- Source:` under a requirement; link task/scenario definitions from root SPEC. Keep requirement descriptions short and behavior-focused; frameworks, databases, classes and algorithms belong in technical design. Cover relevant failures, boundaries, permissions, duplicate requests, concurrency, partial results and recovery. Unknown thresholds are named TBDs, not invented numbers.
 
-## Task spec and readiness
+MODIFIED replaces the entire matched requirement: copy its exact title and **all scenarios**, then edit the complete block. ADDED is for new behavior rather than partial edits to existing requirements. REMOVED includes Reason and Migration. RENAMED uses `- FROM: ` plus a backtick-quoted old title and `- TO: ` plus a backtick-quoted new title; when behavior also changes, include MODIFIED under the new title. Never rename existing titles just to retrofit IDs.
 
-Each task file defines one TASK. All tasks record `Source` (SPEC IDs), `Goal`, `Depends on` (TASK IDs or none), `Risk`, and `Refine when`. A fully specified task may use `Refine when: none — already detailed`.
+## Acceptance and interface evidence
 
-Current tasks additionally record:
+Each scenario states a decidable outcome. For current delivery, add `Verification: automated / manual / hybrid`, `Procedure`, and `Evidence required`; Fixture/Assertion may be explicit fields when GIVEN/THEN alone do not explain reproduction. Manual/hybrid acceptance names `Acceptance owner`. Use `Result: not-run / passed / failed / blocked` separately from the verification method. Passing claims require linked Evidence, actual Tested revision and valid Executed on date/time. Do not insert run-specific reports into stable baseline specs unless the project deliberately owns evidence there; a change's `verification.md` or existing report can retain execution records linked by scenario.
 
-| Field | Meaning |
-|---|---|
-| State | `confirmed / provisional / pending / not-applicable` |
-| AC | AC IDs this work implements or enables; AC must belong to Source specs |
-| Interfaces | IFACE IDs or none, consistent with Source specs |
-| Non-goals | Explicit exclusion from this task |
-| Change scope | Relevant modules/files when known, with allowed/excluded boundaries |
-| Constraints | Necessary architecture/design/security/deploy links and implementation invariants; leave local coding choices open |
-| Test plan | Spec-first test approach, applicable unit/integration/contract/manual checks and commands |
-| Done when | AC/evidence and other concrete completion conditions |
-| Readiness | `ready / blocked` for starting this task, independent of whether code has been written |
-| Completion | `not-run / passed / failed / blocked` for executed completion |
-| Evidence, Tested revision, Executed on | Required when Completion is passed |
+No tests or running mock services are generated by this skill. Command text, generated tests, source inspection or a checked task do not prove acceptance. Visual and business judgments keep their named human acceptance owner. Existing reports become historical when affected assertions/contracts change, until review or re-run.
 
-A task may start when its source behavior/AC and relevant interfaces are confirmed, its necessary design/architecture decisions are available and its external dependencies are satisfied. `ready` does not mean dependencies inside the current plan can be skipped; execute in dependency order. Mark unresolved blocking decisions as TBD and keep readiness blocked. Later skeletal work does not need a full test plan.
+For a known protocol, use or generate the canonical machine contract under `contracts/`. Markdown interface notes explain provider/consumer, authentication, error semantics, compatibility and applicable retry/idempotency/ordering rules without duplicating field schemas. Change design/tasks link that contract and the source behavior. Unknown protocols block dependent work; in-process boundaries may explain why no wire schema applies. Protocol validation uses the project's selected official toolchain, never arbitrary commands executed by the structural checker.
 
-Coverage requires each current AC to appear in at least one current task. An enabling task may share an AC with a feature task; describe its contribution instead of claiming to independently satisfy the entire feature. Multiple tasks may share a functional outcome. Root SPEC lists all definitions and file links for navigation; it need not repeat every assertion.
+## Tasks and readiness
 
-## Execute, review, change
+`tasks.md` uses numbered checkbox tasks (`- [ ] 1.1 ...`). Each current outcome references its requirement/scenarios, necessary dependencies, allowed change scope, design/architecture/contracts and verification procedure. Optional `TASK-*` IDs can remain in task text; no per-task spec files are required. UI tasks link root DESIGN's accepted revision, scope and implementation brief. Keep local coding choices open.
 
-The downstream workflow is: review spec and current task → prepare applicable behavior/contract tests → implement → run checks → record AC results → review completion. Prototype, documentation and manual-only work name the appropriate verification instead of pretending every task needs a failing unit test first.
+Root SPEC uses `spec_framework: openspec`, a named `delivery_scope`, and comma-separated `current_changes` (`none` for an explicitly blocked draft). This selects delivery scope without redefining OpenSpec's lifecycle. All current scenarios need task coverage; an enabling task can share a scenario while describing its contribution. Dependencies run in order. A file-complete OpenSpec change may still be blocked by product, architecture, interface or visual decisions. Not-run acceptance is normal before implementation.
 
-Code review checks both contract conformance and implementation quality: security, maintainability, unintended effects and actual test adequacy still matter. AI may execute available checks and report differences; a person remains responsible where acceptance calls for human judgment.
+The downstream loop is: review change and constraints → prepare applicable tests → implement tasks → run checks and record evidence → review completion → sync/archive with OpenSpec. Fix code for implementation defects; update deltas and review impact for requirement changes; clarify ambiguity. Do not weaken scenarios to make failing code pass. Archive/sync is an implementation handoff action, never a shortcut to finish the blueprint.
 
-Classify a discrepancy before editing the contract: implementation defect → fix code; changed requirement → update authoritative spec and review impact; ambiguity → clarify the decision. Never weaken AC automatically to make failed code pass.
+## Validation and migration
 
-Root SPEC maintains a change-impact ledger: baseline revision, changed IDs, reason/type, affected AC/interfaces/tasks/tests, compatibility/migration impact, and review state. Use Git history/diffs; do not invent commits or automatically commit. Changed assertions or contracts invalidate affected prior acceptance claims until reviewed/re-run; retain old reports as historical evidence. Mark replaced IDs as superseded and link replacements.
+Run the blueprint supplement, then official native validation separately when available:
 
-README and tests may link to or derive from the same sources. Record generator/check commands when actually used and who owns regeneration. Traceability and generated artifacts reduce drift; neither guarantees drift is impossible.
+```bash
+python3 <skill-path>/scripts/validate_blueprint.py <project-root>
+# In the target project root:
+openspec validate --all --strict --no-interactive
+```
+
+The supplement checks project links, scope, readiness, traceability and evidence; it neither runs document commands nor substitutes for OpenSpec's parser/delta validation. Report each result independently. A missing CLI means native checks are not-run, not passed. Structural validation does not prove business correctness or UI acceptance.
+
+For existing unversioned or `spec_schema: 2` blueprints, preserve checks until explicitly migrating. Map old functional SPEC/AC headings into native Requirement/Scenario headings without changing meaning; separate observed implemented behavior from planned changes; move task content into change `tasks.md` and interface notes into `docs/interfaces/`; keep machine contracts. Update root index metadata, agent routes and relative links together. Preserve referenced history, acceptance reports and IDs; do not delete old files until references have been accounted for. Do not maintain two active behavior authorities after migration.

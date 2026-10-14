@@ -23,7 +23,7 @@ For a new Web interface, use design intelligence first, then visual-direction cr
 
 Use implementation-specific guidance only after the stack is confirmed. When React or Next.js is selected, carry material `vercel-react-best-practices` constraints into `ENGINEERING.md` as project rules tied to actual architecture decisions. Do not record every generic rule.
 
-Use `web-design-guidelines` after inspectable UI code or a rendered interface exists. Findings that change observable behavior return to `SPEC.md`; visual findings return to `DESIGN.md`; performance or coding constraints belong in `ENGINEERING.md` or `ARCHITECTURE.md`.
+Use `web-design-guidelines` after inspectable UI code or a rendered interface exists. Findings that change observable behavior return to the relevant OpenSpec change deltas (linked by `SPEC.md`); visual findings return to `DESIGN.md`; performance or coding constraints belong in `ENGINEERING.md` or `ARCHITECTURE.md`.
 
 When recommendations conflict, apply this priority:
 

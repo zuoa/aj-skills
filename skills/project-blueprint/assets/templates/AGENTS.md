@@ -5,7 +5,7 @@ Use [ENGINEERING.md](ENGINEERING.md) as the agent-neutral source for workflow, c
 Read project intent and constraints from:
 
 - [PRD.md](PRD.md) for product scope and outcomes
-- [SPEC.md](SPEC.md) plus `specs/` for observable behavior
+- [SPEC.md](SPEC.md) for scope, `openspec/specs/` for implemented behavior, and selected `openspec/changes/` for proposed work
 - [DESIGN.md](DESIGN.md) for UI/UX constraints
 - [ARCHITECTURE.md](ARCHITECTURE.md) for boundaries and internal design
 - [SECURITY.md](SECURITY.md) for security/privacy controls
@@ -14,4 +14,4 @@ Read project intent and constraints from:
 
 Before changing code, expose material assumptions and conflicts. Implement the smallest scoped change that satisfies the confirmed specification, then run the applicable checks from `ENGINEERING.md`. Do not silently change behavior when the blueprint and request disagree.
 
-For spec_schema 2, start from root SPEC's current delivery scope and the assigned task spec. Read its source SPEC/AC, interface contract and relevant architecture/design constraints. Execute in dependency order, record real AC evidence and completion status, and classify failures before proposing spec changes. Do not mark passed from a checklist or automatically relax AC to fit the implementation. ENGINEERING owns the detailed workflow.
+For OpenSpec, start from root SPEC’s current_changes and the assigned change’s proposal, delta specs, technical design.md and numbered tasks.md. Root DESIGN.md owns visual constraints. Read applicable contracts and project sources; execute in dependency order and record actual scenario evidence before claiming acceptance. Do not automatically relax scenarios to fit failed code. Validate with OpenSpec; sync/archive only after implementation and verification. ENGINEERING owns the detailed workflow.

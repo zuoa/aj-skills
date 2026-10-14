@@ -1,11 +1,13 @@
 ---
 name: project-blueprint
-description: 为新建或早期 Web、SaaS、API 与移动应用建立可执行的项目决策蓝图。用户提到“规划新项目”“先把需求和约束问清楚”“生成/补全 PRD、SPEC、DESIGN、ARCHITECTURE、SECURITY、DEPLOY”“确定全栈技术栈、数据库、中间件、云部署”“spec-driven development”“让 Claude/Codex 开发前遵守项目规则”时应使用。读取已有材料或分阶段访谈，给出约束驱动的选型建议，生成可追溯的模块化规范与就绪度结论；不生成业务代码或完整项目脚手架。也适用于审计已有蓝图文档是否冲突、缺项或不可验证，但不用于单个功能的直接编码、孤立 bug 修复或没有项目上下文的简单技术问答。
+description: 为新建或早期 Web、SaaS、API 与移动应用建立采用 OpenSpec 的项目决策蓝图。用户提到“规划新项目”“先把需求和约束问清楚”“生成/补全 PRD、SPEC、DESIGN、ARCHITECTURE、SECURITY、DEPLOY”“确定全栈技术栈、数据库、中间件、云部署”“OpenSpec”“spec-driven development”“让 Claude/Codex 开发前遵守项目规则”且需要项目规划时应使用。读取已有材料或分阶段访谈，给出约束驱动的选型建议，生成 OpenSpec 行为规范、变更提案与实现任务及就绪度结论；不生成业务代码或完整项目脚手架。也适用于审计已有蓝图文档是否冲突、缺项或不可验证，但不用于单个功能的直接编码、孤立 bug 修复或没有项目上下文的简单技术问答。
 ---
 
 # Project Blueprint
 
 把模糊的产品想法转化为人和编码代理都能执行、复核和持续维护的项目约束。重点不是多写文档，而是在开始实现前暴露假设、消除冲突、记录取舍，并让产品需求、行为规格、设计、架构、部署和测试能够互相追溯。
+
+新蓝图采用 OpenSpec 的 `spec-driven` 工作流：`proposal → specs / design → tasks`。`openspec/specs/` 保存已实现的行为基线，`openspec/changes/` 保存待实现变更；不再生成自定义 spec v2 目录。根 `SPEC.md` 是蓝图的导航、追踪和就绪度入口，不替代 OpenSpec 行为规范。
 
 ## 行为原则
 
@@ -25,7 +27,7 @@ description: 为新建或早期 Web、SaaS、API 与移动应用建立可执行�
 - 支持绿地项目为主，也可读取已有 PRD、设计稿、代码仓库和部署材料进行补全。
 - 支持 Web、SaaS、API、原生移动端和跨端应用。
 - 生成或更新规范文档、机器可读接口契约、ADR、编码代理适配文件，以及用于人工设计确认的轻量 HTML 或已有项目内预览；预览只使用示例数据和局部演示交互，不生成业务代码、测试实现、运行中的 mock 服务或完整脚手架。
-- `PRD.md` 管立项与产品意图，根 `SPEC.md` 管分层索引与交付追踪，领域 spec 管可观察行为，接口 spec 管跨边界契约，任务 spec 管实现交接，`DESIGN.md` 管体验，`ARCHITECTURE.md` 管内部实现，`SECURITY.md` 管控制，`DEPLOY.md` 管运行环境。不要跨文档复制同一事实。
+- `PRD.md` 管立项与产品意图，根 `SPEC.md` 管索引与交付追踪，OpenSpec capability spec 管可观察行为，change 的 `proposal.md` 管动机与范围、`design.md` 管本次技术方案、`tasks.md` 管实现交接。根 `DESIGN.md` 管 UI/UX，`ARCHITECTURE.md` 管长期架构，`SECURITY.md` 管控制，`DEPLOY.md` 管运行环境。接口语义按需放在 `docs/interfaces/`，机器契约放在 `contracts/`；不要跨文档复制同一事实。
 - 正文跟随用户语言；文件名、需求 ID、技术标识和代码符号保持英文。
 
 ## 开始前读取
@@ -34,11 +36,10 @@ description: 为新建或早期 Web、SaaS、API 与移动应用建立可执行�
 
 - [references/intake-and-status.md](references/intake-and-status.md)：访谈顺序、四态决策和就绪度闸门。
 - [references/artifact-contract.md](references/artifact-contract.md)：文档职责、权威关系、ID 和追踪规则。
+- [references/spec-decomposition.md](references/spec-decomposition.md)：OpenSpec 目录、原生语法、变更生命周期和旧格式迁移。
 - [references/output-quality.md](references/output-quality.md)：所有蓝图产物的编辑质量、反模板化写作和 Emoji 默认规则。
 
 按任务读取：
-
-- 拆分功能、AC、接口或实现任务，以及审计 spec 覆盖与变更时，读取 [references/spec-decomposition.md](references/spec-decomposition.md)。
 
 - 需要技术选型或中间件判断时，读取 [references/selection-rubric.md](references/selection-rubric.md)。
 - 需要 UI、移动端或系统设计时，读取 [references/design-and-architecture.md](references/design-and-architecture.md)；需要推荐、比较或确认应用骨架、导航和工作区布局时，同时读取 [references/layout-catalog.md](references/layout-catalog.md)；需要推荐、比较或落地视觉主题时，同时读取 [references/theme-catalog.md](references/theme-catalog.md)。
@@ -56,7 +57,7 @@ description: 为新建或早期 Web、SaaS、API 与移动应用建立可执行�
 
 在提问前先做只读检查：
 
-- 找出已有 `PRD.md`、`SPEC.md`、`DESIGN.md`、架构/安全/部署文档、ADR、README、包清单、容器和 CI 配置。
+- 找出已有 `PRD.md`、`SPEC.md`、`DESIGN.md`、`openspec/config.yaml`、OpenSpec 基线与活动 changes、架构/安全/部署文档、ADR、README、包清单、容器和 CI 配置。已有 OpenSpec 配置、schema 与代理集成优先复用；不强制替换为默认 schema。
 - 若已有代码，识别实际客户端、语言、框架、数据存储、外部服务、测试和部署事实。
 - 建立“已有事实 / 用户声明 / 合理推断 / 未知”四类信息；推断不能直接升级为已确认。
 - 同名文档存在时，先生成冲突和拟变更摘要。经用户确认后增量修改，不静默覆盖或整篇重写。
@@ -87,15 +88,15 @@ description: 为新建或早期 Web、SaaS、API 与移动应用建立可执行�
 
 ### 3. 分层拆解规格与验收
 
-新蓝图在根 `SPEC.md` 标记 `spec_schema: 2`。根文件只维护全局规则、分层索引、当前交付范围、依赖与追踪；每层链接权威来源，不复制正文。旧蓝图无版本字段时保留旧检查，迁移需明确增量变更，不能静默改写历史。
+新根 `SPEC.md` 标记 `spec_framework: openspec`，用 `current_changes` 列出近期 change 名称。在 `openspec/config.yaml` 中用 `schema: spec-driven`、`context` 和 `rules` 连接项目文档与生成规则，不另造 schema。CLI 可用时先核对 `openspec --version` 和 `--help`；仅为生成文档不必安装 CLI 或代理插件，模板可直接生成同样的文件结构，交付时如实记录未运行的原生校验。
 
-- **全景与近期细化**：先列出 MVP 能力与依赖，再选近期交付范围。按业务边界、独立验收、接口边界拆分；优先可验收的纵向任务，不按文件、函数或固定工时机械拆分。远期任务只写目标、来源、依赖、风险及细化触发点。
-- **功能 spec**：小领域保留 `specs/<domain>.md`，复杂领域可按能力拆为 `specs/<domain>/<capability>.md`。每条 `SPEC-<DOMAIN>-NNN` 明确来源 PRD、角色、触发条件、输入约束、业务规则、状态变化与结果。功能 spec 不承载框架、数据库或内部算法；必要机制由架构/任务 spec 说明。
-- **独立 AC**：每条 `AC-<DOMAIN>-NNN` 属于一个功能 SPEC，用 Given/When/Then 描述可观察结果，明确测试数据/环境、断言、步骤/命令、预期证据与验证方式（automated/manual/hybrid）。按相关性覆盖失败、边界、权限、重复操作、并发、部分成功和恢复。未知阈值登记 TBD，不用“正常工作”替代断言。
-- **接口 spec**：按需要建立 `specs/interfaces/`，为跨模块/进程边界定义 `IFACE-<DOMAIN>-NNN`，关联功能与提供方/消费方。已确认协议按官方来源生成或复用 `contracts/` 下 OpenAPI、protobuf 或 JSON Schema，机器契约是字段/线格式的唯一来源；Markdown 解释业务语义和兼容规则。协议未定时保留阻断项，不伪造完整契约。
-- **任务 spec**：在架构与接口已足够明确后，为近期工作在 `specs/tasks/` 生成每个工作包一份 `TASK-<DOMAIN>-NNN` 规范。列出来源 SPEC/AC、接口、依赖、目标/非目标、变更范围、必要实现约束、测试与完成条件。只锁定正确性、兼容性和协作所需决定，局部编码选择留给实现代理。
+- **全景与近期细化**：先列 MVP 能力与依赖，再选择近期可独立验收的 change。远期能力留在 PRD/根 SPEC 的路线图中，记录细化触发点，不批量预建空 changes 或任务。
+- **行为基线与变更**：已有系统的已实现行为放在 `openspec/specs/<capability>/spec.md`；绿地待实现内容放在 `openspec/changes/<change-name>/specs/<capability>/spec.md` 的 `ADDED Requirements` 中，不把计划当作基线，也不为文档完成提前归档。
+- **原生规格与 AC**：用 `### Requirement: <name>` 和 `#### Scenario: <name>`，保留英文解析标题及 `SHALL`/`MUST`、`GIVEN`/`WHEN`/`THEN`。新蓝图可在标题中带 `SPEC-*` / `AC-*` 稳定 ID，已有标题保持原样。场景说明可观察结果、适用失败/边界/权限/并发/恢复、验证方式和所需证据；细则与模板见 [OpenSpec 拆解契约](references/spec-decomposition.md)。
+- **提案、技术设计与任务**：change 内生成 `proposal.md`、适用的 `design.md` 和 `tasks.md`，使用编号 `- [ ] 1.1 ...`。任务引用 requirement/scenario、依赖、变更范围、必要约束和验证步骤。OpenSpec 小写 `design.md` 是变更的技术设计，根大写 `DESIGN.md` 是项目的视觉设计；二者通过链接配合。
+- **接口契约**：复用或生成 `contracts/` 下已选协议的 OpenAPI、protobuf 或 JSON Schema，按需在 `docs/interfaces/` 解释语义与兼容性，并由 change 的设计/任务引用。不要把接口说明、任务文件塞进 OpenSpec 的 capability spec 目录。
 
-模板与机器字段见 [拆解与验收契约](references/spec-decomposition.md)。所有 AC 可判定不等于都能自动判定；人工业务验收和视觉认可有明确负责人。验证方式与执行结果分离，未执行记 not-run，passed 必须有证据、被测版本和执行日期。
+所有 AC 可判定不等于都能自动判定；人工业务验收和视觉认可有明确负责人。验证方式与执行结果分离，未执行记 `not-run`，`passed` 必须有证据、被测版本和执行日期。旧 `spec_schema: 2` 蓝图保留原校验；迁移时先说明路径和标题映射，再增量更新引用，不能静默改写历史。
 
 ### 4. 确认方向，生成预览，再固化设计
 
@@ -138,7 +139,7 @@ React、Vue 等交互型客户端在进入交互原型时选择一致的 UI 基�
 ### 6. 实现交接、工程规则和 ADR
 
 - 先评审近期 spec/AC，再由实现任务准备适用测试、实现并运行验证；蓝图只记录测试方案与回收证据。差异先区分实现缺陷、需求变更或规格歧义，禁止自动放宽 AC 迁就失败实现。
-- 根 SPEC 明确当前交付范围；近期任务就绪不代表整个 MVP 就绪。Code Review 同时检查契约符合性、代码质量、安全和副作用。
+- 根 SPEC 明确当前 changes 与交付范围；近期任务就绪不代表整个 MVP 就绪。实现代理按 change 的 specs、技术设计和 tasks 工作，完成实际验证后才勾选任务；Code Review 同时检查契约符合性、代码质量、安全和副作用。归档和同步基线属于下游实现流程，不在蓝图交付时执行。
 - `ENGINEERING.md` 是代理无关的工程规则来源：实现纪律、测试门禁、仓库约定、常用命令和完成定义。
 - `CLAUDE.md`、`AGENTS.md` 只保存各代理必须立即看到的简短规则、命令和文档路由；不要复制整套项目事实。Cursor 适配仅在用户需要时生成。
 - 对长期、跨模块、代价较高且存在真实候选的选择创建 `docs/adr/NNNN-<slug>.md`。普通偏好和可轻易撤销的局部选择留在对应文档的决策表。
@@ -152,6 +153,8 @@ python3 <skill-path>/scripts/validate_blueprint.py <project-root>
 ```
 
 校验器只读，不自动修复。根据报告处理：缺失文档、孤立 PRD/SPEC、规格场景缺失、失效链接、未登记 TBD、追踪缺口、与当前设计阶段不符的方向/样稿证据/实现规范，以及 spec v2 的 ID/AC/任务依赖/范围覆盖/验收证据和未经复核的 Emoji 使用。基础校验只读，不执行文档内命令、不自动安装协议工具。协议完整性按已选工具单独验证；不可用时标记未验证，结构通过不代表契约或业务验收通过。方向阶段不检查完整视觉参数；实现规范阶段的视觉缺口或未确认样稿阻断 `implementation-ready`。校验器只检查结构与证据引用，不判断美观程度；Emoji 报告为 warning：删除装饰性使用；确有产品或品牌价值时，在 `DESIGN.md` 登记例外及可访问性处理。
+
+新格式还检查 OpenSpec 活动 change、当前范围、场景来源、任务格式和验收证据。OpenSpec 原生语法与 delta 合并兼容性由官方 CLI 校验；CLI 可用时在项目根运行 `openspec validate --all --strict --no-interactive`。两项校验分开报告，CLI 不可用时写明未验证，不把补充校验通过说成原生校验通过。
 
 最后给出：
 

@@ -36,7 +36,7 @@ last_reviewed: YYYY-MM-DD
 | Interface ID/source | Machine contract reference | Data-flow/module responsibility | Key architectural tradeoff | Related SPEC |
 |---|---|---|---|---|
 
-Boundary semantics and wire fields belong to the linked interface spec and machine contract; this section owns internal responsibility and data flow. Record implementation constraints needed by task specs without predesigning every local algorithm.
+Boundary semantics and wire fields belong to the linked interface note and machine contract; this section owns internal responsibility and data flow. Record implementation constraints referenced by OpenSpec change design.md and tasks.md without predesigning every local algorithm.
 
 ## Technology and middleware decisions
 

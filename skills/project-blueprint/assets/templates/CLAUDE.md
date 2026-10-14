@@ -3,7 +3,7 @@
 Read [ENGINEERING.md](ENGINEERING.md) before implementation. Then read the authoritative document for the task:
 
 - Product intent: [PRD.md](PRD.md)
-- Observable behavior: [SPEC.md](SPEC.md) and the linked file under `specs/`
+- Observable behavior: [SPEC.md](SPEC.md), `openspec/specs/` and the selected change’s delta specs
 - Experience/UI: [DESIGN.md](DESIGN.md)
 - Internal design: [ARCHITECTURE.md](ARCHITECTURE.md)
 - Security/privacy: [SECURITY.md](SECURITY.md)
@@ -25,4 +25,4 @@ Read [ENGINEERING.md](ENGINEERING.md) before implementation. Then read the autho
 - Typecheck/lint: `[canonical command]`
 - Build: `[canonical command]`
 
-For spec_schema 2, start from root SPEC's current delivery scope and the assigned task spec. Read its source SPEC/AC, interface contract and relevant architecture/design constraints. Execute in dependency order, record real AC evidence and completion status, and classify failures before proposing spec changes. Do not mark passed from a checklist or automatically relax AC to fit the implementation. ENGINEERING owns the detailed workflow.
+For OpenSpec, start from root SPEC’s current_changes and the assigned change’s proposal, delta specs, technical design.md and numbered tasks.md. Root DESIGN.md owns visual constraints. Read applicable contracts and project sources; execute in dependency order and record actual scenario evidence before claiming acceptance. Do not automatically relax scenarios to fit failed code. Validate with OpenSpec; sync/archive only after implementation and verification. ENGINEERING owns the detailed workflow.

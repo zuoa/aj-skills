@@ -1,0 +1,28 @@
+# Copy to openspec/config.yaml for a new project; preserve existing configuration.
+schema: spec-driven
+
+context: |
+  This project uses project-blueprint with OpenSpec.
+  PRD.md owns product intent and scope; SPEC.md indexes current changes and readiness.
+  openspec/specs contains implemented behavior; changes contain proposed deltas.
+  Root DESIGN.md owns UI/UX and visual acceptance, ARCHITECTURE.md durable architecture,
+  SECURITY.md security controls, DEPLOY.md operations, ENGINEERING.md commands and gates.
+  A change's design.md explains its technical approach; it links these project sources.
+  Follow the user's language for prose and retain OpenSpec's English parser headings.
+
+rules:
+  proposal:
+    - Link source PRD requirements and identify new/modified capability paths.
+    - Separate the current delivery from later roadmap work; expose blocking TBD decisions.
+  specs:
+    - Use native Requirement and Scenario headings with SHALL/MUST and explicit WHEN/THEN.
+    - Preserve existing requirement names and every scenario when creating MODIFIED blocks.
+    - Describe observable behavior; put mechanisms in design and execution steps in tasks.
+    - State scenario verification, procedure and expected evidence; name manual acceptance owners.
+  design:
+    - Link ARCHITECTURE.md, root DESIGN.md and applicable security/deployment/contracts.
+    - Record only change-specific technical decisions, alternatives and migration risks.
+  tasks:
+    - Use numbered checkbox tasks with requirement/scenario references and verification steps.
+    - Record dependencies and necessary constraints; keep unimplemented tasks unchecked.
+    - Check off implemented work only after its applicable checks; acceptance claims need evidence.

@@ -9,8 +9,8 @@ Use these as reference models, not as a requirement to apply every practice.
 
 ## Requirements and specification
 
-- [GitHub Spec Kit](https://github.github.com/spec-kit/): Spec → Plan → Tasks → Implement workflow for agentic development.
-- [OpenSpec concepts](https://github.com/Fission-AI/OpenSpec/blob/main/docs/overview.md): observable requirements/scenarios, domain specs, and change-oriented evolution.
+- [OpenSpec concepts](https://github.com/Fission-AI/OpenSpec/blob/main/docs/concepts.md): adopted framework for implemented specs, proposed deltas and change lifecycle.
+- [OpenSpec default schema](https://github.com/Fission-AI/OpenSpec/blob/main/schemas/spec-driven/schema.yaml), [customization](https://github.com/Fission-AI/OpenSpec/blob/main/docs/customization.md), [CLI](https://github.com/Fission-AI/OpenSpec/blob/main/docs/cli.md): native artifact syntax, config context/rules and validation. Recheck the installed version; reviewed 2026-10-14.
 - [ISO/IEC 25010:2023](https://www.iso.org/standard/78176.html): product quality model for eliciting, specifying and evaluating quality requirements.
 
 ## Architecture and decisions

@@ -1,54 +1,55 @@
 ---
 blueprint_kind: spec-index
-spec_schema: 2
+spec_framework: openspec
 delivery_scope: TBD-SPEC-001
-current_specs: none
-current_tasks: none
+current_changes: none
 blueprint_status: draft
 owner: TBD-PRODUCT-001
 last_reviewed: YYYY-MM-DD
 ---
 
-# Specification Index and Delivery Scope
+# Blueprint Index and Delivery Scope
 
-## Scope and authority
+## Authority and navigation
 
-This index owns shared rules, layered navigation, current delivery scope and traceability. PRD owns charter/product intent; ARCHITECTURE owns internal design; domain specs own behavior and AC; interfaces own boundary semantics; tasks own implementation handoff. Keep machine schemas in their authoritative contract files. Do not duplicate layer contents.
+PRD owns product intent; OpenSpec owns behavior and change artifacts; root DESIGN owns UI/UX; ARCHITECTURE owns durable internal design. This index links their authority and records blueprint readiness. OpenSpec change design.md is the technical approach for that change, distinct from root DESIGN.md.
 
-## Glossary
+- OpenSpec configuration: [openspec/config.yaml](openspec/config.yaml)
+- Implemented behavior: `openspec/specs/<capability>/spec.md` (may be empty for a greenfield project)
+- Proposed work: `openspec/changes/<change-name>/`
+- Machine contracts: `contracts/`; optional semantic notes: `docs/interfaces/`
 
-| Term | Meaning | Source |
+## Glossary and shared rules
+
+| Term / rule | Meaning | Authoritative source |
 |---|---|---|
 
-## Global behavior rules
+## MVP capability map and current delivery
 
-| Rule ID | Observable rule | Source | State |
-|---|---|---|---|
+- Current outcome and exclusions:
+- Dependencies and execution order:
+- Later capabilities, risks and refinement triggers:
 
-## MVP capability map and delivery scope
-
-- Scope named by frontmatter; current outcome and exclusions:
-- Dependency order and scope assumptions:
-- Later capabilities and refinement triggers:
-
-| Capability / SPEC ID | Outcome | Current/later | Dependencies | Refinement trigger |
+| Capability | Outcome | Current/later | Baseline or change link | Dependencies / refinement trigger |
 |---|---|---|---|---|
 
-## Layered specification index
+## Change index
 
-List every functional SPEC, AC, IFACE and TASK ID with its definition link; group related entries without copying requirements. Keep current_specs/current_tasks frontmatter in sync with this delivery's chosen scope.
+Keep current_changes frontmatter synchronized with the selected delivery. List active changes with links to their proposal/specs/design/tasks; distinguish draft, ready-for-implementation and executed completion without treating artifact existence as acceptance.
 
-| Layer / ID | Definition / source | Owner | Decision state |
+| Change | Scope | Artifacts | Decision source / readiness |
 |---|---|---|---|
 
 ## Traceability
 
-| PRD ID | SPEC ID | AC IDs | Interface IDs | Task IDs | Design/architecture source | Verification evidence |
-|---|---|---|---|---|---|---|
+Use IDs for new blueprints; preserve exact titles when referencing an existing OpenSpec baseline. Link definitions rather than copying assertions. PRD requirements planned for later delivery remain explicitly traced to the roadmap.
+
+| PRD ID | Capability / change | Requirement / scenario | Task reference | Design / architecture / contract | Verification evidence |
+|---|---|---|---|---|---|
 
 ## Change impact
 
-| Baseline revision | Changed IDs | Reason: defect/requirement/ambiguity | Affected AC/interfaces/tasks/tests | Compatibility/migration impact | Review state |
+| Baseline revision | Changed requirement/scenario | Reason: defect/requirement/ambiguity | Affected contracts/tasks/tests | Compatibility / migration | Review state |
 |---|---|---|---|---|---|
 
 ## Readiness ledger
@@ -56,11 +57,11 @@ List every functional SPEC, AC, IFACE and TASK ID with its definition link; grou
 | Gate | Status | Blocking decisions | Evidence |
 |---|---|---|---|
 | design-ready | blocked | TBD-PRODUCT-001 | PRD.md |
-| implementation-ready | blocked | TBD-SPEC-001 | specs/core.md |
+| implementation-ready | blocked | TBD-SPEC-001 | Current change and design/architecture decisions |
 | production-ready | blocked | TBD-DEPLOY-001 | SECURITY.md; DEPLOY.md |
 
 ## Open decisions
 
 | TBD ID | Decision | Owner | Decision by | Blocked gate | State |
 |---|---|---|---|---|---|
-| TBD-SPEC-001 | Confirm the current delivery scope and observable behavior | [role/name] | [date/milestone] | implementation-ready | pending |
+| TBD-SPEC-001 | Confirm the current change scope and observable behavior | [role/name] | [date/milestone] | implementation-ready | pending |

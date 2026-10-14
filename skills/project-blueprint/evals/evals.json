@@ -7,7 +7,7 @@
       "expected_output": "生成模块化蓝图草案，明确 MVP 与非目标，把未知规模、预算和责任人登记为阻断项；采用简单架构基线，不无依据引入微服务、Kafka 或 Kubernetes。",
       "files": [],
       "expectations": [
-        "输出包含 PRD.md、SPEC.md、至少一个 specs/*.md、DESIGN.md、ARCHITECTURE.md、SECURITY.md、DEPLOY.md、ENGINEERING.md、CLAUDE.md 和 AGENTS.md",
+        "输出包含 PRD.md、SPEC.md、openspec/config.yaml 和至少一个 openspec/changes/<change>/specs/<capability>/spec.md、DESIGN.md、ARCHITECTURE.md、SECURITY.md、DEPLOY.md、ENGINEERING.md、CLAUDE.md 和 AGENTS.md",
         "PRD 需求与领域 SPEC 使用稳定 ID，并在 SPEC.md 中建立追踪关系",
         "每条领域 SPEC 包含可观察的 Given/When/Then 场景和验收方法",
         "未知规模、预算或责任人以 pending/TBD 登记，并阻断相应 readiness gate",
@@ -189,13 +189,13 @@
     {
       "id": 15,
       "prompt": "为课程预约 SaaS 建立 spec-driven 项目蓝图。MVP 包含可预约时段、预约、取消、提醒，近期只做时段查询和预约。团队已确认预约不能超卖，重复提交不能创建多条预约，普通学员只能看自己的预约。其余未知保持待决定。本轮不追问，不写业务代码。先给能力全景，再细化近期可实现的纵向任务。",
-      "expected_output": "保留 PRD/ARCHITECTURE 权威文档，生成 spec_schema 2 的能力/当前范围索引、带独立 AC 的功能 spec、适用接口和近期任务规范；远期保持有来源、依赖及细化触发点的提纲。",
+      "expected_output": "保留 PRD/ARCHITECTURE 权威文档，采用 OpenSpec spec-driven，生成能力/当前 change 索引、原生 Requirement/Scenario delta、proposal/design/tasks 及适用机器契约；远期能力保留来源、依赖及细化触发点。绿地未实现行为不写入已实现基线。",
       "files": [],
       "expectations": [
-        "根 SPEC 明确 delivery_scope、current_specs、current_tasks，并区分当前范围和完整 MVP",
+        "根 SPEC 明确 spec_framework: openspec、delivery_scope、current_changes，并区分当前范围和完整 MVP",
         "功能行为与 AC 单独编号，覆盖成功、重复提交、并发超卖与权限边界，未知阈值不编造",
         "任务按能验收的结果拆分并引用源 SPEC/AC，避免机械分为全部前端和全部后端",
-        "取消和提醒的远期任务保留目标、依赖、风险与细化触发点，不要求完整任务参数",
+        "取消和提醒的远期能力路线图保留目标、依赖、风险与细化触发点，不要求完整任务参数",
         "接口字段以已确认协议的机器契约为单一来源，缺少协议决定时标明缺口而非伪造完成",
         "不生成业务代码、测试实现或运行 mock；未运行 AC 保持 not-run"
       ]
@@ -232,7 +232,7 @@
       "files": [],
       "expectations": [
         "先澄清 24 小时起算点和权限影响；缺失决定影响 readiness，不编造答案",
-        "变更记录关联源功能、AC、接口、任务和测试，稳定 ID 不重编号，必要替代用 superseded 关联",
+        "变更记录关联源功能、AC、接口、任务和测试，稳定 ID 不重编号，必要替代用 OpenSpec ADDED/MODIFIED/REMOVED/RENAMED 变更记录关联",
         "旧 passing 证据注明测试基线，受影响断言需要重新执行而非直接继承 passed",
         "品牌或业务判断可采用 manual/hybrid，有负责人和证据要求，不承诺所有 AC 都可 AI 自动验证",
         "保持 spec-first，但 Code Review 仍检查安全、质量和副作用；不自动提交或为失败实现改规范"
@@ -304,6 +304,33 @@
         "以库存扫描、预订流程、中文长文本和移动端为依据提出可辨识的视觉方向，说明采用/避免规则与适用范围",
         "不把外部目录当作必须安装的依赖或强制主题菜单，预览计划包含组件目录与业务页",
         "保持方向暂定、视觉待评审及相应实现闸门阻断，不为填模板创造完整数值规范"
+      ]
+    },
+    {
+      "id": 24,
+      "prompt": "为新建预约 API 生成 project-blueprint；产品、FastAPI/PostgreSQL 和部署已确认，无 UI。近期只实现创建预约，要求防重复和超卖。采用 OpenSpec，直接生成文档，不写代码或测试，不安装 CLI，也不归档。",
+      "expected_output": "生成项目权威文档、OpenSpec 配置和初始 change 的 proposal、技术 design、编号 tasks、ADDED 原生规格；已实现 specs 基线保持为空，就绪度与实际验收分开报告。",
+      "files": [],
+      "expectations": [
+        "根 SPEC 使用 spec_framework: openspec 和 current_changes，配置使用 schema: spec-driven 和 context/rules",
+        "原生 Requirement/Scenario 标题和 SHALL/MUST、WHEN/THEN 保留英文，场景覆盖重复和并发超卖",
+        "绿地计划只在 change 的 ADDED deltas，不提前同步或归档到 implemented specs",
+        "区分根 DESIGN.md 的 UI 不适用与 change design.md 的技术方案",
+        "任务使用编号 checkbox 并引用场景/验证，全部未实现项保持未勾选",
+        "遵守不安装 CLI，官方校验记录 not-run，不将补充结构检查等同原生校验通过"
+      ]
+    },
+    {
+      "id": 25,
+      "prompt": "已有 OpenSpec baseline 的 Requirement: Cancel order 有普通用户和管理员两个 Scenario，没有 SPEC/AC ID。我授权把取消时限从 12 小时改成 24 小时。请更新 blueprint 的拟变更，不实现。另有旧 spec_schema: 2 文件与未更新的 AGENTS。保留历史，不给旧 Requirement 换标题，不归档。",
+      "expected_output": "读取完整基线，保留标题和全部场景，用 MODIFIED 表达新行为，说明旧规格到 OpenSpec 的映射并增量修复文档路由，旧验收作为历史而非新行为通过证据。",
+      "files": [],
+      "expectations": [
+        "MODIFIED 使用原 Requirement 标题及所有既有场景，避免部分更新丢失管理员场景",
+        "不为补 ID 重命名既有标题，不静默覆写基线或归档计划",
+        "处理旧 v2 的字段/目录/链接映射，不维护两个活动行为权威",
+        "新任务采用 change tasks.md 编号 checkbox，AGENTS 路由到 current_changes 和 native specs",
+        "旧 passing 证据需要新版本复核或重跑，仍保留人工验收边界"
       ]
     }
   ]
