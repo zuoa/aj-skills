@@ -1,0 +1,121 @@
+/* Style controls shape and typography; palette and slot geometry remain independent.
+   Both .frame-slot and .panel receive the same visual grammar. No scene is fabricated. */
+.screen[data-style] :is(.panel, .frame-slot) { background: var(--surface); border: 1px solid var(--border); box-shadow: none; border-radius: 0; }
+.screen[data-style] :is(.panel)::before { display: none; }
+.screen[data-style] .frame-corner { display: none; }
+.screen[data-style] .frame-slot-main, .screen[data-style] .frame-slot-map { background: var(--surface); }
+.screen[data-style] .masthead::after { display: none; }
+.screen[data-style] .title-wing { display: none; }
+.screen[data-style] .metric-panel { padding-inline: calc(var(--panelInset) * 1px); }
+.screen[data-style] .metric-panel .panel-header { height: 34px; }
+.screen[data-style] .metric-panel .metric-value strong { font-size: calc(var(--metricSize) * 1px); }
+.screen[data-style] .panel-header { border-bottom-color: var(--border); }
+.screen[data-style] .frame-slot-label h2 { color: var(--text); }
+.screen[data-style] h1 { text-shadow: none; }
+.screen[data-style] .panel:has(.geo-stage), .screen[data-style] .panel:has(.scene-map) { background: var(--surface); }
+
+/* Command: a framed console, cut corners and a split title rail. */
+.screen[data-style=command-hud] { background: radial-gradient(ellipse at 50% 30%, color-mix(in srgb, var(--accent) 8%, var(--background)), var(--background) 70%); }
+.screen[data-style=command-hud] :is(.panel, .frame-slot) { background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 6%, var(--surface)), var(--surface)); border-radius: 14px 0 14px 0; border-top: 2px solid var(--accent); }
+.screen[data-style=command-hud] .panel-header { background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 12%, transparent), transparent); }
+.screen[data-style=command-hud] .masthead { border-bottom: 2px solid var(--accent); }
+.screen[data-style=command-hud] .title-block { padding: 6px 24px; border-bottom: 2px solid var(--accent); border-radius: 0 0 24px 24px; background: linear-gradient(0deg, color-mix(in srgb, var(--accent) 12%, transparent), transparent); }
+.screen[data-style=command-hud] .title-wing { display: block; }
+.screen[data-style=command-hud] h1 { text-shadow: 0 0 16px var(--titleGlow); }
+.screen[data-style=command-hud] .frame-corner { display: block; width: 18px; height: 18px; }
+.screen[data-style=command-hud] :is(.metric-panel, .frame-slot-metric) { border-top: 0; border-bottom: 3px solid var(--accent); border-radius: 0; }
+
+/* Operations: hard straight frames, a compact terminal band, fixed status rows. */
+.screen[data-style=aurora-ops] { background: linear-gradient(color-mix(in srgb, var(--border) 15%, transparent) 1px, transparent 1px), var(--background); background-size: 100% 48px; }
+.screen[data-style=aurora-ops] :is(.panel, .frame-slot) { border-left: 3px solid var(--accent); background: color-mix(in srgb, var(--surface) 94%, transparent); }
+.screen[data-style=aurora-ops] .masthead { border-block: 1px solid var(--accent); }
+.screen[data-style=aurora-ops] .title-block { justify-content: flex-start; text-align: left; }
+.screen[data-style=aurora-ops] .panel-header { border-bottom-style: dashed; }
+.screen[data-style=aurora-ops] .alerts li { padding-block: 10px; }
+.screen[data-style=aurora-ops] th { background: color-mix(in srgb, var(--accent) 9%, var(--surface)); }
+
+/* Executive: fine metal rules and spacious figures. */
+.screen[data-style=executive-metal] { background: radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--accent) 7%, var(--background)), var(--background) 65%); }
+.screen[data-style=executive-metal] :is(.panel, .frame-slot) { border-top-color: var(--accent); background: linear-gradient(145deg, color-mix(in srgb, var(--accent) 4%, var(--surface)), var(--surface)); }
+.screen[data-style=executive-metal] .masthead { border-bottom: 1px solid var(--accent); }
+.screen[data-style=executive-metal] .title-copy { border-inline: 1px solid var(--border); padding-inline: 32px; }
+.screen[data-style=executive-metal] :is(.metric-panel, .frame-slot-metric) { border-inline: 0; background: transparent; }
+.screen[data-style=executive-metal] .metric-value strong { color: var(--accent); font-weight: 500; }
+.screen[data-style=executive-metal] .panel-header h2 { letter-spacing: 2px; }
+
+/* Editorial: open statistical sections with a left title and hairline dividers. */
+.screen[data-style=editorial-light] { background: var(--background); }
+.screen[data-style=editorial-light] .masthead { border-bottom: 2px solid var(--text); }
+.screen[data-style=editorial-light] .title-block { justify-content: flex-start; text-align: left; }
+.screen[data-style=editorial-light] :is(.panel, .frame-slot) { border: 0; border-top: 2px solid var(--border); }
+.screen[data-style=editorial-light] :is(.metric-panel, .frame-slot-metric) { background: transparent; border-top-color: var(--accent); }
+.screen[data-style=editorial-light] .panel-header h2 { font-weight: 600; letter-spacing: 0; }
+.screen[data-style=editorial-light] .brand-sigil { border-radius: 0; background: transparent; }
+.screen[data-style=editorial-light] .footer-mode { background: transparent; border: 0; }
+.screen[data-style=editorial-light] .frame-crosshair { opacity: .2; }
+
+/* Soft cards: elevated surfaces, rounded geometry and a soft focus on the main area. */
+.screen[data-style=soft-card] { background: radial-gradient(ellipse at 95% 8%, color-mix(in srgb, var(--accent) 9%, var(--background)), var(--background) 75%); }
+.screen[data-style=soft-card] :is(.panel, .frame-slot) { border: 1px solid color-mix(in srgb, var(--border) 55%, transparent); border-radius: 18px; box-shadow: 0 6px 18px color-mix(in srgb, var(--text) 6%, transparent); }
+.screen[data-style=soft-card] .masthead { border: none; }
+.screen[data-style=soft-card] .title-block { justify-content: flex-start; text-align: left; }
+.screen[data-style=soft-card] .panel-header { border: none; }
+.screen[data-style=soft-card] :is(.frame-slot-main, .frame-slot-map) { background: linear-gradient(145deg, var(--surface), color-mix(in srgb, var(--accent) 8%, var(--surface))); }
+.screen[data-style=soft-card] .metric-value strong { color: var(--accent); }
+.screen[data-style=soft-card] :is(button, select, .geo-label) { border-radius: 8px; }
+
+/* Engineering: orthogonal blueprint grid and a corner coordinate marker. */
+.screen[data-style=industrial-blueprint] { background: linear-gradient(color-mix(in srgb, var(--accent) 6%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--accent) 6%, transparent) 1px, transparent 1px), var(--background); background-size: 32px 32px; }
+.screen[data-style=industrial-blueprint] :is(.panel, .frame-slot) { background: color-mix(in srgb, var(--surface) 95%, transparent); border-top: 3px solid var(--accent); }
+.screen[data-style=industrial-blueprint] .masthead { border-bottom: 1px dashed var(--accent); }
+.screen[data-style=industrial-blueprint] .title-block { justify-content: flex-start; text-align: left; }
+.screen[data-style=industrial-blueprint] .frame-corner { display: block; width: 24px; height: 24px; border-style: dashed; }
+.screen[data-style=industrial-blueprint] .panel-header { border-bottom-style: dashed; }
+.screen[data-style=industrial-blueprint] .frame-slot-index { border: 1px solid var(--accent); padding: 3px 5px; }
+.screen[data-style=industrial-blueprint] .brand-sigil { border-radius: 0; }
+
+/* Scenic: transparent overlays. A real scene must be supplied separately. */
+.screen[data-style=scenic-glass] { background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 6%, var(--background)), var(--background)); }
+.screen[data-style=scenic-glass] :is(.panel, .frame-slot) { background: color-mix(in srgb, var(--surface) 70%, transparent); border-color: color-mix(in srgb, var(--border) 70%, transparent); border-radius: 3px; }
+.screen[data-style=scenic-glass] :is(.frame-slot-map, .frame-slot-main, .panel:has(.geo-stage), .panel:has(.scene-map)) { background: transparent; border-inline: 0; border-bottom: 0; }
+.screen[data-style=scenic-glass] .masthead { border-bottom: 1px solid var(--border); }
+.screen[data-style=scenic-glass] .title-block { justify-content: flex-start; text-align: left; }
+.screen[data-style=scenic-glass] :is(.metric-panel, .frame-slot-metric) { border-left: 2px solid var(--accent); }
+
+/* Atlas: book-like chapter headings and a quiet warm surface. */
+.screen[data-style=story-atlas] { background: repeating-linear-gradient(0deg, transparent 0 5px, color-mix(in srgb, var(--text) 1%, transparent) 5px 6px), var(--background); }
+.screen[data-style=story-atlas] .masthead { border-bottom: 3px double var(--accent); }
+.screen[data-style=story-atlas] :is(.panel, .frame-slot) { border: 1px solid var(--border); border-radius: 2px; }
+.screen[data-style=story-atlas] .panel-header { border-bottom: 1px solid var(--accent); }
+.screen[data-style=story-atlas] .panel-header h2 { font-family: var(--titleFont); font-size: 16px; letter-spacing: 2px; }
+.screen[data-style=story-atlas] :is(.metric-panel, .frame-slot-metric) { border: 0; border-bottom: 1px solid var(--accent); background: transparent; }
+.screen[data-style=story-atlas] .frame-slot-index { font-family: var(--titleFont); padding-right: 12px; border-right: 1px solid var(--accent); }
+.screen[data-style=story-atlas] .frame-crosshair { border: 1px solid var(--border); border-radius: 50%; width: 64px; height: 64px; }
+.screen[data-style=story-atlas] .frame-crosshair i:first-child { top: 31px; width: 64px; }
+.screen[data-style=story-atlas] .frame-crosshair i:last-child { left: 31px; height: 64px; }
+
+/* Ceremony: symmetric title, a quiet sunburst and double frames. */
+.screen[data-style=festive-ceremony] { background: repeating-conic-gradient(from 260deg at 50% 0%, color-mix(in srgb, var(--accent) 4%, transparent) 0deg 8deg, transparent 8deg 16deg), var(--background); }
+.screen[data-style=festive-ceremony] .masthead { border-bottom: 3px double var(--accent); }
+.screen[data-style=festive-ceremony] .title-block { border-radius: 40px; padding: 5px 28px; background: color-mix(in srgb, var(--accent) 8%, var(--surface)); border: 1px solid var(--border); }
+.screen[data-style=festive-ceremony] :is(.panel, .frame-slot) { border: 3px double var(--border); border-radius: 14px; }
+.screen[data-style=festive-ceremony] .panel-header { border-bottom-style: double; }
+.screen[data-style=festive-ceremony] :is(.metric-panel, .frame-slot-metric) { background: linear-gradient(120deg, color-mix(in srgb, var(--accent) 15%, var(--surface)), var(--surface)); border-color: var(--accent); }
+.screen[data-style=festive-ceremony] .metric-value strong { color: var(--accent); }
+
+/* Orbital: dotted space, a restrained signal rail, a main region for network content. */
+.screen[data-style=orbital-network] { background: radial-gradient(circle, color-mix(in srgb, var(--accent) 14%, transparent) 1px, transparent 1.5px), radial-gradient(ellipse at 50% 45%, color-mix(in srgb, var(--accent) 8%, var(--background)), var(--background) 70%); background-size: 24px 24px, auto; }
+.screen[data-style=orbital-network] :is(.panel, .frame-slot) { border-radius: 16px 4px; border-color: color-mix(in srgb, var(--accent) 40%, var(--border)); background: color-mix(in srgb, var(--surface) 92%, transparent); }
+.screen[data-style=orbital-network] .masthead { border-bottom: 1px solid var(--accent); }
+.screen[data-style=orbital-network] .title-copy { padding-inline: 24px; border-inline: 3px solid var(--accent); border-radius: 50%; }
+.screen[data-style=orbital-network] :is(.frame-slot-main, .frame-slot-map) { border-inline: 0; border-radius: 0; background: transparent; }
+.screen[data-style=orbital-network] .frame-crosshair { width: 100px; height: 100px; border-radius: 50%; border: 1px dashed var(--accent); }
+.screen[data-style=orbital-network] .frame-crosshair i:first-child { width: 100px; top: 49px; }
+.screen[data-style=orbital-network] .frame-crosshair i:last-child { height: 100px; left: 49px; }
+.screen[data-style=orbital-network] .panel-header h2::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+
+/* Preserve mobile title flow and the user's reduced-motion setting across families. */
+.screen[data-style][data-layout=flow] .title-block { padding: 0; border: 0; background: transparent; }
+.screen[data-style][data-layout=flow] .title-copy { padding-inline: 0; border: 0; }
+.screen[data-style][data-layout=flow] .title-wing { display: none; }
+@media (prefers-reduced-motion: reduce) { .framework-preview .fx, .framework-preview .fx * { animation: none !important; } }

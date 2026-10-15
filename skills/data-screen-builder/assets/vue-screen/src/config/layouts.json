@@ -1,0 +1,631 @@
+{
+  "version": "1",
+  "presets": [
+    {
+      "id": "map-center",
+      "name": "中心地图",
+      "description": "左侧分析，中央地图，右侧事件，顶部概览",
+      "aspect": "16:9",
+      "rows": 10,
+      "slots": [
+        {
+          "id": "overview-1",
+          "label": "概览区域 1",
+          "role": "metric",
+          "layout": {
+            "col": 1,
+            "row": 1,
+            "width": 4,
+            "height": 1
+          }
+        },
+        {
+          "id": "overview-2",
+          "label": "概览区域 2",
+          "role": "metric",
+          "layout": {
+            "col": 5,
+            "row": 1,
+            "width": 4,
+            "height": 1
+          }
+        },
+        {
+          "id": "overview-3",
+          "label": "概览区域 3",
+          "role": "metric",
+          "layout": {
+            "col": 9,
+            "row": 1,
+            "width": 4,
+            "height": 1
+          }
+        },
+        {
+          "id": "left-top",
+          "label": "左侧上区",
+          "role": "chart",
+          "layout": {
+            "col": 1,
+            "row": 2,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "id": "map",
+          "label": "地图区域",
+          "role": "map",
+          "layout": {
+            "col": 4,
+            "row": 2,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "id": "left-bottom",
+          "label": "左侧下区",
+          "role": "chart",
+          "layout": {
+            "col": 1,
+            "row": 8,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "id": "left-middle",
+          "label": "左侧中区",
+          "role": "chart",
+          "layout": {
+            "col": 1,
+            "row": 5,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "id": "bottom",
+          "label": "底部区域",
+          "role": "chart",
+          "layout": {
+            "col": 4,
+            "row": 8,
+            "width": 6,
+            "height": 3
+          }
+        },
+        {
+          "id": "right-top",
+          "label": "右侧上区",
+          "role": "list",
+          "layout": {
+            "col": 10,
+            "row": 2,
+            "width": 3,
+            "height": 5
+          }
+        },
+        {
+          "id": "right-bottom",
+          "label": "右侧下区",
+          "role": "list",
+          "layout": {
+            "col": 10,
+            "row": 7,
+            "width": 3,
+            "height": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "analysis-wide",
+      "name": "主图分析",
+      "description": "宽幅主图优先，右侧辅助，底部对比",
+      "aspect": "16:9",
+      "rows": 10,
+      "slots": [
+        {
+          "id": "overview-1",
+          "label": "概览区域 1",
+          "role": "metric",
+          "layout": {
+            "col": 1,
+            "row": 1,
+            "width": 4,
+            "height": 1
+          }
+        },
+        {
+          "id": "overview-2",
+          "label": "概览区域 2",
+          "role": "metric",
+          "layout": {
+            "col": 5,
+            "row": 1,
+            "width": 4,
+            "height": 1
+          }
+        },
+        {
+          "id": "overview-3",
+          "label": "概览区域 3",
+          "role": "metric",
+          "layout": {
+            "col": 9,
+            "row": 1,
+            "width": 4,
+            "height": 1
+          }
+        },
+        {
+          "id": "primary",
+          "label": "主图区域",
+          "role": "main",
+          "layout": {
+            "col": 1,
+            "row": 2,
+            "width": 8,
+            "height": 6
+          }
+        },
+        {
+          "id": "side-top",
+          "label": "右侧上区",
+          "role": "chart",
+          "layout": {
+            "col": 9,
+            "row": 2,
+            "width": 4,
+            "height": 3
+          }
+        },
+        {
+          "id": "side-bottom",
+          "label": "右侧下区",
+          "role": "chart",
+          "layout": {
+            "col": 9,
+            "row": 5,
+            "width": 4,
+            "height": 3
+          }
+        },
+        {
+          "id": "bottom-left",
+          "label": "底部左区",
+          "role": "chart",
+          "layout": {
+            "col": 1,
+            "row": 8,
+            "width": 6,
+            "height": 3
+          }
+        },
+        {
+          "id": "bottom-right",
+          "label": "底部右区",
+          "role": "chart",
+          "layout": {
+            "col": 7,
+            "row": 8,
+            "width": 6,
+            "height": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "balanced-three",
+      "name": "均衡三列",
+      "description": "三列等宽，同级观察，上下两层",
+      "aspect": "16:9",
+      "rows": 10,
+      "slots": [
+        {
+          "id": "overview-1",
+          "label": "概览区域 1",
+          "role": "metric",
+          "layout": {
+            "col": 1,
+            "row": 1,
+            "width": 4,
+            "height": 1
+          }
+        },
+        {
+          "id": "overview-2",
+          "label": "概览区域 2",
+          "role": "metric",
+          "layout": {
+            "col": 5,
+            "row": 1,
+            "width": 4,
+            "height": 1
+          }
+        },
+        {
+          "id": "overview-3",
+          "label": "概览区域 3",
+          "role": "metric",
+          "layout": {
+            "col": 9,
+            "row": 1,
+            "width": 4,
+            "height": 1
+          }
+        },
+        {
+          "id": "column-1-top",
+          "label": "第 1 列上区",
+          "role": "chart",
+          "layout": {
+            "col": 1,
+            "row": 2,
+            "width": 4,
+            "height": 4
+          }
+        },
+        {
+          "id": "column-1-bottom",
+          "label": "第 1 列下区",
+          "role": "chart",
+          "layout": {
+            "col": 1,
+            "row": 6,
+            "width": 4,
+            "height": 5
+          }
+        },
+        {
+          "id": "column-2-top",
+          "label": "第 2 列上区",
+          "role": "chart",
+          "layout": {
+            "col": 5,
+            "row": 2,
+            "width": 4,
+            "height": 4
+          }
+        },
+        {
+          "id": "column-2-bottom",
+          "label": "第 2 列下区",
+          "role": "chart",
+          "layout": {
+            "col": 5,
+            "row": 6,
+            "width": 4,
+            "height": 5
+          }
+        },
+        {
+          "id": "column-3-top",
+          "label": "第 3 列上区",
+          "role": "chart",
+          "layout": {
+            "col": 9,
+            "row": 2,
+            "width": 4,
+            "height": 4
+          }
+        },
+        {
+          "id": "column-3-bottom",
+          "label": "第 3 列下区",
+          "role": "chart",
+          "layout": {
+            "col": 9,
+            "row": 6,
+            "width": 4,
+            "height": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "monitoring-two",
+      "name": "双列值守",
+      "description": "左侧主监测，右侧常驻事件",
+      "aspect": "16:9",
+      "rows": 10,
+      "slots": [
+        {
+          "id": "overview-1",
+          "label": "概览区域 1",
+          "role": "metric",
+          "layout": {
+            "col": 1,
+            "row": 1,
+            "width": 4,
+            "height": 1
+          }
+        },
+        {
+          "id": "overview-2",
+          "label": "概览区域 2",
+          "role": "metric",
+          "layout": {
+            "col": 5,
+            "row": 1,
+            "width": 4,
+            "height": 1
+          }
+        },
+        {
+          "id": "overview-3",
+          "label": "概览区域 3",
+          "role": "metric",
+          "layout": {
+            "col": 9,
+            "row": 1,
+            "width": 4,
+            "height": 1
+          }
+        },
+        {
+          "id": "primary",
+          "label": "主监测区域",
+          "role": "main",
+          "layout": {
+            "col": 1,
+            "row": 2,
+            "width": 7,
+            "height": 6
+          }
+        },
+        {
+          "id": "events",
+          "label": "事件区域",
+          "role": "list",
+          "layout": {
+            "col": 8,
+            "row": 2,
+            "width": 5,
+            "height": 6
+          }
+        },
+        {
+          "id": "bottom-left",
+          "label": "底部左区",
+          "role": "chart",
+          "layout": {
+            "col": 1,
+            "row": 8,
+            "width": 7,
+            "height": 3
+          }
+        },
+        {
+          "id": "bottom-right",
+          "label": "底部右区",
+          "role": "list",
+          "layout": {
+            "col": 8,
+            "row": 8,
+            "width": 5,
+            "height": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "comparison-four",
+      "name": "四列对比",
+      "description": "四列等宽对比，底部通栏汇总",
+      "aspect": "16:9",
+      "rows": 10,
+      "slots": [
+        {
+          "id": "overview-1",
+          "label": "概览区域 1",
+          "role": "metric",
+          "layout": {
+            "col": 1,
+            "row": 1,
+            "width": 3,
+            "height": 1
+          }
+        },
+        {
+          "id": "overview-2",
+          "label": "概览区域 2",
+          "role": "metric",
+          "layout": {
+            "col": 4,
+            "row": 1,
+            "width": 3,
+            "height": 1
+          }
+        },
+        {
+          "id": "overview-3",
+          "label": "概览区域 3",
+          "role": "metric",
+          "layout": {
+            "col": 7,
+            "row": 1,
+            "width": 3,
+            "height": 1
+          }
+        },
+        {
+          "id": "overview-4",
+          "label": "概览区域 4",
+          "role": "metric",
+          "layout": {
+            "col": 10,
+            "row": 1,
+            "width": 3,
+            "height": 1
+          }
+        },
+        {
+          "id": "comparison-1",
+          "label": "第 1 列区域",
+          "role": "chart",
+          "layout": {
+            "col": 1,
+            "row": 2,
+            "width": 3,
+            "height": 6
+          }
+        },
+        {
+          "id": "comparison-2",
+          "label": "第 2 列区域",
+          "role": "chart",
+          "layout": {
+            "col": 4,
+            "row": 2,
+            "width": 3,
+            "height": 6
+          }
+        },
+        {
+          "id": "comparison-3",
+          "label": "第 3 列区域",
+          "role": "chart",
+          "layout": {
+            "col": 7,
+            "row": 2,
+            "width": 3,
+            "height": 6
+          }
+        },
+        {
+          "id": "comparison-4",
+          "label": "第 4 列区域",
+          "role": "chart",
+          "layout": {
+            "col": 10,
+            "row": 2,
+            "width": 3,
+            "height": 6
+          }
+        },
+        {
+          "id": "summary",
+          "label": "底部汇总区域",
+          "role": "main",
+          "layout": {
+            "col": 1,
+            "row": 8,
+            "width": 12,
+            "height": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "panorama-wide",
+      "name": "超宽全景",
+      "description": "左右辅助，中央宽主图",
+      "aspect": "32:9",
+      "rows": 10,
+      "slots": [
+        {
+          "id": "overview-1",
+          "label": "概览区域 1",
+          "role": "metric",
+          "layout": {
+            "col": 1,
+            "row": 1,
+            "width": 3,
+            "height": 1
+          }
+        },
+        {
+          "id": "overview-2",
+          "label": "概览区域 2",
+          "role": "metric",
+          "layout": {
+            "col": 4,
+            "row": 1,
+            "width": 3,
+            "height": 1
+          }
+        },
+        {
+          "id": "overview-3",
+          "label": "概览区域 3",
+          "role": "metric",
+          "layout": {
+            "col": 7,
+            "row": 1,
+            "width": 3,
+            "height": 1
+          }
+        },
+        {
+          "id": "overview-4",
+          "label": "概览区域 4",
+          "role": "metric",
+          "layout": {
+            "col": 10,
+            "row": 1,
+            "width": 3,
+            "height": 1
+          }
+        },
+        {
+          "id": "left-top",
+          "label": "左侧上区",
+          "role": "chart",
+          "layout": {
+            "col": 1,
+            "row": 2,
+            "width": 3,
+            "height": 4
+          }
+        },
+        {
+          "id": "left-bottom",
+          "label": "左侧下区",
+          "role": "chart",
+          "layout": {
+            "col": 1,
+            "row": 6,
+            "width": 3,
+            "height": 5
+          }
+        },
+        {
+          "id": "primary",
+          "label": "中央主图区域",
+          "role": "main",
+          "layout": {
+            "col": 4,
+            "row": 2,
+            "width": 6,
+            "height": 9
+          }
+        },
+        {
+          "id": "right-top",
+          "label": "右侧上区",
+          "role": "chart",
+          "layout": {
+            "col": 10,
+            "row": 2,
+            "width": 3,
+            "height": 4
+          }
+        },
+        {
+          "id": "right-bottom",
+          "label": "右侧下区",
+          "role": "list",
+          "layout": {
+            "col": 10,
+            "row": 6,
+            "width": 3,
+            "height": 5
+          }
+        }
+      ]
+    }
+  ]
+}

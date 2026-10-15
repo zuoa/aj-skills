@@ -1,0 +1,1 @@
+{"type":"FeatureCollection","coordinateSystem":"WGS84","source":"虚构演示图层；不是实际道路或水系","features":[{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[121.3856,31.2055],[121.3922,31.2055],[121.3922,31.2095],[121.3856,31.2095],[121.3856,31.2055]]]}}]}

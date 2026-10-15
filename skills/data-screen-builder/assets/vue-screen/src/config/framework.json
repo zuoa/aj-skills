@@ -1,0 +1,13 @@
+{
+  "version": "1",
+  "title": "主题标题",
+  "canvas": {
+    "width": 1920,
+    "height": 1080
+  },
+  "layoutId": "analysis-wide",
+  "paletteId": "mist-indigo",
+  "styleId": "editorial-light",
+  "visualStyle": "restrained",
+  "bindings": {}
+}

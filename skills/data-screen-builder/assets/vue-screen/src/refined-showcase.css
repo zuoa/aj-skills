@@ -1,0 +1,208 @@
+/* Shared data hierarchy; each material and silhouette below remains independent. */
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded])[data-layout=canvas] { grid-template-rows: 114px 34px minmax(0,1fr) 28px; gap: 12px; padding-inline: 30px; }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded]) .masthead { grid-template-columns: 260px minmax(0,1fr) 260px; gap: 20px; }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded]) .panel { padding: 6px 24px 11px; }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded]) .panel-header { height: 42px; }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded]) .panel-header h2 { font-size: 14px; font-weight: 500; }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded]) .metric-panel { padding: 11px 25px 12px; }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded]) .metric-panel .panel-header { height: 27px; margin-right: 108px; }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded]) .metric-value { padding-top: 0; margin-right: 102px; gap: 8px; }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded]) .metric-value strong { font-size: 44px; font-weight: 500; line-height: 1.15; }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded]) .metric-caption { margin: 3px 108px 0 0; font-size: 10px; }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded]) .metric-medallion { right: 15px; top: 14px; width: 108px; height: 108px; }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded]) .metric-medallion > .screen-icon { left: 40px; top: 29px; width: 28px; height: 28px; }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded]) .metric-context { font-size: 9px; padding-top: 6px; gap: 12px; }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded]) .panel-summary { padding-top: 10px; padding-bottom: 1px; }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded]) .panel-footer { min-height: 23px; border-color: color-mix(in srgb, var(--accent) 14%, transparent); }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded]) .alerts-overview { margin-top: 12px; padding-block: 13px; background: color-mix(in srgb, var(--accent) 5%, transparent); }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded]) .alerts li:not(.alerts-overview) { padding-block: 13px; border-color: color-mix(in srgb, var(--border) 40%, transparent); }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded]) .alerts strong { font-size: 13px; font-weight: 500; }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded]) td { padding-block: 10px; }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded]) :is(th,td) { border-bottom-color: color-mix(in srgb, var(--border) 35%, transparent); }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded]) th { background: color-mix(in srgb, var(--accent) 5%, transparent); color: var(--muted); font-size: 10px; }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded]) tbody tr:nth-child(2n) { background: color-mix(in srgb, var(--accent) 2%, transparent); }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded]) .frame-slot-label { top: 22px; left: 25px; }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded]) .frame-slot-metric .frame-slot-label { top: 50%; }
+.medallion-engrave { fill: none; stroke: var(--accent); stroke-width: .6; stroke-opacity: .55; }
+.medallion-armor { fill: var(--surface); stroke: var(--accent); stroke-width: 1; stroke-opacity: .75; }
+.medallion-bolts { fill: var(--text); fill-opacity: .65; }
+.medallion-crystal { fill: color-mix(in srgb, var(--accent) 9%, transparent); stroke: var(--accent); stroke-width: .8; }
+.medallion-crystal-edge { stroke: var(--text); stroke-opacity: .6; stroke-width: 1.6; fill: none; }
+.medallion-constellation { fill: none; stroke: var(--accent); stroke-width: 1; stroke-opacity: .55; stroke-dasharray: 1 5; }
+.medallion-seal { fill: color-mix(in srgb, var(--accent) 12%, var(--surface)); stroke: var(--accent); stroke-width: 1.5; }
+.armor-fasteners { fill: var(--text); fill-opacity: .65; stroke: var(--background); stroke-width: 1.2; }
+.armor-engraving { fill: none; stroke: var(--text); stroke-opacity: .12; stroke-width: .6; }
+.crystal-refraction { fill: none; stroke: var(--text); stroke-width: .8; stroke-opacity: .42; }
+.astral-optic { fill: none; stroke: var(--text); stroke-width: .65; stroke-opacity: .24; }
+.gilded-hairline { fill: none; stroke: var(--accent); stroke-width: .6; stroke-opacity: .45; }
+
+/* Machined graphite: wide bevels, narrow light channels, hard inset edges. */
+.screen[data-ornament=mecha] { --fx-glow: 7px; background: radial-gradient(ellipse at 50% 55%, color-mix(in srgb, var(--accent) 9%, var(--background)), var(--background) 75%); }
+.screen[data-ornament=mecha] .glass-top { stop-color: color-mix(in srgb, var(--border) 32%, var(--surface)); stop-opacity: .98; }
+.screen[data-ornament=mecha] .glass-bottom { stop-color: var(--background); stop-opacity: .96; }
+.screen[data-ornament=mecha] .metal-bright { stop-color: color-mix(in srgb, var(--text) 46%, var(--border)); stop-opacity: .9; }
+.screen[data-ornament=mecha] .metal-mid { stop-color: var(--border); stop-opacity: 1; }
+.screen[data-ornament=mecha] .ornament-outline { stroke-opacity: .28; filter: none; }
+.screen[data-ornament=mecha] .ornament-inner { stroke: var(--text); stroke-opacity: .07; }
+.screen[data-ornament=mecha] .armor-plate { stroke: var(--text); stroke-opacity: .16; }
+.screen[data-ornament=mecha] .armor-rail { opacity: .35; }
+.screen[data-ornament=mecha] .armor-foot { stroke-width: 1; opacity: .32; }
+.screen[data-ornament=mecha] .armor-vents { stroke-width: 1; opacity: .4; }
+.screen[data-ornament=mecha] .panel-header { margin-top: 8px; height: 34px; padding: 0 8px; background: linear-gradient(90deg,color-mix(in srgb, var(--accent) 9%, transparent), transparent 86%); border-bottom-color: color-mix(in srgb, var(--text) 9%, transparent); border-left: 2px solid var(--accent); }
+.screen[data-ornament=mecha] .metric-panel .panel-header { margin-top: 7px; border: 0; padding: 0; background: none; }
+.screen[data-ornament=mecha] .panel-header h2 .screen-icon { filter: none; width: 14px; }
+.screen[data-ornament=mecha] .perimeter-stream { stroke-width: 1.3; stroke-dasharray: 24 976; opacity: .75; }
+.screen[data-ornament=mecha] .title-armor { stroke: var(--text); stroke-opacity: .22; }
+.screen[data-ornament=mecha] .title-inlay { stroke-opacity: .22; }
+.screen[data-ornament=mecha] .title-energy { stroke-width: 1.4; }
+.screen[data-ornament=mecha] h1 { font-size: 34px; letter-spacing: 5px; font-weight: 600; text-shadow: 0 2px 0 var(--background); }
+.screen[data-ornament=mecha] .title-fins { fill: var(--text); opacity: .3; }
+.screen[data-ornament=mecha] :is(.celestial-dome,.nebula-cloud,.scene-ray,.scene-reticle,.scene-pedestal) { display: none; }
+.screen[data-ornament=mecha] .showcase-particles { opacity: .24; }
+.screen[data-ornament=mecha] .chassis-shadow { stroke-width: 8; stroke-opacity: .5; }
+.screen[data-ornament=mecha] .chassis-light { stroke-width: .9; stroke-opacity: .4; }
+.screen[data-ornament=mecha] .metric-medallion .medallion-orbit { stroke-width: 2; stroke-opacity: .16; }
+.screen[data-ornament=mecha] .metric-medallion .medallion-value { stroke-width: 2.5; stroke-linecap: square; }
+.screen[data-ornament=mecha] .severity { border-radius: 0; clip-path: polygon(4px 0,100% 0,100% calc(100% - 4px),calc(100% - 4px) 100%,0 100%,0 4px); }
+.mechanical-dais { position: absolute; inset: 8% 0 -8%; width: 100%; height: 100%; }
+.dais-bevel { fill: none; stroke: var(--text); stroke-width: 1; stroke-opacity: .28; }
+.dais-inset { fill: var(--background); fill-opacity: .6; stroke: var(--accent); stroke-width: .8; stroke-opacity: .38; }
+.dais-energy { fill: none; stroke: var(--accent); stroke-width: 2.4; stroke-opacity: .65; }
+.dais-vent { stroke: var(--accent); stroke-width: 3; stroke-opacity: .3; }
+
+/* Refractive crystal: luminous facets, suspended layers and vertical light. */
+.screen[data-ornament=hologram] { --fx-glow: 11px; background: radial-gradient(ellipse at 50% 58%, color-mix(in srgb, var(--accent) 13%, var(--background)), var(--background) 70%); }
+.screen[data-ornament=hologram] .glass-top { stop-color: color-mix(in srgb,var(--accent) 12%,var(--surface)); stop-opacity: .66; }
+.screen[data-ornament=hologram] .glass-bottom { stop-color: var(--background); stop-opacity: .7; }
+.screen[data-ornament=hologram] .ornament-outline { stroke-opacity: .4; stroke-width: .65; }
+.screen[data-ornament=hologram] .ornament-inner { stroke-opacity: .09; }
+.screen[data-ornament=hologram] .glass-rib { fill: var(--text); opacity: .18; }
+.screen[data-ornament=hologram] .hologram-rail { stroke-width: 1.6; stroke-opacity: .85; }
+.screen[data-ornament=hologram] .ornament-gem { fill-opacity: .6; stroke-opacity: .7; }
+.screen[data-ornament=hologram] .panel-header { border-bottom-color: color-mix(in srgb,var(--accent) 18%,transparent); }
+.screen[data-ornament=hologram] .panel-header h2 { color: var(--text); letter-spacing: 1px; }
+.screen[data-ornament=hologram] .title-block { padding-inline: 78px; }
+.screen[data-ornament=hologram] h1 { font-size: 34px; font-weight: 500; letter-spacing: 4px; }
+.screen[data-ornament=hologram] .title-crystal { fill-opacity: .42; stroke-opacity: .45; }
+.screen[data-ornament=hologram] .title-energy { stroke-width: 1.3; }
+.screen[data-ornament=hologram] .title-crystal-gem path:first-child { fill: var(--accent); fill-opacity: .2; }
+.screen[data-ornament=hologram] .metric-value strong { color: var(--text); text-shadow: 0 0 18px color-mix(in srgb,var(--accent) 25%,transparent); }
+.screen[data-ornament=hologram] :is(.screen-chassis,.showcase-floor,.celestial-dome) { display: none; }
+.screen[data-ornament=hologram] .showcase-particles { opacity: .3; }
+.screen[data-ornament=hologram] .severity { border-radius: 2px; border: 1px solid currentColor; background: transparent; }
+.screen[data-ornament=hologram] .panel-summary strong { color: var(--accent); }
+.spectral-scene { flex: 1; min-height: 0; position: relative; isolation: isolate; overflow: hidden; }
+.spectral-scene > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.spectral-scene .campus-zone-name { font-size: 14px; }
+.spectral-scene .campus-zone-value { font-size: 17px; }
+.spectral-scene .campus-zone-unit { font-size: 10px; }
+.reactor-ring { stroke: var(--accent); stroke-width: 1; stroke-opacity: .5; fill: none; }
+.reactor-ring > ellipse:first-child { stroke-width: 2.5; stroke-opacity: .75; }
+.reactor-ticks { stroke-dasharray: 1 12; stroke-width: 4; stroke-opacity: .48; animation: reactor-dash 28s linear infinite; }
+.reactor-supports { fill: none; stroke: var(--accent); stroke-width: 2; stroke-opacity: .28; }
+.reactor-crystal { stroke: var(--accent); stroke-width: .9; stroke-opacity: .8; }
+.crystal-facets { fill: none; stroke: var(--text); stroke-opacity: .35; stroke-width: .6; }
+.crystal-inner { fill: var(--accent); fill-opacity: .045; stroke: var(--accent); stroke-opacity: .4; stroke-width: .6; }
+.crystal-edge { fill: none; stroke: var(--text); stroke-width: 1.6; stroke-opacity: .8; }
+.reactor-scan { fill: none; stroke: var(--accent); stroke-opacity: .7; stroke-width: 1.1; animation: reactor-scan 7s ease-in-out infinite alternate; }
+.reactor-columns { animation: stage-breathe 8s ease-in-out infinite alternate; }
+.reactor-satellites { fill: var(--accent); fill-opacity: .07; stroke: var(--text); stroke-opacity: .4; stroke-width: .7; }
+.reactor-baseline { fill: none; stroke: var(--accent); stroke-opacity: .35; stroke-width: .8; }
+.spectral-tag { fill: var(--background); fill-opacity: .83; stroke: var(--accent); stroke-opacity: .5; stroke-width: .7; }
+.spectral-leader { fill: none; stroke: var(--accent); stroke-opacity: .4; stroke-width: .7; }
+.spectral-zone { cursor: pointer; outline: none; }
+.spectral-zone:hover .spectral-tag, .spectral-zone:focus-visible .spectral-tag { stroke: var(--text); fill: var(--surface); fill-opacity: 1; }
+
+/* Celestial optics: broad curves, fine star marks, soft nebular depth. */
+.screen[data-ornament=astral] { --fx-glow: 10px; background: radial-gradient(ellipse at 53% 20%,color-mix(in srgb,var(--accent) 16%,var(--background)),var(--background) 72%); }
+.screen[data-ornament=astral] :is(.panel,.frame-slot) { border-radius: 36px; }
+.screen[data-ornament=astral] .glass-top { stop-opacity: .8; stop-color: color-mix(in srgb,var(--accent) 6%,var(--surface)); }
+.screen[data-ornament=astral] .glass-bottom { stop-opacity: .72; }
+.screen[data-ornament=astral] .ornament-inner { display: none; }
+.screen[data-ornament=astral] .ornament-outline { stroke-opacity: .15; filter: none; }
+.screen[data-ornament=astral] .astral-arc { stroke-width: 1.1; stroke-opacity: .6; }
+.screen[data-ornament=astral] .astral-lens { stroke-width: .65; fill: var(--accent); fill-opacity: .18; stroke-opacity: .5; }
+.screen[data-ornament=astral] .perimeter-stream { stroke-width: 1; stroke-dasharray: 17 983; opacity: .5; animation-duration: 18s; }
+.screen[data-ornament=astral] .title-block { padding-inline: 70px; }
+.screen[data-ornament=astral] h1 { font-weight: 400; font-size: 33px; letter-spacing: 6px; }
+.screen[data-ornament=astral] .title-orbit { stroke-opacity: .35; stroke-width: .6; }
+.screen[data-ornament=astral] .title-orbit-outer { stroke-opacity: .24; }
+.screen[data-ornament=astral] .title-energy { stroke-width: 1.2; stroke-opacity: .8; }
+.screen[data-ornament=astral] .panel-header { border-bottom-color: color-mix(in srgb,var(--accent) 14%,transparent); }
+.screen[data-ornament=astral] .panel-header h2 { letter-spacing: 1.5px; }
+.screen[data-ornament=astral] .metric-value strong { text-shadow: none; }
+.screen[data-ornament=astral] :is(.screen-chassis,.showcase-floor,.perspective-grid) { display: none; }
+.screen[data-ornament=astral] .celestial-dome { opacity: .09; }
+.screen[data-ornament=astral] .cloud-a { left: -35%; top: 10%; opacity: .65; }
+.screen[data-ornament=astral] .cloud-b { right: -30%; top: 28%; opacity: .5; }
+.screen[data-ornament=astral] .severity { border-radius: 12px; }
+.screen[data-ornament=astral] .alerts-overview { border-radius: 16px; }
+.astral-specks { fill: var(--text); }
+.celestial-sphere { stroke: var(--accent); stroke-width: .9; stroke-opacity: .5; }
+.celestial-graticule { stroke: var(--accent); stroke-width: .65; stroke-opacity: .2; fill: none; }
+.celestial-constellation { fill: none; stroke: var(--text); stroke-width: .9; stroke-opacity: .55; }
+.celestial-nodes { fill: var(--text); fill-opacity: .85; }
+.celestial-orbit { fill: none; stroke: var(--accent); stroke-width: 1; stroke-opacity: .4; }
+.orbit-front { stroke: var(--text); stroke-width: 1.4; stroke-opacity: .7; }
+.orbit-dashes { stroke-width: 2; stroke-dasharray: 1 16; stroke-opacity: .6; animation: reactor-dash 70s linear infinite; }
+.orbit-upright { stroke-width: .65; stroke-opacity: .2; }
+.orbital-satellites { fill: var(--accent); stroke: var(--text); stroke-width: .8; }
+.celestial-baseline { stroke: var(--accent); stroke-width: .6; stroke-opacity: .25; }
+.celestial-jewel { fill: var(--accent); fill-opacity: .35; stroke: var(--text); stroke-width: .6; stroke-opacity: .65; }
+
+/* Engraved champagne metal: solid lacquer, double lines and sculpted architecture. */
+.screen[data-ornament=gilded] { --fx-glow: 5px; background: radial-gradient(ellipse at 50% 0%,color-mix(in srgb,var(--accent) 12%,var(--background)),var(--background) 65%); }
+.screen[data-ornament=gilded] .glass-top { stop-opacity: .98; stop-color: color-mix(in srgb,var(--accent) 4%,var(--surface)); }
+.screen[data-ornament=gilded] .glass-bottom { stop-opacity: .94; }
+.screen[data-ornament=gilded] .metal-bright { stop-color: color-mix(in srgb,var(--text) 52%,var(--accent)); }
+.screen[data-ornament=gilded] .metal-mid { stop-color: color-mix(in srgb,var(--accent) 35%,var(--surface)); }
+.screen[data-ornament=gilded] .ornament-outline { stroke-opacity: .2; filter: none; }
+.screen[data-ornament=gilded] .ornament-inner { display: none; }
+.screen[data-ornament=gilded] .gilded-emboss { stroke-width: 2.6; }
+.screen[data-ornament=gilded] .gilded-filigree { stroke-width: 1.2; stroke-opacity: .8; }
+.screen[data-ornament=gilded] .gilded-crest { stroke-width: .85; stroke-opacity: .65; }
+.screen[data-ornament=gilded] .perimeter-stream { stroke-width: .8; stroke-dasharray: 15 985; opacity: .3; }
+.screen[data-ornament=gilded] .title-block { padding-inline: 95px; }
+.screen[data-ornament=gilded] h1 { font-size: 34px; letter-spacing: 5px; font-weight: 600; color: color-mix(in srgb,var(--text) 75%,var(--accent)); text-shadow: 0 2px 0 var(--background),0 -1px 0 color-mix(in srgb,var(--accent) 45%,transparent); }
+.screen[data-ornament=gilded] .title-armor { stroke-width: .7; stroke-opacity: .65; }
+.screen[data-ornament=gilded] .title-filigree { stroke-width: 1; filter: none; }
+.screen[data-ornament=gilded] .title-inlay { stroke-opacity: .4; fill-opacity: .9; }
+.screen[data-ornament=gilded] .title-subtitle { letter-spacing: 3px; }
+.screen[data-ornament=gilded] .panel-header { border-bottom: 3px double color-mix(in srgb,var(--accent) 20%,transparent); }
+.screen[data-ornament=gilded] .metric-value strong { color: color-mix(in srgb,var(--text) 55%,var(--accent)); text-shadow: 0 1px 0 var(--background); }
+.screen[data-ornament=gilded] .metric-panel .panel-header { border: 0; }
+.screen[data-ornament=gilded] .panel-header h2 .screen-icon { filter: none; width: 14px; }
+.screen[data-ornament=gilded] .brand-sigil { border-radius: 50%; border: 3px double color-mix(in srgb,var(--accent) 70%,transparent); background: radial-gradient(ellipse at 30% 15%,color-mix(in srgb,var(--accent) 20%,var(--surface)),var(--surface)); }
+.screen[data-ornament=gilded] .showcase-particles { opacity: .45; }
+.screen[data-ornament=gilded] .screen-chassis { opacity: .4; }
+.screen[data-ornament=gilded] .nebula-cloud { opacity: .4; }
+.screen[data-ornament=gilded] .campus-road { stroke: var(--accent); stroke-opacity: .16; stroke-width: 9; }
+.screen[data-ornament=gilded] .campus-building { stroke: var(--accent); stroke-opacity: .55; }
+.screen[data-ornament=gilded] .campus-building polygon:nth-child(2) { fill: color-mix(in srgb,var(--accent) 19%,var(--surface)); }
+.screen[data-ornament=gilded] .campus-building polygon:nth-child(3) { fill: color-mix(in srgb,var(--accent) 7%,var(--background)); }
+.screen[data-ornament=gilded] .campus-building polygon:nth-child(4) { fill: color-mix(in srgb,var(--text) 45%,var(--accent)); }
+.screen[data-ornament=gilded] .campus-rim { stroke-width: 2; filter: none; }
+.screen[data-ornament=gilded] .campus-orbit { stroke-opacity: .15; }
+.screen[data-ornament=gilded] .window-cool { fill: var(--accent); fill-opacity: .45; }
+.screen[data-ornament=gilded] .campus-gardens { fill: var(--accent); fill-opacity: .04; stroke: var(--accent); stroke-opacity: .1; }
+.screen[data-ornament=gilded] .campus-tag { stroke-width: 1; stroke-opacity: .55; }
+.screen[data-ornament=gilded] .severity { border: 1px solid currentColor; background: transparent; border-radius: 0; }
+.screen[data-ornament=gilded] .alerts-overview { border: 1px solid color-mix(in srgb,var(--accent) 14%,transparent); }
+.screen[data-ornament=gilded] .medallion-orbit { stroke-width: 1; }
+.screen[data-ornament=gilded] .medallion-value { stroke-width: 2.5; }
+
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded])[data-layout=flow] .masthead { grid-template-columns: minmax(0,1fr) auto; gap: 12px; }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded])[data-layout=flow] .title-block { padding-inline: 20px; }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded])[data-layout=flow] h1 { font-size: 20px; letter-spacing: 1px; }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded])[data-layout=flow] .metric-panel { height: 150px; }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded])[data-layout=flow] .metric-panel .metric-value { margin-right: 80px; }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded])[data-layout=flow] .metric-value strong { font-size: 39px; }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded])[data-layout=flow] .metric-medallion { right: 5px; top: 16px; width: 96px; height: 96px; }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded])[data-layout=flow] .metric-medallion > .screen-icon { left: 35px; top: 25px; width: 26px; height: 26px; }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded])[data-layout=flow] :is(.exhibition-scene,.spectral-scene) { flex: auto; height: 340px; }
+.screen:is([data-ornament=mecha],[data-ornament=hologram],[data-ornament=astral],[data-ornament=gilded])[data-layout=flow] .campus-note span { display: none; }
+.screen[data-intensity=off] :is(.reactor-columns,.reactor-scan,.reactor-ticks,.orbit-dashes) { display: none; }
+.screen:is(.effects-paused,.reduced,.monitoring) .fx, .screen:is(.effects-paused,.reduced,.monitoring) .fx * { animation-play-state: paused !important; }
+@keyframes reactor-scan { to { transform: translateY(78px); opacity: .3; } }
+@keyframes reactor-dash { to { stroke-dashoffset: -416; } }
+@media (prefers-reduced-motion: reduce) { .screen .fx,.screen .fx * { animation: none !important; } }

@@ -1,0 +1,148 @@
+/* Four exhibition treatments: geometry, material, light and motion form a system. */
+.screen[data-ornament]:not([data-ornament=none]) { --fx-opacity: 1; --fx-glow: 12px; padding-inline: 34px; background: radial-gradient(ellipse at 50% 18%, color-mix(in srgb, var(--accent) 14%, var(--background)), var(--background) 72%); }
+.screen[data-ornament]:not([data-ornament=none])[data-layout=canvas] { grid-template-rows: 126px 34px minmax(0,1fr) 30px; gap: 14px; }
+.screen[data-ornament]:not([data-ornament=none]) .masthead { border: 0; grid-template-columns: 280px minmax(0,1fr) 280px; gap: 12px; }
+.screen[data-ornament]:not([data-ornament=none]) .title-block { height: 100%; padding: 10px 70px 16px; border: 0; border-radius: 0; background: none; }
+.screen[data-ornament]:not([data-ornament=none]) .title-copy { position: relative; z-index: 1; padding: 0; border: 0; }
+.screen[data-ornament]:not([data-ornament=none]) .title-wing { display: none; }
+.screen[data-ornament]:not([data-ornament=none]) h1 { letter-spacing: calc(var(--titleTracking) * 1px); text-shadow: 0 1px 0 var(--background), 0 0 18px color-mix(in srgb, var(--accent) 45%, transparent); }
+.screen[data-ornament]:not([data-ornament=none]) h1.long-title { font-size: 28px; letter-spacing: 2px; }
+.screen[data-ornament]:not([data-ornament=none]) .title-subtitle { margin-top: 8px; font-size: 9px; letter-spacing: 4px; }
+.screen[data-ornament]:not([data-ornament=none]) .toolbar { padding-inline: 8px; }
+.screen[data-ornament]:not([data-ornament=none]) :is(.panel,.frame-slot) { isolation: isolate; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.screen[data-ornament]:not([data-ornament=none]) .panel { padding: 9px calc(var(--panelInset) * 1px) 12px; }
+.screen[data-ornament]:not([data-ornament=none]) .panel-header { height: 46px; border-bottom: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); }
+.screen[data-ornament]:not([data-ornament=none]) .panel-header h2 { color: var(--text); font-size: 14px; font-weight: 600; letter-spacing: 1px; }
+.screen[data-ornament]:not([data-ornament=none]) .panel-header h2 .screen-icon { width: 17px; height: 17px; filter: drop-shadow(0 0 4px var(--accent)); }
+.screen[data-ornament]:not([data-ornament=none]) .metric-panel .panel-header { height: 30px; padding: 0; border: 0; }
+.screen[data-ornament]:not([data-ornament=none]) .metric-value { padding-top: 3px; }
+.screen[data-ornament]:not([data-ornament=none]) .metric-value strong { color: var(--text); font-weight: 600; text-shadow: 0 0 14px color-mix(in srgb, var(--accent) 30%, transparent); }
+.screen[data-ornament]:not([data-ornament=none]) .metric-caption { padding-top: 1px; }
+.screen[data-ornament]:not([data-ornament=none]) .panel-footer { border-color: color-mix(in srgb, var(--accent) 25%, transparent); }
+.screen[data-ornament]:not([data-ornament=none]) .frame-slot-label { top: 25px; left: 26px; }
+.screen[data-ornament]:not([data-ornament=none]) .frame-slot-metric .frame-slot-label { top: 50%; }
+.screen[data-ornament]:not([data-ornament=none]) .frame-slot-label h2 { font-weight: 600; }
+.screen[data-ornament]:not([data-ornament=none]) .frame-crosshair { border-color: var(--accent); opacity: .35; }
+.screen[data-ornament]:not([data-ornament=none]) .frame-corner { display: none; }
+.screen[data-ornament]:not([data-ornament=none]) .screen-effects { opacity: var(--fx-opacity); background: none; }
+.screen[data-ornament]:not([data-ornament=none]) .screen-footer { padding-inline: 10px; border-top-color: color-mix(in srgb, var(--accent) 35%, transparent); }
+.screen[data-ornament]:not([data-ornament=none]) .footer-mode { background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 25%, var(--surface)), transparent); border: 0; }
+.screen[data-ornament]:not([data-ornament=none]) .display-settings { top: 110px; border-color: var(--accent); box-shadow: 0 16px 40px #0009; }
+
+/* Materials and vectors: data text is never inside a blurred SVG. */
+.frame-art { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; z-index: -1; pointer-events: none; }
+.title-art { position: absolute; inset: 3px -10px; width: calc(100% + 20px); height: calc(100% - 6px); overflow: visible; pointer-events: none; }
+.frame-art path, .frame-art ellipse, .title-art path, .title-art ellipse, .title-art circle { vector-effect: non-scaling-stroke; }
+.metal-bright { stop-color: var(--accent); stop-opacity: .95; }.metal-dark { stop-color: var(--surface); stop-opacity: .98; }.metal-mid { stop-color: var(--border); stop-opacity: .9; }
+.glass-top { stop-color: var(--surface); stop-opacity: .96; }.glass-bottom { stop-color: var(--background); stop-opacity: .82; }
+.ornament-outline { fill: none; stroke: var(--accent); stroke-opacity: .45; stroke-width: 1; }
+.ornament-inner { fill: none; stroke: var(--accent); stroke-opacity: .19; stroke-width: 1; }
+.optical-glow { filter: drop-shadow(0 0 calc(var(--fx-glow) * .5) color-mix(in srgb, var(--accent) 65%, transparent)); }
+.perimeter-stream { fill: none; stroke: var(--text); stroke-width: 1.8; stroke-dasharray: 55 945; stroke-dashoffset: 90; opacity: .8; animation: perimeter-travel 9s linear infinite; }
+.panel:nth-child(2n) .perimeter-stream, .frame-slot:nth-child(2n) .perimeter-stream { animation-delay: -4s; animation-direction: reverse; }
+.title-energy { fill: none; stroke: var(--accent); stroke-width: 2.2; }
+.title-thin { fill: none; stroke: var(--accent); stroke-width: 1; opacity: .65; }
+.title-stream { fill: none; stroke: var(--text); stroke-width: 2.5; stroke-dasharray: 95 905; stroke-dashoffset: 120; animation: perimeter-travel 7s linear infinite; }
+.title-armor { stroke: var(--accent); stroke-width: 1; }
+.title-inlay { fill: var(--background); fill-opacity: .93; stroke: var(--accent); stroke-opacity: .65; stroke-width: 1; }
+.ornament-gem { fill: var(--accent); stroke: var(--text); stroke-width: .7; }
+.armor-plate { stroke: var(--accent); stroke-width: .7; }
+.armor-rail { fill: var(--accent); opacity: .65; }
+.armor-foot { stroke: var(--accent); stroke-width: 2; fill: none; opacity: .65; }
+.armor-vents { stroke: var(--accent); stroke-width: 2; fill: none; opacity: .85; }
+.title-fins { fill: var(--accent); opacity: .65; }
+.glass-rib { fill: var(--accent); opacity: .55; }
+.hologram-rail { stroke: var(--accent); stroke-width: 2.4; fill: none; }
+.title-crystal { fill: color-mix(in srgb, var(--accent) 13%, var(--surface)); fill-opacity: .7; stroke: var(--accent); stroke-width: 1; }
+.title-crystal-gem path { fill: color-mix(in srgb, var(--accent) 55%, var(--surface)); stroke: var(--text); stroke-width: .8; }
+.astral-arc { fill: none; stroke: var(--accent); stroke-opacity: .8; stroke-width: 1.5; }
+.astral-lens { fill: var(--surface); stroke: var(--accent); stroke-width: 1.4; }
+.astral-star { stroke: var(--accent); stroke-width: 1; }
+.title-orbit { stroke: var(--accent); stroke-width: 1; fill: color-mix(in srgb, var(--accent) 8%, transparent); }
+.title-orbit-outer { stroke-dasharray: 4 13; fill: none; stroke-opacity: .6; }
+.gilded-emboss { stroke-width: 4; fill: none; }
+.gilded-filigree { stroke: var(--accent); stroke-width: 1.3; fill: none; }
+.gilded-crest { stroke: var(--accent); stroke-width: 1.5; fill: none; }
+.title-filigree { stroke: var(--accent); stroke-width: 1.7; fill: none; filter: drop-shadow(0 0 5px color-mix(in srgb, var(--accent) 50%, transparent)); }
+
+/* Global depth: layered clouds, sparse particles, horizon and a structural chassis. */
+.nebula-cloud { position: absolute; width: 70%; height: 75%; border-radius: 50%; background: radial-gradient(ellipse at 50% 50%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 66%); filter: blur(35px); animation: nebula-drift 20s ease-in-out infinite alternate; }
+.cloud-a { left: -25%; top: 10%; }.cloud-b { right: -25%; top: 18%; animation-delay: -10s; }
+.horizon-flare { position: absolute; left: 16%; right: 16%; height: 160px; bottom: -70px; background: radial-gradient(ellipse, color-mix(in srgb, var(--accent) 28%, transparent), transparent 68%); filter: blur(12px); }
+.showcase-floor { position: absolute; width: 150%; height: 70%; bottom: -42%; left: -25%; background: repeating-linear-gradient(0deg, color-mix(in srgb, var(--accent) 13%, transparent) 0 1px, transparent 1px 55px), repeating-linear-gradient(90deg, color-mix(in srgb, var(--accent) 13%, transparent) 0 1px, transparent 1px 55px); transform: perspective(500px) rotateX(60deg); mask-image: linear-gradient(transparent, #000); }
+.showcase-particles { position: absolute; inset: 0; }
+.showcase-particles i { position: absolute; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); opacity: .55; animation: particle-drift 12s ease-in-out infinite alternate; }
+.screen-chassis { position: absolute; inset: 0; width: 100%; height: 100%; }
+.screen-chassis path { fill: none; vector-effect: non-scaling-stroke; }
+.chassis-shadow { stroke: var(--border); stroke-width: 5; }.chassis-light { stroke: var(--accent); stroke-width: 1.6; stroke-opacity: .8; }.chassis-ticks { stroke: var(--accent); stroke-width: 2; stroke-opacity: .6; }
+.celestial-dome { position: absolute; width: 1100px; height: 1100px; left: calc(50% - 550px); top: -400px; opacity: .12; }
+.celestial-dome i { position: absolute; inset: 0; border: 1px solid var(--accent); border-radius: 50%; transform: rotateX(60deg) rotateZ(-25deg); }
+.celestial-dome i:nth-child(2) { inset: 70px; transform: rotateY(60deg) rotateZ(30deg); }.celestial-dome i:nth-child(3) { inset: 130px; border-style: dashed; transform: rotateY(-45deg); }
+
+/* Central stage decoration is separate from real geographic coordinates. */
+.scene-halo { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+.scene-halo ~ :is(.three-region,.geo-svg,.ol-region) { z-index: 1; }
+.screen[data-ornament]:not([data-ornament=none]) .panel:has(.geo-stage) .panel-header { position: relative; z-index: 2; background: linear-gradient(90deg, color-mix(in srgb, var(--surface) 96%, transparent), color-mix(in srgb, var(--surface) 86%, transparent)); }
+.screen[data-ornament]:not([data-ornament=none]) .geo-label { z-index: 2; }
+.scene-aura { position: absolute; left: 4%; right: 4%; top: 6%; bottom: 0; background: radial-gradient(ellipse at 50% 58%, color-mix(in srgb, var(--accent) 24%, transparent), transparent 65%); }
+.scene-pedestal { position: absolute; width: 85%; aspect-ratio: 1; top: -28%; left: 7.5%; transform: perspective(800px) rotateX(66deg); }
+.pedestal-rings { position: absolute; inset: 0; border-radius: 50%; border: 2px solid color-mix(in srgb, var(--accent) 50%, transparent); box-shadow: 0 0 25px color-mix(in srgb, var(--accent) 20%, transparent), inset 0 0 25px color-mix(in srgb, var(--accent) 25%, transparent); animation: ring-revolve 30s linear infinite; }
+.pedestal-rings i { position: absolute; inset: 7%; border-radius: 50%; border: 3px dashed var(--accent); opacity: .75; }
+.pedestal-rings i:nth-child(2) { inset: 14%; border-width: 1px; border-style: solid; opacity: .35; }.pedestal-rings i:nth-child(3) { inset: -6%; border-width: 7px; border-style: dotted; opacity: .25; }
+.pedestal-core { position: absolute; inset: 20%; border-radius: 50%; background: radial-gradient(ellipse, color-mix(in srgb, var(--accent) 16%, transparent), transparent 70%); }
+.scene-ray { position: absolute; height: 85%; width: 14%; bottom: -8%; background: linear-gradient(0deg, color-mix(in srgb, var(--accent) 14%, transparent), transparent 85%); filter: blur(12px); transform-origin: bottom; animation: stage-breathe 7s ease-in-out infinite alternate; }
+.ray-a { left: 22%; transform: rotate(-18deg); }.ray-b { left: 43%; width: 16%; }.ray-c { right: 22%; transform: rotate(18deg); animation-delay: -3.5s; }
+.scene-reticle { position: absolute; inset: 0; width: 100%; height: 100%; stroke: var(--accent); stroke-width: 1; fill: none; opacity: .5; }
+
+/* The four signatures also differ in composition, density and light direction. */
+.screen[data-ornament=mecha] { --fx-glow: 10px; }
+.screen[data-ornament=mecha] .panel-header { background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 14%, transparent), transparent 80%); }
+.screen[data-ornament=mecha] .panel-header h2 { text-transform: uppercase; }
+.screen[data-ornament=mecha] .frame-art .ornament-shell { fill-opacity: .95; }
+.screen[data-ornament=mecha] .brand-sigil { border-radius: 0; clip-path: polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px); background: linear-gradient(145deg, color-mix(in srgb, var(--accent) 30%, var(--surface)), var(--surface)); }
+.screen[data-ornament=hologram] { --fx-glow: 18px; background: radial-gradient(ellipse at 50% 38%, color-mix(in srgb, var(--accent) 16%, var(--background)), var(--background) 65%); }
+.screen[data-ornament=hologram] .glass-top { stop-color: color-mix(in srgb, var(--accent) 15%, var(--surface)); stop-opacity: .85; }.screen[data-ornament=hologram] .glass-bottom { stop-opacity: .55; }
+.screen[data-ornament=hologram] .panel-header h2 { color: var(--accent); }
+.screen[data-ornament=hologram] .scene-pedestal { width: 92%; left: 4%; top: -38%; }
+.screen[data-ornament=hologram] .scene-ray { height: 110%; width: 11%; background: linear-gradient(0deg, color-mix(in srgb, var(--accent) 25%, transparent), transparent 90%); }
+.screen[data-ornament=hologram] .metric-value strong { color: var(--accent); }
+.screen[data-ornament=astral] { --fx-glow: 16px; background: radial-gradient(ellipse at 52% 0%, color-mix(in srgb, var(--accent) 23%, var(--background)), var(--background) 58%); }
+.screen[data-ornament=astral] .glass-top { stop-color: color-mix(in srgb, var(--accent) 9%, var(--surface)); }.screen[data-ornament=astral] .glass-bottom { stop-opacity: .8; }
+.screen[data-ornament=astral] .title-block { padding-inline: 85px; }
+.screen[data-ornament=astral] .cloud-b { background: radial-gradient(ellipse, color-mix(in srgb, var(--good) 14%, transparent), transparent 65%); }
+.screen[data-ornament=astral] .celestial-dome { opacity: .28; }
+.screen[data-ornament=astral] .scene-pedestal { width: 72%; left: 14%; transform: perspective(800px) rotateX(46deg) rotateZ(-16deg); top: -30%; }
+.screen[data-ornament=astral] .pedestal-rings { border-color: var(--accent); }.screen[data-ornament=astral] .pedestal-rings i:nth-child(2) { border-color: var(--good); }
+.screen[data-ornament=astral] .scene-ray { opacity: .45; }
+.screen[data-ornament=gilded] { --fx-glow: 8px; background: radial-gradient(ellipse at 50% -5%, color-mix(in srgb, var(--accent) 20%, var(--background)), var(--background) 60%); }
+.screen[data-ornament=gilded] .glass-top { stop-color: color-mix(in srgb, var(--accent) 6%, var(--surface)); }
+.screen[data-ornament=gilded] .panel-header { border-bottom: 3px double color-mix(in srgb, var(--accent) 35%, transparent); }
+.screen[data-ornament=gilded] .panel-header h2 { font-family: var(--titleFont); letter-spacing: 2px; }
+.screen[data-ornament=gilded] .metric-value strong { color: var(--accent); }
+.screen[data-ornament=gilded] .celestial-dome, .screen[data-ornament=gilded] .perspective-grid, .screen[data-ornament=gilded] .showcase-floor { display: none; }
+.screen[data-ornament=gilded] .scene-reticle { stroke-dasharray: 2 4; }
+.screen[data-ornament=gilded] .scene-pedestal { width: 82%; left: 9%; }.screen[data-ornament=gilded] .pedestal-rings i { border-style: double; border-width: 6px; }
+.screen[data-ornament=gilded] .perimeter-stream { animation-duration: 18s; opacity: .4; }
+.screen[data-ornament=gilded] .showcase-particles i { border-radius: 0; transform: rotate(45deg); }
+
+/* Pause, intensity and accessibility affect light layers, never the information layer. */
+.screen[data-intensity=low] { --fx-opacity: .28; --fx-glow: 3px; }.screen[data-intensity=medium] { --fx-opacity: .6; --fx-glow: 7px; }
+.screen[data-ornament]:not([data-ornament=none])[data-intensity=low] { --fx-opacity: .28; --fx-glow: 3px; }
+.screen[data-ornament]:not([data-ornament=none])[data-intensity=medium] { --fx-opacity: .6; --fx-glow: 7px; }
+.screen[data-intensity=off] .fx { display: none !important; }.screen[data-intensity=off] .optical-glow { filter: none !important; }
+.screen[data-intensity=off] .scene-halo { display: none; }
+.screen[data-ornament][data-intensity=off] h1, .screen[data-ornament][data-intensity=off] .metric-value strong { text-shadow: none; }
+.screen[data-ornament]:not([data-ornament=none])[data-layout=flow] { padding-inline: 16px; }
+.screen[data-ornament]:not([data-ornament=none])[data-layout=flow] .masthead { grid-template-columns: minmax(0,1fr) auto; min-height: 175px; padding-bottom: 84px; }
+.screen[data-ornament]:not([data-ornament=none])[data-layout=flow] .title-block { bottom: 4px; height: 80px; width: 100%; padding: 8px 30px; justify-content: center; }
+.screen[data-ornament]:not([data-ornament=none])[data-layout=flow] .title-art { inset: 0; height: 100%; width: 100%; }
+.screen[data-ornament]:not([data-ornament=none])[data-layout=flow] h1 { font-size: 20px; letter-spacing: 2px; white-space: normal; overflow-wrap: anywhere; line-height: 1.3; }
+.screen[data-ornament]:not([data-ornament=none])[data-layout=flow] .screen-chassis, .screen[data-ornament]:not([data-ornament=none])[data-layout=flow] .celestial-dome { display: none; }
+.screen[data-ornament]:not([data-ornament=none])[data-layout=flow] .scene-pedestal { width: 80%; left: 10%; top: 28%; transform: perspective(800px) rotateX(58deg); }
+.screen[data-ornament=astral][data-layout=flow] .scene-pedestal { transform: perspective(800px) rotateX(46deg) rotateZ(-16deg); }
+@keyframes perimeter-travel { to { stroke-dashoffset: -910; } }
+@keyframes ring-revolve { to { transform: rotate(360deg); } }
+@keyframes nebula-drift { to { transform: translate3d(30px,35px,0) scale(1.12); opacity: .65; } }
+@keyframes particle-drift { to { translate: 12px -26px; opacity: .15; } }
+@keyframes stage-breathe { to { opacity: .4; } }
+@media (prefers-reduced-motion: reduce) { .screen .fx, .screen .fx * { animation: none !important; } }

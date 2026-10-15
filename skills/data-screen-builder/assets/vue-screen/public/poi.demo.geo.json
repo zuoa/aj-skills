@@ -1,0 +1,20 @@
+{
+  "type": "FeatureCollection",
+  "coordinateSystem": "WGS84",
+  "source": "虚构演示点位；非实际机构",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "示例服务站"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.3802,
+          31.21
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>汇报补充与确认</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar"><span class="brand">汇报工作台</span><span id="period-label"></span></header>
+  <div class="workspace">
+    <aside>
+      <p class="eyebrow">生成前确认</p>
+      <h1>把缺的事实<br>补到对应事项。</h1>
+      <p class="intro">逐项确认目标、时间节点与进展。暂时拿不到的信息，请说明原因，报告会保留判断限制。</p>
+      <div class="coverage"><strong id="coverage">—</strong><span>项已回应</span><progress id="progress" max="1" value="0" aria-label="确认进度"></progress></div>
+      <nav id="groups" aria-label="补充板块"></nav>
+      <p class="aside-note">提交后将继续生成报告。需要离开时，先保存草稿，下次可接着填写。</p>
+    </aside>
+    <main>
+      <div class="filters">
+        <label>责任部门<select id="department"><option value="">全部部门</option></select></label>
+        <label>优先级<select id="priority"><option value="">全部</option><option>高</option><option>中</option><option>低</option></select></label>
+        <label>确认状态<select id="completion"><option value="">全部事项</option><option value="pending">待回应</option><option value="done">已回应</option></select></label>
+      </div>
+      <p id="message" role="status" aria-live="polite">正在读取本期事项…</p>
+      <div id="errors" role="alert" hidden></div>
+      <div id="cards"></div>
+      <section id="new-section" class="new-section"><h2>补充新目标或下期计划</h2><p>新增事项也会进入后续汇报的目标台账。</p><div id="new-goals"></div><button type="button" id="add-goal" class="secondary">＋ 添加目标</button></section>
+      <footer class="actions"><span id="save-state">尚未修改</span><button type="button" id="save" class="secondary">保存草稿</button><button type="button" id="submit" class="primary">提交确认并继续生成</button></footer>
+    </main>
+  </div>
+</body>
+</html>

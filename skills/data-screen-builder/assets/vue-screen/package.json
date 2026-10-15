@@ -1,0 +1,36 @@
+{
+  "name": "data-screen",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "dev:framework": "vite --host 127.0.0.1 --open /?view=framework",
+    "build": "vue-tsc --noEmit && vite build",
+    "build:demo": "vue-tsc --noEmit && vite build --mode demo",
+    "preview": "vite preview --host 127.0.0.1",
+    "validate": "node scripts/validate-config.mjs",
+    "validate:framework": "node scripts/validate-framework.mjs",
+    "test": "vitest run",
+    "serve:fixture": "node scripts/fixture-server.mjs"
+  },
+  "dependencies": {
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "echarts": "6.1.0",
+    "ol": "10.11.0",
+    "three": "0.186.1",
+    "vue": "3.5.43"
+  },
+  "devDependencies": {
+    "@types/three": "0.186.0",
+    "@vitejs/plugin-vue": "6.0.10",
+    "typescript": "5.9.3",
+    "vite": "8.3.4",
+    "vitest": "4.0.18",
+    "vue-tsc": "3.3.13"
+  }
+}

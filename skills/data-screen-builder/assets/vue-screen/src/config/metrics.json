@@ -1,0 +1,184 @@
+{
+  "version": "1",
+  "metrics": [
+    {
+      "dimensions": [
+        {
+          "name": "area",
+          "type": "string"
+        }
+      ],
+      "granularities": [
+        "none"
+      ],
+      "refreshMs": 30000,
+      "staleAfterMs": 120000,
+      "source": "mock:park-operations",
+      "owner": "园区运营团队",
+      "positiveDirection": "up",
+      "id": "park.enterprises",
+      "name": "入驻企业",
+      "definition": "查询时间范围截至时刻的在营入驻企业数；跨区域按服务端去重。",
+      "unit": "家",
+      "precision": 0,
+      "aggregation": "distinct"
+    },
+    {
+      "dimensions": [
+        {
+          "name": "area",
+          "type": "string"
+        }
+      ],
+      "granularities": [
+        "none"
+      ],
+      "refreshMs": 30000,
+      "staleAfterMs": 120000,
+      "source": "mock:park-operations",
+      "owner": "园区运营团队",
+      "positiveDirection": "up",
+      "id": "park.occupancy",
+      "name": "空间使用率",
+      "definition": "已使用面积 / 可用面积 × 100；服务端按面积加权，结果范围为 0–100。",
+      "unit": "%",
+      "precision": 1,
+      "aggregation": "ratio"
+    },
+    {
+      "dimensions": [
+        {
+          "name": "area",
+          "type": "string"
+        }
+      ],
+      "granularities": [
+        "none"
+      ],
+      "refreshMs": 30000,
+      "staleAfterMs": 120000,
+      "source": "mock:park-operations",
+      "owner": "园区运营团队",
+      "positiveDirection": "up",
+      "id": "park.investment",
+      "name": "累计签约投资",
+      "definition": "查询时间范围内已确认签约投资额，不含撤销项目；单位万元。",
+      "unit": "万元",
+      "precision": 0,
+      "aggregation": "sum"
+    },
+    {
+      "dimensions": [
+        {
+          "name": "area",
+          "type": "string"
+        }
+      ],
+      "granularities": [
+        "hour",
+        "day"
+      ],
+      "refreshMs": 30000,
+      "staleAfterMs": 120000,
+      "source": "mock:park-operations",
+      "owner": "园区运营团队",
+      "positiveDirection": "down",
+      "id": "energy.consumption",
+      "name": "用电量",
+      "definition": "查询窗口内按计量时段归属的用电量；缺失计量点返回 null。",
+      "unit": "kWh",
+      "precision": 1,
+      "aggregation": "sum"
+    },
+    {
+      "dimensions": [
+        {
+          "name": "area",
+          "type": "string"
+        },
+        {
+          "name": "industry",
+          "type": "string"
+        }
+      ],
+      "granularities": [
+        "none"
+      ],
+      "refreshMs": 30000,
+      "staleAfterMs": 120000,
+      "source": "mock:park-operations",
+      "owner": "园区运营团队",
+      "positiveDirection": "neutral",
+      "id": "park.industries",
+      "name": "企业行业构成",
+      "definition": "同一统计口径下按主营行业归类的企业数，每家企业只归入一个行业。",
+      "unit": "家",
+      "precision": 0,
+      "aggregation": "distinct"
+    },
+    {
+      "dimensions": [
+        {
+          "name": "area",
+          "type": "string"
+        },
+        {
+          "name": "hour",
+          "type": "string"
+        },
+        {
+          "name": "weekday",
+          "type": "string"
+        }
+      ],
+      "granularities": [
+        "none"
+      ],
+      "refreshMs": 30000,
+      "staleAfterMs": 120000,
+      "source": "mock:park-operations",
+      "owner": "园区运营团队",
+      "positiveDirection": "neutral",
+      "id": "park.activity",
+      "name": "通行热度",
+      "definition": "查询窗口内按本地小时与星期汇总的通行事件数量。",
+      "unit": "次",
+      "precision": 0,
+      "aggregation": "sum"
+    },
+    {
+      "dimensions": [
+        {
+          "name": "area",
+          "type": "string"
+        },
+        {
+          "name": "message",
+          "type": "string"
+        },
+        {
+          "name": "severity",
+          "type": "string"
+        },
+        {
+          "name": "eventTime",
+          "type": "timestamp"
+        }
+      ],
+      "granularities": [
+        "none"
+      ],
+      "refreshMs": 10000,
+      "staleAfterMs": 30000,
+      "source": "mock:park-operations",
+      "owner": "园区运营团队",
+      "positiveDirection": "neutral",
+      "id": "park.alerts",
+      "name": "待处理事件",
+      "definition": "查询窗口内仍待处理的事件列表；value 为该事件影响设备数，不用于告警判断。",
+      "unit": "台",
+      "precision": 0,
+      "aggregation": "none"
+    }
+  ]
+}

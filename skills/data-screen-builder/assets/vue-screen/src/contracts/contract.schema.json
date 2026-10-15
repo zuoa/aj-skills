@@ -1,0 +1,627 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aj-skills.local/data-screen/v1",
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-zA-Z][a-zA-Z0-9_.-]*$"
+    },
+    "cell": {
+      "type": [
+        "string",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "field": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "type"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/id"
+        },
+        "type": {
+          "enum": [
+            "string",
+            "number",
+            "boolean",
+            "timestamp"
+          ]
+        }
+      }
+    },
+    "granularity": {
+      "enum": [
+        "none",
+        "hour",
+        "day",
+        "week",
+        "month"
+      ]
+    },
+    "metric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "definition",
+        "unit",
+        "precision",
+        "aggregation",
+        "positiveDirection",
+        "dimensions",
+        "granularities",
+        "refreshMs",
+        "staleAfterMs",
+        "source",
+        "owner"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "definition": {
+          "type": "string",
+          "minLength": 1
+        },
+        "unit": {
+          "type": "string"
+        },
+        "precision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8
+        },
+        "aggregation": {
+          "enum": [
+            "sum",
+            "avg",
+            "ratio",
+            "distinct",
+            "last",
+            "none"
+          ]
+        },
+        "positiveDirection": {
+          "enum": [
+            "up",
+            "down",
+            "neutral"
+          ]
+        },
+        "dimensions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/field"
+          }
+        },
+        "granularities": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/granularity"
+          }
+        },
+        "refreshMs": {
+          "type": "integer",
+          "minimum": 1000
+        },
+        "staleAfterMs": {
+          "type": "integer",
+          "minimum": 1000
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "owner": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "catalog": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "metrics"
+      ],
+      "properties": {
+        "version": {
+          "const": "1"
+        },
+        "metrics": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/metric"
+          }
+        }
+      }
+    },
+    "query": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metricId",
+        "dimensions",
+        "filters",
+        "timeRange",
+        "granularity"
+      ],
+      "properties": {
+        "metricId": {
+          "$ref": "#/$defs/id"
+        },
+        "dimensions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        },
+        "filters": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/id"
+          },
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/cell"
+              },
+              {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "$ref": "#/$defs/cell"
+                }
+              }
+            ]
+          }
+        },
+        "timeRange": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "from",
+            "to",
+            "timezone"
+          ],
+          "properties": {
+            "from": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "to": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "timezone": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "granularity": {
+          "$ref": "#/$defs/granularity"
+        },
+        "orderBy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "field",
+            "direction"
+          ],
+          "properties": {
+            "field": {
+              "$ref": "#/$defs/id"
+            },
+            "direction": {
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          }
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        }
+      }
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "metricId",
+        "fields",
+        "rows",
+        "dataAsOf",
+        "fetchedAt",
+        "quality"
+      ],
+      "properties": {
+        "version": {
+          "const": "1"
+        },
+        "metricId": {
+          "$ref": "#/$defs/id"
+        },
+        "fields": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/field"
+          }
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/$defs/cell"
+            }
+          }
+        },
+        "dataAsOf": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "fetchedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "quality": {
+          "enum": [
+            "ok",
+            "partial",
+            "stale"
+          ]
+        }
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "type",
+        "queryId",
+        "fields",
+        "layout"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "caption": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "$ref": "#/$defs/id"
+        },
+        "queryId": {
+          "$ref": "#/$defs/id"
+        },
+        "fields": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "x": {
+              "$ref": "#/$defs/id"
+            },
+            "y": {
+              "$ref": "#/$defs/id"
+            },
+            "value": {
+              "$ref": "#/$defs/id"
+            },
+            "label": {
+              "$ref": "#/$defs/id"
+            },
+            "series": {
+              "$ref": "#/$defs/id"
+            },
+            "longitude": {
+              "$ref": "#/$defs/id"
+            },
+            "latitude": {
+              "$ref": "#/$defs/id"
+            }
+          }
+        },
+        "layout": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "col",
+            "row",
+            "width",
+            "height"
+          ],
+          "properties": {
+            "col": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 12
+            },
+            "row": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "width": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 12
+            },
+            "height": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "thresholds": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "warning",
+            "critical",
+            "direction"
+          ],
+          "properties": {
+            "warning": {
+              "type": "number"
+            },
+            "critical": {
+              "type": "number"
+            },
+            "direction": {
+              "enum": [
+                "above",
+                "below"
+              ]
+            }
+          }
+        },
+        "interaction": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "field",
+            "filter"
+          ],
+          "properties": {
+            "field": {
+              "$ref": "#/$defs/id"
+            },
+            "filter": {
+              "$ref": "#/$defs/id"
+            }
+          }
+        },
+        "geography": {
+          "$ref": "#/$defs/geography"
+        }
+      }
+    },
+    "screen": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "id",
+        "title",
+        "mode",
+        "canvas",
+        "queries",
+        "components"
+      ],
+      "properties": {
+        "version": {
+          "const": "1"
+        },
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mode": {
+          "enum": [
+            "presentation",
+            "monitoring"
+          ]
+        },
+        "visuals": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "style",
+            "intensity"
+          ],
+          "properties": {
+            "style": {
+              "enum": [
+                "cinematic",
+                "restrained"
+              ]
+            },
+            "intensity": {
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            }
+          }
+        },
+        "canvas": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "width",
+            "height"
+          ],
+          "properties": {
+            "width": {
+              "type": "integer",
+              "minimum": 320
+            },
+            "height": {
+              "type": "integer",
+              "minimum": 240
+            }
+          }
+        },
+        "queries": {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": {
+            "$ref": "#/$defs/id"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/query"
+          }
+        },
+        "components": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/binding"
+          }
+        }
+      }
+    },
+    "geography": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "renderer",
+        "source",
+        "coordinateSystem",
+        "idProperty",
+        "nameProperty",
+        "depth"
+      ],
+      "properties": {
+        "renderer": {
+          "enum": [
+            "three",
+            "openlayers",
+            "svg"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "coordinateSystem": {
+          "enum": [
+            "WGS84",
+            "GCJ02"
+          ]
+        },
+        "idProperty": {
+          "type": "string",
+          "minLength": 1
+        },
+        "nameProperty": {
+          "type": "string",
+          "minLength": 1
+        },
+        "depth": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 20
+        },
+        "basemap": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "url",
+            "attribution",
+            "coordinateSystem"
+          ],
+          "properties": {
+            "url": {
+              "type": "string",
+              "minLength": 1
+            },
+            "attribution": {
+              "type": "string",
+              "minLength": 1
+            },
+            "coordinateSystem": {
+              "enum": [
+                "WGS84",
+                "GCJ02"
+              ]
+            }
+          }
+        },
+        "overlays": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "source",
+              "coordinateSystem"
+            ],
+            "properties": {
+              "kind": {
+                "enum": [
+                  "roads",
+                  "water",
+                  "poi"
+                ]
+              },
+              "source": {
+                "type": "string",
+                "minLength": 1
+              },
+              "coordinateSystem": {
+                "enum": [
+                  "WGS84",
+                  "GCJ02"
+                ]
+              },
+              "nameProperty": {
+                "type": "string",
+                "minLength": 1
+              },
+              "imageProperty": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

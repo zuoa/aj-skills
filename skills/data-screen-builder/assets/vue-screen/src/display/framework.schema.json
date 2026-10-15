@@ -1,0 +1,355 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aj-skills.local/data-screen-framework.schema.json",
+  "$defs": {
+    "frame": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "const": "1"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "canvas": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "width": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "height": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "width",
+            "height"
+          ]
+        },
+        "layoutId": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+        },
+        "paletteId": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+        },
+        "visualStyle": {
+          "enum": [
+            "cinematic",
+            "restrained"
+          ]
+        },
+        "customLayout": {
+          "$ref": "#/$defs/layout"
+        },
+        "customPalette": {
+          "$ref": "#/$defs/palette"
+        },
+        "bindings": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+          },
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+          }
+        },
+        "styleId": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+        },
+        "customStyle": {
+          "$ref": "#/$defs/style"
+        },
+        "effectIntensity": {
+          "enum": [
+            "off",
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      },
+      "required": [
+        "version",
+        "title",
+        "canvas",
+        "layoutId",
+        "paletteId",
+        "bindings"
+      ]
+    },
+    "layout": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "aspect": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rows": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "slots": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "role": {
+                "enum": [
+                  "metric",
+                  "chart",
+                  "map",
+                  "list",
+                  "main"
+                ]
+              },
+              "layout": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "col": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "row": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "width": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "height": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                },
+                "required": [
+                  "col",
+                  "row",
+                  "width",
+                  "height"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "label",
+              "role",
+              "layout"
+            ]
+          }
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "description",
+        "aspect",
+        "rows",
+        "slots"
+      ]
+    },
+    "palette": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tokens": {
+          "type": "object",
+          "properties": {
+            "background": {
+              "type": "string",
+              "pattern": "^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$"
+            },
+            "surface": {
+              "type": "string",
+              "pattern": "^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$"
+            },
+            "border": {
+              "type": "string",
+              "pattern": "^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$"
+            },
+            "text": {
+              "type": "string",
+              "pattern": "^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$"
+            },
+            "muted": {
+              "type": "string",
+              "pattern": "^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$"
+            },
+            "accent": {
+              "type": "string",
+              "pattern": "^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$"
+            },
+            "good": {
+              "type": "string",
+              "pattern": "^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$"
+            },
+            "warning": {
+              "type": "string",
+              "pattern": "^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$"
+            },
+            "critical": {
+              "type": "string",
+              "pattern": "^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$"
+            },
+            "scheme": {
+              "enum": [
+                "dark",
+                "light"
+              ]
+            },
+            "categories": {
+              "type": "array",
+              "minItems": 2,
+              "items": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$"
+              }
+            },
+            "sequential": {
+              "type": "array",
+              "minItems": 2,
+              "items": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$"
+              }
+            }
+          },
+          "required": [
+            "background",
+            "surface",
+            "border",
+            "text",
+            "muted",
+            "accent",
+            "good",
+            "warning",
+            "critical",
+            "scheme",
+            "categories",
+            "sequential"
+          ],
+          "additionalProperties": {
+            "type": [
+              "string",
+              "number",
+              "array"
+            ]
+          }
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "tokens"
+      ]
+    },
+    "style": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "effects": {
+          "enum": [
+            "cinematic",
+            "restrained"
+          ]
+        },
+        "recommendedPalettes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tokens": {
+          "type": "object",
+          "additionalProperties": {
+            "type": [
+              "string",
+              "number",
+              "array"
+            ]
+          }
+        },
+        "ornament": {
+          "enum": [
+            "none",
+            "mecha",
+            "hologram",
+            "astral",
+            "gilded",
+            "luminous"
+          ]
+        },
+        "defaultIntensity": {
+          "enum": [
+            "off",
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "description",
+        "effects",
+        "recommendedPalettes",
+        "tokens"
+      ]
+    }
+  }
+}

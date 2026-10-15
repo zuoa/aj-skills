@@ -1,0 +1,154 @@
+{
+  "default": "spatial",
+  "profiles": [
+    {
+      "id": "spatial",
+      "name": "辖区空间 · 暖铜与金",
+      "intent": "空间范围、分区经营与事件定位优先",
+      "style": "cinematic",
+      "renderer": "three",
+      "gridRows": "116px repeat(9, minmax(0, 1fr))",
+      "tokens": {
+        "background": "#180e0e",
+        "surface": "#271b19",
+        "border": "#523830",
+        "text": "#f4e9df",
+        "muted": "#b9a49a",
+        "accent": "#f0b363",
+        "good": "#87c9ab",
+        "warning": "#f2cb78",
+        "critical": "#f48191",
+        "categories": [
+          "#eaa55f",
+          "#87c9ab",
+          "#afabdb",
+          "#ce7f79"
+        ],
+        "sequential": [
+          "#332622",
+          "#74533a",
+          "#be8550",
+          "#f5cc84"
+        ],
+        "titleGlow": "#eaaa6320",
+        "sceneTop": "#a5402c",
+        "sceneSide": "#5d211e",
+        "sceneEdge": "#ffd987",
+        "sceneGlow": "#ff782e",
+        "sceneRoad": "#e5c89a",
+        "sceneWater": "#397080"
+      },
+      "layouts": {}
+    },
+    {
+      "id": "analysis",
+      "name": "经营分析 · 雾白与靛青",
+      "intent": "比较与趋势优先，空间作为辅助分析入口",
+      "style": "restrained",
+      "renderer": "openlayers",
+      "gridRows": "116px repeat(9, minmax(0, 1fr))",
+      "tokens": {
+        "scheme": "light",
+        "background": "#e9eef3",
+        "surface": "#f9fbfd",
+        "border": "#ccd6e2",
+        "text": "#1c304b",
+        "muted": "#52657d",
+        "accent": "#405fb4",
+        "good": "#287f74",
+        "warning": "#926311",
+        "critical": "#b3334c",
+        "categories": [
+          "#405fb4",
+          "#287f74",
+          "#9666ae",
+          "#b67b37"
+        ],
+        "sequential": [
+          "#eef2fa",
+          "#c3cfed",
+          "#7b91cb",
+          "#405fb4"
+        ],
+        "titleGlow": "#405fb400",
+        "sceneTop": "#667db4",
+        "sceneSide": "#34466f",
+        "sceneEdge": "#c0d0f5",
+        "sceneGlow": "#405fb4",
+        "sceneRoad": "#6d88b5",
+        "sceneWater": "#8eb7c9"
+      },
+      "layouts": {
+        "map": {
+          "col": 1,
+          "row": 2,
+          "width": 6,
+          "height": 6
+        },
+        "energy": {
+          "col": 7,
+          "row": 2,
+          "width": 3,
+          "height": 3
+        },
+        "industries": {
+          "col": 7,
+          "row": 5,
+          "width": 3,
+          "height": 3
+        },
+        "ranking": {
+          "col": 7,
+          "row": 8,
+          "width": 3,
+          "height": 3
+        },
+        "activity": {
+          "col": 1,
+          "row": 8,
+          "width": 6,
+          "height": 3
+        }
+      }
+    },
+    {
+      "id": "ecology",
+      "name": "运行监测 · 墨绿与松石",
+      "intent": "连续运行、能源变化与异常关注",
+      "style": "cinematic",
+      "renderer": "three",
+      "gridRows": "116px repeat(9, minmax(0, 1fr))",
+      "tokens": {
+        "background": "#081b19",
+        "surface": "#102b29",
+        "border": "#28514c",
+        "text": "#e0f0e9",
+        "muted": "#91b5a9",
+        "accent": "#63c8b1",
+        "good": "#8bce8e",
+        "warning": "#e6bd6f",
+        "critical": "#e88b9b",
+        "categories": [
+          "#63c8b1",
+          "#8bce8e",
+          "#8bbaca",
+          "#d4b375"
+        ],
+        "sequential": [
+          "#123833",
+          "#2a6358",
+          "#469b82",
+          "#a7d7b0"
+        ],
+        "titleGlow": "#63c8b120",
+        "sceneTop": "#327465",
+        "sceneSide": "#153c34",
+        "sceneEdge": "#c0ecc9",
+        "sceneGlow": "#59d0a3",
+        "sceneRoad": "#83ab9c",
+        "sceneWater": "#367a8c"
+      },
+      "layouts": {}
+    }
+  ]
+}

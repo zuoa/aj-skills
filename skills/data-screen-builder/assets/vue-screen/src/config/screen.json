@@ -1,0 +1,329 @@
+{
+  "version": "1",
+  "id": "park-operations",
+  "title": "园区运营总览",
+  "mode": "presentation",
+  "canvas": {
+    "width": 1920,
+    "height": 1080
+  },
+  "queries": {
+    "enterprises": {
+      "metricId": "park.enterprises",
+      "dimensions": [],
+      "filters": {},
+      "timeRange": {
+        "from": "2026-10-11T00:00:00+08:00",
+        "to": "2026-10-12T00:00:00+08:00",
+        "timezone": "Asia/Shanghai"
+      },
+      "granularity": "none"
+    },
+    "occupancy": {
+      "metricId": "park.occupancy",
+      "dimensions": [],
+      "filters": {},
+      "timeRange": {
+        "from": "2026-10-11T00:00:00+08:00",
+        "to": "2026-10-12T00:00:00+08:00",
+        "timezone": "Asia/Shanghai"
+      },
+      "granularity": "none"
+    },
+    "investment": {
+      "metricId": "park.investment",
+      "dimensions": [],
+      "filters": {},
+      "timeRange": {
+        "from": "2026-10-11T00:00:00+08:00",
+        "to": "2026-10-12T00:00:00+08:00",
+        "timezone": "Asia/Shanghai"
+      },
+      "granularity": "none"
+    },
+    "energy": {
+      "metricId": "energy.consumption",
+      "dimensions": [],
+      "filters": {},
+      "timeRange": {
+        "from": "2026-10-11T00:00:00+08:00",
+        "to": "2026-10-12T00:00:00+08:00",
+        "timezone": "Asia/Shanghai"
+      },
+      "granularity": "hour"
+    },
+    "areas": {
+      "metricId": "park.investment",
+      "dimensions": [
+        "area"
+      ],
+      "filters": {},
+      "timeRange": {
+        "from": "2026-10-11T00:00:00+08:00",
+        "to": "2026-10-12T00:00:00+08:00",
+        "timezone": "Asia/Shanghai"
+      },
+      "granularity": "none",
+      "orderBy": {
+        "field": "value",
+        "direction": "desc"
+      }
+    },
+    "industries": {
+      "metricId": "park.industries",
+      "dimensions": [
+        "industry"
+      ],
+      "filters": {},
+      "timeRange": {
+        "from": "2026-10-11T00:00:00+08:00",
+        "to": "2026-10-12T00:00:00+08:00",
+        "timezone": "Asia/Shanghai"
+      },
+      "granularity": "none"
+    },
+    "activity": {
+      "metricId": "park.activity",
+      "dimensions": [
+        "hour",
+        "weekday"
+      ],
+      "filters": {},
+      "timeRange": {
+        "from": "2026-10-11T00:00:00+08:00",
+        "to": "2026-10-12T00:00:00+08:00",
+        "timezone": "Asia/Shanghai"
+      },
+      "granularity": "none"
+    },
+    "alerts": {
+      "metricId": "park.alerts",
+      "dimensions": [
+        "area",
+        "message",
+        "severity",
+        "eventTime"
+      ],
+      "filters": {},
+      "timeRange": {
+        "from": "2026-10-11T00:00:00+08:00",
+        "to": "2026-10-12T00:00:00+08:00",
+        "timezone": "Asia/Shanghai"
+      },
+      "granularity": "none",
+      "orderBy": {
+        "field": "eventTime",
+        "direction": "desc"
+      },
+      "limit": 8
+    }
+  },
+  "components": [
+    {
+      "id": "enterprises",
+      "title": "入驻企业",
+      "type": "metric",
+      "queryId": "enterprises",
+      "fields": {
+        "value": "value"
+      },
+      "layout": {
+        "col": 1,
+        "row": 1,
+        "width": 4,
+        "height": 1
+      },
+      "caption": "在营入驻 · 按企业去重"
+    },
+    {
+      "id": "occupancy",
+      "title": "空间使用率",
+      "type": "metric",
+      "queryId": "occupancy",
+      "fields": {
+        "value": "value"
+      },
+      "layout": {
+        "col": 5,
+        "row": 1,
+        "width": 4,
+        "height": 1
+      },
+      "caption": "已用面积 / 可用面积"
+    },
+    {
+      "id": "investment",
+      "title": "累计签约投资",
+      "type": "metric",
+      "queryId": "investment",
+      "fields": {
+        "value": "value"
+      },
+      "layout": {
+        "col": 9,
+        "row": 1,
+        "width": 4,
+        "height": 1
+      },
+      "caption": "已确认签约 · 不含撤销项目"
+    },
+    {
+      "id": "energy",
+      "title": "用电趋势",
+      "type": "trend",
+      "queryId": "energy",
+      "fields": {
+        "x": "time",
+        "value": "value"
+      },
+      "layout": {
+        "col": 1,
+        "row": 2,
+        "width": 3,
+        "height": 3
+      },
+      "caption": "按小时计量 · 缺失点保留断线"
+    },
+    {
+      "id": "map",
+      "title": "园区运营一张图",
+      "type": "map",
+      "queryId": "areas",
+      "fields": {
+        "label": "area",
+        "value": "value"
+      },
+      "layout": {
+        "col": 4,
+        "row": 2,
+        "width": 6,
+        "height": 6
+      },
+      "interaction": {
+        "field": "area",
+        "filter": "area"
+      },
+      "caption": "区域签约投资 · 虚构边界示例 · 选择区域联动",
+      "geography": {
+        "renderer": "three",
+        "source": "districts.demo.geo.json",
+        "coordinateSystem": "WGS84",
+        "idProperty": "area",
+        "nameProperty": "name",
+        "depth": 5,
+        "overlays": [
+          {
+            "kind": "roads",
+            "source": "roads.demo.geo.json",
+            "coordinateSystem": "WGS84"
+          },
+          {
+            "kind": "water",
+            "source": "water.demo.geo.json",
+            "coordinateSystem": "WGS84"
+          },
+          {
+            "kind": "poi",
+            "source": "poi.demo.geo.json",
+            "coordinateSystem": "WGS84",
+            "nameProperty": "name",
+            "imageProperty": "photo"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ranking",
+      "title": "区域签约投资",
+      "type": "ranking",
+      "queryId": "areas",
+      "fields": {
+        "label": "area",
+        "value": "value"
+      },
+      "layout": {
+        "col": 1,
+        "row": 8,
+        "width": 3,
+        "height": 3
+      },
+      "interaction": {
+        "field": "area",
+        "filter": "area"
+      },
+      "caption": "选择区域，联动查看经营表现"
+    },
+    {
+      "id": "industries",
+      "title": "企业行业构成",
+      "type": "composition",
+      "queryId": "industries",
+      "fields": {
+        "label": "industry",
+        "value": "value"
+      },
+      "layout": {
+        "col": 1,
+        "row": 5,
+        "width": 3,
+        "height": 3
+      },
+      "caption": "按主营行业归类，每家企业只归入一类"
+    },
+    {
+      "id": "activity",
+      "title": "通行热度",
+      "type": "heatmap",
+      "queryId": "activity",
+      "fields": {
+        "x": "hour",
+        "y": "weekday",
+        "value": "value"
+      },
+      "layout": {
+        "col": 4,
+        "row": 8,
+        "width": 6,
+        "height": 3
+      },
+      "caption": "星期 × 小时 · 通行事件数"
+    },
+    {
+      "id": "alerts",
+      "title": "待处理事件",
+      "type": "alerts",
+      "queryId": "alerts",
+      "fields": {
+        "label": "message"
+      },
+      "layout": {
+        "col": 10,
+        "row": 2,
+        "width": 3,
+        "height": 5
+      },
+      "caption": "关注运行异常 · 核查后跟进处置"
+    },
+    {
+      "id": "table",
+      "title": "区域投资明细",
+      "type": "table",
+      "queryId": "areas",
+      "fields": {
+        "label": "area",
+        "value": "value"
+      },
+      "layout": {
+        "col": 10,
+        "row": 7,
+        "width": 3,
+        "height": 4
+      },
+      "caption": "以生产服务确认的投资口径为准"
+    }
+  ],
+  "visuals": {
+    "style": "cinematic",
+    "intensity": "medium"
+  }
+}

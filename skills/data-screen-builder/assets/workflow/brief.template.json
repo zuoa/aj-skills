@@ -1,0 +1,65 @@
+{
+  "version": "1",
+  "project": "",
+  "currentStage": "theme",
+  "stages": {
+    "theme": {
+      "status": "pending",
+      "decision": null,
+      "evidence": ""
+    },
+    "visualStyle": {
+      "status": "pending",
+      "decision": null,
+      "references": [],
+      "signature": "",
+      "assetRequirements": [],
+      "evidence": ""
+    },
+    "palette": {
+      "status": "pending",
+      "decision": null,
+      "evidence": ""
+    },
+    "layout": {
+      "status": "pending",
+      "decision": null,
+      "evidence": ""
+    },
+    "customLayout": {
+      "status": "pending",
+      "applicable": false,
+      "decision": null,
+      "evidence": ""
+    },
+    "framework": {
+      "status": "pending",
+      "revision": null,
+      "configDigest": "",
+      "previewUrl": "",
+      "screenshot": "",
+      "evidence": ""
+    },
+    "content": {
+      "status": "pending",
+      "inputMode": null,
+      "manifest": "",
+      "evidence": ""
+    },
+    "integration": {
+      "status": "pending",
+      "entry": "",
+      "evidence": ""
+    },
+    "verification": {
+      "status": "pending",
+      "report": "",
+      "evidence": ""
+    }
+  },
+  "requirements": [],
+  "excluded": [],
+  "delegations": [],
+  "openItems": [],
+  "changes": []
+}

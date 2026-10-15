@@ -1,0 +1,91 @@
+/* Refinement comes from purposeful contents and layered materials, rather than armor. */
+.screen[data-ornament=luminous] { --fx-glow: 9px; background: radial-gradient(ellipse at 52% 44%, color-mix(in srgb, var(--accent) 13%, var(--background)), var(--background) 68%); }
+.screen[data-ornament=luminous][data-layout=canvas] { grid-template-rows: 108px 34px minmax(0,1fr) 28px; gap: 12px; padding-inline: 30px; }
+.screen[data-ornament=luminous] .masthead { grid-template-columns: 260px minmax(0,1fr) 260px; gap: 20px; }
+.screen[data-ornament=luminous] .title-block { padding: 12px 38px 25px; }
+.screen[data-ornament=luminous] h1 { font-weight: 500; letter-spacing: 4px; text-shadow: 0 0 22px color-mix(in srgb, var(--accent) 22%, transparent); }
+.screen[data-ornament=luminous] .title-subtitle { color: var(--muted); letter-spacing: 3px; font-size: 9px; }
+.screen[data-ornament=luminous] .brand-sigil { width: 44px; height: 44px; border-radius: 12px; background: radial-gradient(ellipse at 30% 0%, color-mix(in srgb, var(--accent) 28%, var(--surface)), var(--surface)); border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); box-shadow: inset 0 1px 1px color-mix(in srgb, var(--text) 20%, transparent), 0 5px 15px #0003; }
+.screen[data-ornament=luminous] .masthead-brand strong { font-weight: 500; letter-spacing: 1px; }
+.screen[data-ornament=luminous] .live-clock time { font-size: 25px; font-weight: 500; }
+.screen[data-ornament=luminous] .screen-context { font-size: 11px; gap: 12px; }
+.screen[data-ornament=luminous] .toolbar { border-top: 1px solid color-mix(in srgb, var(--border) 35%, transparent); padding-top: 5px; }
+.screen[data-ornament=luminous] .cloud-a { left: -30%; top: 22%; }.screen[data-ornament=luminous] .cloud-b { right: -28%; top: 30%; }
+.screen[data-ornament=luminous] :is(.screen-chassis,.celestial-dome,.perspective-grid,.showcase-floor) { display: none; }
+.screen[data-ornament=luminous] .showcase-particles { opacity: .35; }
+.screen[data-ornament=luminous] .light-shaft { width: 120px; opacity: .4; }
+.screen[data-ornament=luminous] .horizon-flare { bottom: -115px; opacity: .5; }
+.screen[data-ornament=luminous] :is(.panel,.frame-slot) { border-radius: 18px; box-shadow: 0 8px 24px #0002, inset 0 1px 0 color-mix(in srgb, var(--text) 4%, transparent); }
+.screen[data-ornament=luminous] .panel { padding: 0 22px 12px; }
+.screen[data-ornament=luminous] .glass-top { stop-color: color-mix(in srgb, var(--accent) 8%, var(--surface)); stop-opacity: .96; }.screen[data-ornament=luminous] .glass-bottom { stop-color: var(--background); stop-opacity: .78; }
+.screen[data-ornament=luminous] .ornament-inner { display: none; }
+.screen[data-ornament=luminous] .ornament-outline { stroke-opacity: .24; filter: none; }
+.luminous-rim { stroke: var(--accent); stroke-width: 1.6; fill: none; opacity: .65; }
+.luminous-inlay { fill: none; stroke: var(--text); stroke-opacity: .055; stroke-width: 1; }
+.screen[data-ornament=luminous] .perimeter-stream { stroke-width: 1; stroke-dasharray: 35 965; opacity: .3; animation-duration: 16s; filter: none; }
+.screen[data-ornament=luminous] .panel-header { height: 44px; border-bottom: 1px solid color-mix(in srgb, var(--accent) 12%, transparent); }
+.screen[data-ornament=luminous] .panel-header h2 { font-size: 14px; font-weight: 500; letter-spacing: .5px; }
+.screen[data-ornament=luminous] .panel-header h2 .screen-icon { width: 14px; height: 14px; filter: none; }
+.screen[data-ornament=luminous] .panel-header h2::after { content: ''; width: 24px; height: 2px; margin-left: 8px; background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 65%, transparent), transparent); }
+.screen[data-ornament=luminous] .panel-footer { min-height: 24px; border-color: color-mix(in srgb, var(--accent) 10%, transparent); }
+.screen[data-ornament=luminous] .panel:has(.exhibition-scene) { background: radial-gradient(ellipse at 50% 58%, color-mix(in srgb, var(--accent) 5%, transparent), transparent); }
+.screen[data-ornament=luminous] .panel:has(.exhibition-scene) .panel-header { height: 48px; }
+.screen[data-ornament=luminous] .metric-panel { padding: 8px 24px 12px; }
+.screen[data-ornament=luminous] .metric-panel .panel-header { height: 30px; margin-right: 118px; }
+.screen[data-ornament=luminous] .metric-panel .panel-header h2::after { display: none; }
+.screen[data-ornament=luminous] .metric-panel .metric-value { margin-right: 115px; padding-top: 0; gap: 9px; }
+.screen[data-ornament=luminous] .metric-value strong { color: var(--text); font-weight: 500; text-shadow: none; letter-spacing: 1px; }
+.screen[data-ornament=luminous] .metric-value span { color: var(--muted); font-size: 12px; }
+.screen[data-ornament=luminous] .metric-caption { margin: 2px 120px 0 0; font-size: 10px; }
+.metric-context { display: flex; align-items: center; gap: 18px; font-size: 9px; color: var(--muted); margin-top: auto; padding-top: 7px; }
+.metric-freshness { display: inline-flex; align-items: center; gap: 5px; color: var(--good); }
+.metric-freshness i { width: 4px; height: 4px; background: currentColor; border-radius: 50%; }
+.metric-medallion { position: absolute; top: 8px; right: 18px; width: 116px; height: 116px; pointer-events: none; }
+.metric-medallion > svg { width: 100%; height: 100%; }.metric-medallion > .screen-icon { position: absolute; left: 43px; top: 32px; width: 31px; height: 31px; color: var(--accent); filter: drop-shadow(0 2px 7px color-mix(in srgb, var(--accent) 30%, transparent)); }
+.medallion-base { fill: color-mix(in srgb, var(--accent) 5%, transparent); stroke: var(--accent); stroke-opacity: .55; stroke-width: .8; }
+.medallion-orbit { fill: none; stroke: var(--accent); stroke-opacity: .14; stroke-width: 4; }
+.medallion-value { fill: none; stroke: var(--accent); stroke-width: 4; stroke-linecap: round; }
+.medallion-traces { fill: none; stroke: var(--accent); stroke-width: .8; stroke-opacity: .4; }
+.panel-summary { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 10px; flex-shrink: 0; padding: 5px 0 1px; }
+.panel-summary > div { border-right: 1px solid color-mix(in srgb, var(--border) 45%, transparent); }.panel-summary > div:last-child { border: 0; }
+.panel-summary span { display: block; font-size: 9px; color: var(--muted); margin-bottom: 0; }
+.panel-summary strong { font: 500 14px/18px var(--dataFont); color: var(--text); font-variant-numeric: tabular-nums; }.panel-summary small { font: 9px var(--bodyFont); color: var(--muted); }
+.screen[data-ornament=luminous] .alerts-overview { background: color-mix(in srgb, var(--accent) 4%, transparent); border-radius: 8px; margin-top: 9px; }
+.screen[data-ornament=luminous] .alerts li:not(.alerts-overview) { padding: 15px 0; border-color: color-mix(in srgb, var(--border) 40%, transparent); }
+.screen[data-ornament=luminous] .alerts strong { font-size: 13px; font-weight: 500; }.screen[data-ornament=luminous] .alerts time { color: var(--muted); }
+.screen[data-ornament=luminous] .severity { width: 34px; text-align: center; border-radius: 5px; padding: 6px 0; }
+.screen[data-ornament=luminous] th { font-size: 10px; color: var(--muted); background: color-mix(in srgb, var(--accent) 4%, transparent); }
+.screen[data-ornament=luminous] td { padding-block: 14px; }.screen[data-ornament=luminous] th,.screen[data-ornament=luminous] td { border-bottom-color: color-mix(in srgb, var(--border) 30%, transparent); }
+.screen[data-ornament=luminous] tbody tr:nth-child(2n) { background: color-mix(in srgb, var(--accent) 2%, transparent); }
+.screen[data-ornament=luminous] .table-scroll { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.luminous-title-shadow { fill: none; stroke: var(--accent); stroke-width: 7; stroke-opacity: .13; filter: blur(6px); }
+.luminous-title-glass { fill: color-mix(in srgb, var(--accent) 10%, var(--surface)); fill-opacity: .7; stroke: var(--accent); stroke-width: .5; stroke-opacity: .15; }
+.luminous-title-crown { fill: none; stroke: var(--text); stroke-opacity: .13; stroke-width: .6; }
+.luminous-title-jewel { fill: var(--accent); fill-opacity: .45; stroke: var(--text); stroke-opacity: .5; stroke-width: .6; }
+.screen[data-ornament=luminous] .title-energy { stroke-width: 1; stroke-opacity: .75; }.screen[data-ornament=luminous] .title-stream { stroke-width: 1.5; stroke-opacity: .7; animation-duration: 11s; }
+
+/* Concept architecture uses one projection for roofs, facades, roads and labels. */
+.exhibition-scene { flex: 1; min-height: 0; position: relative; isolation: isolate; overflow: hidden; }
+.campus-model { position: absolute; inset: 0; width: 100%; height: 100%; }
+.campus-atmosphere { position: absolute; width: 90%; height: 80%; left: 5%; bottom: 0; background: radial-gradient(ellipse, color-mix(in srgb, var(--accent) 9%, transparent), transparent 65%); }
+.campus-building { stroke: color-mix(in srgb, var(--accent) 60%, transparent); stroke-width: .55; }
+.campus-gardens { fill: var(--good); fill-opacity: .09; stroke: var(--good); stroke-opacity: .15; stroke-width: .5; }
+.campus-road { stroke: var(--accent); stroke-opacity: .38; stroke-width: 7; fill: none; }
+.campus-route { stroke: var(--text); stroke-width: 1; fill: none; stroke-dasharray: 18 982; stroke-dashoffset: 70; opacity: .65; animation: perimeter-travel 14s linear infinite; }
+.campus-ground { stroke: var(--accent); stroke-opacity: .42; stroke-width: .8; }
+.campus-rim { stroke: var(--accent); stroke-width: 1.5; stroke-opacity: .8; filter: drop-shadow(0 0 5px color-mix(in srgb, var(--accent) 35%, transparent)); }
+.campus-orbit { stroke: var(--accent); stroke-width: 1; stroke-opacity: .24; fill: none; }.orbit-dashed { stroke-dasharray: 1 15; stroke-width: 2; stroke-opacity: .35; }
+.window-cool { fill: var(--accent); fill-opacity: .62; }.window-warm { fill: var(--warning); fill-opacity: .8; }
+.campus-tree { fill: var(--good); fill-opacity: .34; stroke: var(--good); stroke-opacity: .3; stroke-width: .6; }
+.campus-zone { cursor: pointer; outline: none; }.campus-zone:hover .campus-tag,.campus-zone:focus-visible .campus-tag { stroke: var(--text); fill: var(--surface); }
+.campus-tag { fill: var(--background); fill-opacity: .9; stroke: var(--accent); stroke-opacity: .4; stroke-width: .65; }
+.campus-leader { stroke: var(--accent); stroke-opacity: .65; fill: none; stroke-width: .7; }.campus-anchor { fill: var(--accent); }
+.campus-zone-name { fill: var(--text); font: 11px var(--bodyFont); }.campus-zone-value { fill: var(--accent); font: 13px var(--dataFont); }.campus-zone-unit { fill: var(--muted); font-size: 9px; }
+.campus-note { position: absolute; bottom: 3px; left: 2px; margin: 0; color: var(--muted); font-size: 9px; }.campus-note span { margin-left: 12px; color: var(--accent); }
+.campus-scope { position: absolute; top: 15px; left: 14px; display: flex; align-items: baseline; gap: 12px; color: var(--muted); font-size: 10px; }.campus-scope strong { color: var(--text); font-size: 12px; font-weight: 400; }
+.screen[data-ornament=luminous] .frame-slot-label { top: 18px; left: 22px; }.screen[data-ornament=luminous] .frame-slot-metric .frame-slot-label { top: 50%; }
+.screen[data-ornament=luminous][data-layout=flow] .metric-panel { height: 145px; }.screen[data-ornament=luminous][data-layout=flow] .exhibition-scene { flex: auto; height: 360px; }
+.screen[data-ornament=luminous][data-layout=flow] .panel-summary { padding-bottom: 8px; }.screen[data-ornament=luminous][data-layout=flow] .metric-value strong { font-size: 40px; }
+.screen[data-ornament=luminous][data-layout=flow] .metric-medallion { width: 100px; height: 100px; right: 6px; }.screen[data-ornament=luminous][data-layout=flow] .metric-medallion > .screen-icon { top: 28px; left: 37px; width: 27px; height: 27px; }
+.screen[data-ornament=luminous][data-layout=flow] .metric-panel .metric-value { margin-right: 88px; }.screen[data-ornament=luminous][data-layout=flow] .metric-caption { margin-right: 0; }
+.screen[data-ornament=luminous][data-layout=flow] .title-block { padding-inline: 16px; }.screen[data-ornament=luminous][data-layout=flow] .campus-note span { display: none; }

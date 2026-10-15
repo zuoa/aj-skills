@@ -1,0 +1,340 @@
+{
+  "version": "1",
+  "presets": [
+    {
+      "id": "command-hud",
+      "name": "科技指挥",
+      "description": "切角框体、分段标题轨道、细网格与明确区域层次",
+      "effects": "cinematic",
+      "recommendedPalettes": [
+        "midnight-cyan"
+      ],
+      "tokens": {
+        "titleSize": 34,
+        "titleTracking": 5,
+        "panelGap": 16,
+        "panelInset": 18,
+        "metricSize": 42,
+        "chartLineWidth": 2,
+        "chartBarWidth": 9,
+        "chartAreaOpacity": 0.14
+      }
+    },
+    {
+      "id": "aurora-ops",
+      "name": "极光运维",
+      "description": "直线终端边框、紧凑状态带、低亮度网格与清晰告警",
+      "effects": "restrained",
+      "recommendedPalettes": [
+        "aurora-green",
+        "pine-teal"
+      ],
+      "tokens": {
+        "titleSize": 29,
+        "titleTracking": 2,
+        "panelGap": 12,
+        "panelInset": 16,
+        "metricSize": 38,
+        "chartLineWidth": 1.6,
+        "chartBarWidth": 8,
+        "chartAreaOpacity": 0.06
+      }
+    },
+    {
+      "id": "executive-metal",
+      "name": "黑金经营",
+      "description": "金属细线、大数字、克制装饰与沉稳的展示层级",
+      "effects": "restrained",
+      "recommendedPalettes": [
+        "obsidian-gold",
+        "warm-copper"
+      ],
+      "tokens": {
+        "titleSize": 32,
+        "titleTracking": 6,
+        "titleWeight": 500,
+        "panelGap": 22,
+        "panelInset": 22,
+        "metricSize": 44,
+        "chartLineWidth": 2,
+        "chartBarWidth": 6,
+        "chartAreaOpacity": 0.04
+      }
+    },
+    {
+      "id": "editorial-light",
+      "name": "清爽报表",
+      "description": "平直分隔、左对齐标题、开放留白与清晰统计图",
+      "effects": "restrained",
+      "recommendedPalettes": [
+        "mist-indigo",
+        "porcelain-blue"
+      ],
+      "tokens": {
+        "titleSize": 30,
+        "titleTracking": 1,
+        "panelGap": 22,
+        "panelInset": 22,
+        "metricSize": 38,
+        "chartLineWidth": 2.2,
+        "chartBarWidth": 12,
+        "chartAreaOpacity": 0
+      }
+    },
+    {
+      "id": "soft-card",
+      "name": "柔和卡片",
+      "description": "圆角表面、轻阴影、柔和层次与宽松排版",
+      "effects": "restrained",
+      "recommendedPalettes": [
+        "porcelain-blue",
+        "mist-indigo"
+      ],
+      "tokens": {
+        "titleSize": 30,
+        "titleTracking": 1,
+        "panelGap": 20,
+        "panelInset": 22,
+        "metricSize": 40,
+        "chartLineWidth": 2.6,
+        "chartBarWidth": 12,
+        "chartAreaOpacity": 0.1
+      }
+    },
+    {
+      "id": "industrial-blueprint",
+      "name": "工业蓝图",
+      "description": "工程坐标网格、技术标尺、硬边框与设备状态标记",
+      "effects": "restrained",
+      "recommendedPalettes": [
+        "porcelain-blue",
+        "midnight-cyan"
+      ],
+      "tokens": {
+        "titleSize": 30,
+        "titleTracking": 3,
+        "panelGap": 14,
+        "panelInset": 18,
+        "metricSize": 38,
+        "chartLineWidth": 1.5,
+        "chartBarWidth": 8,
+        "chartAreaOpacity": 0
+      }
+    },
+    {
+      "id": "scenic-glass",
+      "name": "实景通透",
+      "description": "透明覆盖层、窄边框、轻量标签，为实际场景留出视线",
+      "effects": "restrained",
+      "recommendedPalettes": [
+        "midnight-cyan",
+        "mist-indigo"
+      ],
+      "tokens": {
+        "titleSize": 30,
+        "titleTracking": 2,
+        "panelGap": 14,
+        "panelInset": 18,
+        "metricSize": 40,
+        "chartLineWidth": 2,
+        "chartBarWidth": 8,
+        "chartAreaOpacity": 0.08
+      }
+    },
+    {
+      "id": "story-atlas",
+      "name": "人文图志",
+      "description": "衬线标题、章节式面板、暖纸层次与地点叙事",
+      "effects": "restrained",
+      "recommendedPalettes": [
+        "vermilion-cream",
+        "warm-copper"
+      ],
+      "tokens": {
+        "titleFont": "\"Songti SC\", \"STSong\", \"SimSun\", serif",
+        "titleSize": 34,
+        "titleWeight": 600,
+        "titleTracking": 4,
+        "panelGap": 22,
+        "panelInset": 22,
+        "metricSize": 40,
+        "chartLineWidth": 2,
+        "chartBarWidth": 10,
+        "chartAreaOpacity": 0.04
+      }
+    },
+    {
+      "id": "festive-ceremony",
+      "name": "节庆盛典",
+      "description": "对称题头、双层细框、柔和放射纹与庆典节奏",
+      "effects": "restrained",
+      "recommendedPalettes": [
+        "vermilion-cream",
+        "warm-copper"
+      ],
+      "tokens": {
+        "titleSize": 36,
+        "titleTracking": 5,
+        "panelGap": 18,
+        "panelInset": 20,
+        "metricSize": 44,
+        "chartLineWidth": 2.4,
+        "chartBarWidth": 12,
+        "chartAreaOpacity": 0.16
+      }
+    },
+    {
+      "id": "orbital-network",
+      "name": "星轨传播",
+      "description": "轨道标题、点阵底纹、信号标记与开放主视觉区域",
+      "effects": "cinematic",
+      "recommendedPalettes": [
+        "violet-signal",
+        "midnight-cyan"
+      ],
+      "tokens": {
+        "titleSize": 33,
+        "titleTracking": 4,
+        "panelGap": 18,
+        "panelInset": 18,
+        "metricSize": 42,
+        "chartLineWidth": 2.2,
+        "chartBarWidth": 7,
+        "chartAreaOpacity": 0.12
+      }
+    },
+    {
+      "id": "mecha-citadel",
+      "name": "机甲指挥舱",
+      "description": "石墨金属切面、装甲内衬、螺钉刻线、窄槽能量流与机械辖区台座",
+      "effects": "cinematic",
+      "ornament": "mecha",
+      "defaultIntensity": "high",
+      "recommendedPalettes": [
+        "midnight-cyan"
+      ],
+      "tokens": {
+        "titleSize": 38,
+        "titleTracking": 6,
+        "panelGap": 20,
+        "panelInset": 24,
+        "metricSize": 40,
+        "chartLineWidth": 2.4,
+        "chartBarWidth": 10,
+        "chartAreaOpacity": 0.2,
+        "sceneRoughness": 0.38,
+        "sceneMetalness": 0.68,
+        "sceneSideRoughness": 0.45,
+        "sceneSideMetalness": 0.75,
+        "sceneEmission": 0.025,
+        "sceneBloom": 0.35
+      }
+    },
+    {
+      "id": "hologram-reactor",
+      "name": "全息反应堆",
+      "description": "透明晶体题头、折射棱框、悬浮晶核、纵向光柱与分层反应环",
+      "effects": "cinematic",
+      "ornament": "hologram",
+      "defaultIntensity": "high",
+      "recommendedPalettes": [
+        "midnight-cyan"
+      ],
+      "tokens": {
+        "titleSize": 38,
+        "titleTracking": 5,
+        "panelGap": 20,
+        "panelInset": 24,
+        "metricSize": 40,
+        "chartLineWidth": 2.2,
+        "chartBarWidth": 9,
+        "chartAreaOpacity": 0.22,
+        "sceneRoughness": 0.25,
+        "sceneMetalness": 0.25,
+        "sceneSideRoughness": 0.3,
+        "sceneSideMetalness": 0.2,
+        "sceneEmission": 0.12,
+        "sceneBloom": 0.65
+      }
+    },
+    {
+      "id": "astral-theater",
+      "name": "星穹剧场",
+      "description": "轨道题头、弧面光学边框、细密星云与球形星图展陈",
+      "effects": "cinematic",
+      "ornament": "astral",
+      "defaultIntensity": "high",
+      "recommendedPalettes": [
+        "violet-signal"
+      ],
+      "tokens": {
+        "titleSize": 36,
+        "titleTracking": 5,
+        "panelGap": 20,
+        "panelInset": 26,
+        "metricSize": 40,
+        "chartLineWidth": 2.5,
+        "chartBarWidth": 9,
+        "chartAreaOpacity": 0.2,
+        "sceneRoughness": 0.68,
+        "sceneMetalness": 0.18,
+        "sceneSideRoughness": 0.7,
+        "sceneSideMetalness": 0.12,
+        "sceneEmission": 0.07,
+        "sceneBloom": 0.5
+      }
+    },
+    {
+      "id": "gilded-palace",
+      "name": "鎏金殿堂",
+      "description": "浮雕题头、香槟金属双镶边、卷草角花、徽章与建筑展台",
+      "effects": "cinematic",
+      "ornament": "gilded",
+      "defaultIntensity": "high",
+      "recommendedPalettes": [
+        "obsidian-gold"
+      ],
+      "tokens": {
+        "titleFont": "\"Songti SC\", \"STSong\", \"SimSun\", serif",
+        "titleSize": 38,
+        "titleTracking": 6,
+        "panelGap": 20,
+        "panelInset": 28,
+        "metricSize": 40,
+        "chartLineWidth": 2,
+        "chartBarWidth": 9,
+        "chartAreaOpacity": 0.12,
+        "sceneRoughness": 0.3,
+        "sceneMetalness": 0.72,
+        "sceneSideRoughness": 0.42,
+        "sceneSideMetalness": 0.64,
+        "sceneEmission": 0.02,
+        "sceneBloom": 0.3
+      }
+    },
+    {
+      "id": "luminous-gallery",
+      "name": "琉光展厅",
+      "description": "曲面玻璃、香槟细节、柔和投光、指标层次与完整内容表达",
+      "effects": "cinematic",
+      "ornament": "luminous",
+      "defaultIntensity": "high",
+      "recommendedPalettes": [
+        "midnight-cyan",
+        "obsidian-gold",
+        "violet-signal"
+      ],
+      "tokens": {
+        "titleSize": 36,
+        "titleTracking": 4,
+        "panelGap": 20,
+        "panelInset": 22,
+        "metricSize": 48,
+        "chartLineWidth": 2.2,
+        "chartBarWidth": 12,
+        "chartAreaOpacity": 0.18,
+        "captionSize": 11
+      }
+    }
+  ]
+}

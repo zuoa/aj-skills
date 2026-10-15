@@ -1,0 +1,320 @@
+{
+  "version": "1",
+  "presets": [
+    {
+      "id": "warm-copper",
+      "name": "暖铜与金",
+      "tokens": {
+        "background": "#180e0e",
+        "surface": "#271b19",
+        "border": "#523830",
+        "text": "#f4e9df",
+        "muted": "#b9a49a",
+        "accent": "#f0b363",
+        "good": "#87c9ab",
+        "warning": "#f2cb78",
+        "critical": "#f48191",
+        "categories": [
+          "#eaa55f",
+          "#87c9ab",
+          "#afabdb",
+          "#ce7f79"
+        ],
+        "sequential": [
+          "#332622",
+          "#74533a",
+          "#be8550",
+          "#f5cc84"
+        ],
+        "titleGlow": "#eaaa6320",
+        "sceneTop": "#a5402c",
+        "sceneSide": "#5d211e",
+        "sceneEdge": "#ffd987",
+        "sceneGlow": "#ff782e",
+        "sceneRoad": "#e5c89a",
+        "sceneWater": "#397080",
+        "scheme": "dark"
+      }
+    },
+    {
+      "id": "mist-indigo",
+      "name": "雾白与靛青",
+      "tokens": {
+        "scheme": "light",
+        "background": "#e9eef3",
+        "surface": "#f9fbfd",
+        "border": "#ccd6e2",
+        "text": "#1c304b",
+        "muted": "#52657d",
+        "accent": "#405fb4",
+        "good": "#287f74",
+        "warning": "#926311",
+        "critical": "#b3334c",
+        "categories": [
+          "#405fb4",
+          "#287f74",
+          "#9666ae",
+          "#b67b37"
+        ],
+        "sequential": [
+          "#eef2fa",
+          "#c3cfed",
+          "#7b91cb",
+          "#405fb4"
+        ],
+        "titleGlow": "#405fb400",
+        "sceneTop": "#667db4",
+        "sceneSide": "#34466f",
+        "sceneEdge": "#c0d0f5",
+        "sceneGlow": "#405fb4",
+        "sceneRoad": "#6d88b5",
+        "sceneWater": "#8eb7c9"
+      }
+    },
+    {
+      "id": "pine-teal",
+      "name": "墨绿与松石",
+      "tokens": {
+        "background": "#081b19",
+        "surface": "#102b29",
+        "border": "#28514c",
+        "text": "#e0f0e9",
+        "muted": "#91b5a9",
+        "accent": "#63c8b1",
+        "good": "#8bce8e",
+        "warning": "#e6bd6f",
+        "critical": "#e88b9b",
+        "categories": [
+          "#63c8b1",
+          "#8bce8e",
+          "#8bbaca",
+          "#d4b375"
+        ],
+        "sequential": [
+          "#123833",
+          "#2a6358",
+          "#469b82",
+          "#a7d7b0"
+        ],
+        "titleGlow": "#63c8b120",
+        "sceneTop": "#327465",
+        "sceneSide": "#153c34",
+        "sceneEdge": "#c0ecc9",
+        "sceneGlow": "#59d0a3",
+        "sceneRoad": "#83ab9c",
+        "sceneWater": "#367a8c",
+        "scheme": "dark"
+      }
+    },
+    {
+      "id": "midnight-cyan",
+      "name": "深海与冰蓝",
+      "tokens": {
+        "background": "#071222",
+        "surface": "#0d2036",
+        "border": "#285075",
+        "text": "#e6f3ff",
+        "muted": "#9db6ce",
+        "accent": "#52d9f5",
+        "good": "#62d6b2",
+        "warning": "#f3c475",
+        "critical": "#ff8d9d",
+        "scheme": "dark",
+        "categories": [
+          "#52d9f5",
+          "#72a7ff",
+          "#c0a3ff",
+          "#f3c475"
+        ],
+        "sequential": [
+          "#10263b",
+          "#1c5574",
+          "#328fac",
+          "#88e5f5"
+        ],
+        "titleGlow": "#52d9f520",
+        "sceneTop": "#328fac",
+        "sceneSide": "#1c5574",
+        "sceneEdge": "#88e5f5",
+        "sceneGlow": "#52d9f5",
+        "sceneRoad": "#9db6ce",
+        "sceneWater": "#72a7ff"
+      }
+    },
+    {
+      "id": "aurora-green",
+      "name": "夜墨与极光",
+      "tokens": {
+        "background": "#081512",
+        "surface": "#10251e",
+        "border": "#315346",
+        "text": "#e5f3e9",
+        "muted": "#9cbca9",
+        "accent": "#80e3a6",
+        "good": "#5ad9b1",
+        "warning": "#f5c878",
+        "critical": "#ff98a0",
+        "scheme": "dark",
+        "categories": [
+          "#80e3a6",
+          "#69c5d2",
+          "#a6baef",
+          "#f5c878"
+        ],
+        "sequential": [
+          "#123227",
+          "#28664a",
+          "#4daa70",
+          "#a1edb5"
+        ],
+        "titleGlow": "#80e3a620",
+        "sceneTop": "#4daa70",
+        "sceneSide": "#28664a",
+        "sceneEdge": "#a1edb5",
+        "sceneGlow": "#80e3a6",
+        "sceneRoad": "#9cbca9",
+        "sceneWater": "#69c5d2"
+      }
+    },
+    {
+      "id": "obsidian-gold",
+      "name": "曜黑与香槟",
+      "tokens": {
+        "background": "#121212",
+        "surface": "#20201e",
+        "border": "#554c3d",
+        "text": "#f4efdf",
+        "muted": "#bab3a2",
+        "accent": "#dfbe7a",
+        "good": "#90c5aa",
+        "warning": "#f4c66e",
+        "critical": "#f49696",
+        "scheme": "dark",
+        "categories": [
+          "#dfbe7a",
+          "#91b7c8",
+          "#abacd8",
+          "#b8ca9d"
+        ],
+        "sequential": [
+          "#29271f",
+          "#665737",
+          "#ac8d4e",
+          "#ecd398"
+        ],
+        "titleGlow": "#dfbe7a20",
+        "sceneTop": "#ac8d4e",
+        "sceneSide": "#665737",
+        "sceneEdge": "#ecd398",
+        "sceneGlow": "#dfbe7a",
+        "sceneRoad": "#bab3a2",
+        "sceneWater": "#91b7c8"
+      }
+    },
+    {
+      "id": "porcelain-blue",
+      "name": "瓷白与湖蓝",
+      "tokens": {
+        "background": "#edf5fb",
+        "surface": "#ffffff",
+        "border": "#b9d1e4",
+        "text": "#173550",
+        "muted": "#496780",
+        "accent": "#247fa5",
+        "good": "#247461",
+        "warning": "#916214",
+        "critical": "#b93a4d",
+        "scheme": "light",
+        "categories": [
+          "#247fa5",
+          "#5366c3",
+          "#bc7137",
+          "#298875"
+        ],
+        "sequential": [
+          "#edf5fb",
+          "#b8dbe9",
+          "#66aecb",
+          "#247fa5"
+        ],
+        "titleGlow": "#247fa500",
+        "sceneTop": "#66aecb",
+        "sceneSide": "#b8dbe9",
+        "sceneEdge": "#247fa5",
+        "sceneGlow": "#247fa5",
+        "sceneRoad": "#496780",
+        "sceneWater": "#5366c3"
+      }
+    },
+    {
+      "id": "vermilion-cream",
+      "name": "朱红与米金",
+      "tokens": {
+        "background": "#f6ede0",
+        "surface": "#fffbf4",
+        "border": "#d6bda5",
+        "text": "#4b302b",
+        "muted": "#725e54",
+        "accent": "#a43235",
+        "good": "#346f55",
+        "warning": "#88601c",
+        "critical": "#9a2444",
+        "scheme": "light",
+        "categories": [
+          "#a43235",
+          "#bd7c27",
+          "#3e7c70",
+          "#7368a8"
+        ],
+        "sequential": [
+          "#faeee0",
+          "#e8c7b1",
+          "#c88068",
+          "#a43235"
+        ],
+        "titleGlow": "#a4323500",
+        "sceneTop": "#c88068",
+        "sceneSide": "#e8c7b1",
+        "sceneEdge": "#a43235",
+        "sceneGlow": "#a43235",
+        "sceneRoad": "#725e54",
+        "sceneWater": "#bd7c27"
+      }
+    },
+    {
+      "id": "violet-signal",
+      "name": "夜紫与信号",
+      "tokens": {
+        "background": "#100f22",
+        "surface": "#1c1b35",
+        "border": "#444364",
+        "text": "#ececfc",
+        "muted": "#aaa8cb",
+        "accent": "#b2a8ff",
+        "good": "#7de0c6",
+        "warning": "#f3c187",
+        "critical": "#f99bab",
+        "scheme": "dark",
+        "categories": [
+          "#b2a8ff",
+          "#69d5e9",
+          "#f99bab",
+          "#f3c187"
+        ],
+        "sequential": [
+          "#282445",
+          "#514878",
+          "#8a7abc",
+          "#d4c5ff"
+        ],
+        "titleGlow": "#b2a8ff20",
+        "sceneTop": "#8a7abc",
+        "sceneSide": "#514878",
+        "sceneEdge": "#d4c5ff",
+        "sceneGlow": "#b2a8ff",
+        "sceneRoad": "#aaa8cb",
+        "sceneWater": "#69d5e9"
+      }
+    }
+  ]
+}
